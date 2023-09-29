@@ -95,9 +95,8 @@ export function CommandBuild(program: Command) {
       const scriptTsFilePath = path.join(repositoryRootPath, '.torytis', 'script.ts');
       fs.writeFileSync(scriptTsFilePath, scriptTsString);
 
-      // 7) .torytis/script.ts 파일을 .torytis/images/script.js 파일로 번들링 하기
-      // console.log(`7) .torytis/script.ts 파일을 .torytis/images/script.js 파일로 번들링 하기`);
-      const scriptJsFilePath = path.join(repositoryRootPath, '.torytis', 'images', 'script.js');
+      // 7) .torytis/script.ts 파일을 .torytis/script.js 파일로 번들링 하기
+      const scriptJsFilePath = path.join(repositoryRootPath, '.torytis', 'script.js');
       await new Promise(function(resolve, reject) {
         esbuild.build({
           entryPoints: [scriptTsFilePath],
@@ -135,6 +134,11 @@ export function CommandBuild(program: Command) {
         });
       }); 
 
+      // 11) src/public 밑에 있는 파일들 .torytis/ 밑으로 복사하기
+      const srcPublicFolderPath = path.join(repositoryRootPath, 'src', 'public/');
+      if (fs.existsSync(srcPublicFolderPath)) {
+        fs.cpSync(srcPublicFolderPath, path.join(repositoryRootPath, '.torytis/'), { recursive: true });
+      }
       // return;
 
       // // 10) src/index.scss 읽기
