@@ -2,7 +2,6 @@
 import { Command } from 'commander';
 import { version } from '../package.json';
 import { CommandBuild } from './commands/build';
-import { CommandNew } from './commands/new';
 const program = new Command();
 
 program
@@ -12,7 +11,6 @@ program
 ;
 
 CommandBuild(program);
-CommandNew(program);
 
 program.parse();
 
