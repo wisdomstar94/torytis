@@ -3,7 +3,7 @@ import { isRepogitoryRoot } from "../functions/common";
 import { renderToString } from 'react-dom/server';
 import path from "path";
 import fs from 'fs';
-import { sassPlugin } from 'esbuild-sass-plugin';
+import { sassPlugin, postcssModules } from 'esbuild-sass-plugin';
 import esbuild from 'esbuild';
 import { globSync } from 'glob';
 import { exec } from 'child_process';
@@ -36,7 +36,13 @@ export function CommandBuild(program: Command) {
           format: 'cjs',
           outfile: convertIndexJsxPath,
           plugins: [
-            sassPlugin(),
+            sassPlugin({
+              filter: /\.module\.scss$/,
+              transform: postcssModules({}),
+            }),
+            sassPlugin({
+              filter: /\.scss$/,
+            }),
             /*
             {
               async transform(source, resolveDir) {

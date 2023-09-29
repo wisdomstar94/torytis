@@ -1,5 +1,3 @@
-declare module '*.scss' {}
-
 declare global {
   namespace JSX {
     interface IntrinsicElements {

@@ -1,7 +1,7 @@
 {
   "name": "@wisdomstar94/torytis",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "tistory 블로그 스킨을 보다 더 편리하게 만들 수 있도록 도와주는 툴입니다.",
   "scripts": {
     "pack:build": "node ./esbuild.config.js"
@@ -31,6 +31,7 @@
     "esbuild-sass-plugin": "^2.15.0",
     "glob": "^10.3.10",
     "postcss": "^8.4.30",
+    "postcss-modules": "^6.0.0",
     "postcss-preset-env": "^9.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
