@@ -9,7 +9,7 @@ esbuild.build({
   format: 'cjs',
   platform: 'node',
   outfile: "bin/torytis.js",
-  external: ['esbuild'],
+  external: ['esbuild', 'postcss-modules'],
   treeShaking: true,
   plugins: [],
 });
