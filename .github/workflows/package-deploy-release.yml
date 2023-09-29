@@ -1,0 +1,38 @@
+name: package-deploy-release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  publish-release-registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+          # registry-url: https://npm.pkg.github.com/
+          registry-url: https://registry.npmjs.org/
+      - run: npm install
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.PACKAGE_PUBLISH_KEY_GITHUB}}
+      - run: npm run pack:build
+      - run: rm -rf ./src
+      - run: rm -rf ./src-cli
+      - run: rm -rf ./.github
+      - run: rm -rf ./package-lock.json
+      - run: rm -rf ./tailwind.config.js
+      - run: rm -rf ./postcss.config.js
+      - run: rm -rf ./tsconfig.json
+      - run: rm -rf ./esbuild.config.js
+      - run: rm -rf ./global.d.ts
+      # - run: npm publish
+      - run: npm publish --access=public
+        env:
+          # NODE_AUTH_TOKEN: ${{secrets.PACKAGE_PUBLISH_KEY_GITHUB}}
+          NODE_AUTH_TOKEN: ${{secrets.PACKAGE_PUBLISH_KEY_NPM}}
