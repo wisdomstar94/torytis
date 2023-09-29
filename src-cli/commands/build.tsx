@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { isRepogitoryRoot } from "../functions/common";
 import { renderToString } from 'react-dom/server';
+import PostcssModulesPlugin from 'postcss-modules';
 import path from "path";
 import fs from 'fs';
 import { sassPlugin, postcssModules } from 'esbuild-sass-plugin';
@@ -8,6 +9,8 @@ import esbuild from 'esbuild';
 import { globSync } from 'glob';
 import { exec } from 'child_process';
 import { metaTagReplace, ttAttrReplace, ttHtmlCommentReplace } from "../functions/replacer";
+
+PostcssModulesPlugin.postcss;
 
 export function CommandBuild(program: Command) {
   program
