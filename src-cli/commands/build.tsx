@@ -30,7 +30,7 @@ export function CommandBuild(program: Command) {
           entryPoints: [path.join(repositoryRootPath, 'src', 'index.tsx')],
           bundle: true,
           jsx: 'automatic',
-          target: ['es5'],
+          target: ['es6'],
           treeShaking: true,
           platform: 'browser',
           format: 'cjs',
@@ -77,7 +77,7 @@ export function CommandBuild(program: Command) {
 
       // 5) src 밑에 있는 .ts 파일 찾기
       // console.log(`5) src 밑에 있는 .ts 파일 찾기`);
-      const targetTsDir = path.join(repositoryRootPath, 'src', `**/*.ts`);
+      const targetTsDir = path.join(repositoryRootPath, 'src', `**/*.script.tsx`);
       const tsPathes = globSync(targetTsDir, {
         dot: true,
         // node_modules 은 검색대상에서 제외
@@ -102,7 +102,7 @@ export function CommandBuild(program: Command) {
           entryPoints: [scriptTsFilePath],
           bundle: true,
           jsx: 'automatic',
-          target: ['es5'],
+          target: ['es6'],
           treeShaking: true,
           platform: 'browser',
           format: 'cjs',

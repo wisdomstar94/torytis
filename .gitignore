@@ -5,3 +5,5 @@ build
 out
 .torytis
 bin
+index.js
+tsconfig.package.tsbuildinfo

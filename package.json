@@ -1,10 +1,12 @@
 {
   "name": "@wisdomstar94/torytis",
   "private": false,
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "tistory 블로그 스킨을 보다 더 편리하게 만들 수 있도록 도와주는 툴입니다.",
   "scripts": {
-    "pack:build": "node ./esbuild.config.js"
+    "pack:cli:build": "node ./esbuild.cli.config.js",
+    "pack:lib:build": "node ./esbuild.lib.config.js",
+    "pack:lib:build:tsc": "tsc --project ./tsconfig.package.json"
   },
   "keywords": [
     "tistory",

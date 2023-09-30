@@ -21,9 +21,12 @@ jobs:
       - run: npm install
         env:
           NODE_AUTH_TOKEN: ${{secrets.PACKAGE_PUBLISH_KEY_GITHUB}}
-      - run: npm run pack:build
+      - run: npm run pack:cli:build
+      - run: npm run pack:lib:build
+      - run: npm run pack:lib:build:tsc
       - run: rm -rf ./src
       - run: rm -rf ./src-cli
+      - run: rm -rf ./src-lib
       - run: rm -rf ./.github
       - run: rm -rf ./package-lock.json
       - run: rm -rf ./tailwind.config.js
@@ -31,6 +34,8 @@ jobs:
       - run: rm -rf ./tsconfig.json
       - run: rm -rf ./esbuild.config.js
       - run: rm -rf ./global.d.ts
+      - run: mv ./lib/src-lib ./src-lib
+      - run: mv ./index.ts ./index.d.ts
       # - run: npm publish
       - run: npm publish --access=public
         env:
