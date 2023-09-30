@@ -7,7 +7,7 @@ import { sassPlugin, postcssModules } from 'esbuild-sass-plugin';
 import esbuild from 'esbuild';
 import { globSync } from 'glob';
 import { exec } from 'child_process';
-import { metaTagReplace, ttAttrReplace, ttHtmlCommentReplace } from "../functions/replacer";
+import { allInOneReplace } from "../functions/replacer";
 
 export function CommandBuild(program: Command) {
   program
@@ -114,6 +114,11 @@ export function CommandBuild(program: Command) {
         });
       });
 
+      // 7.5) .torytis/script.js 파일에 있는 torytis html 문법 치환하기
+      let torytisScriptJsString = fs.readFileSync(scriptJsFilePath).toString();
+      torytisScriptJsString = allInOneReplace(torytisScriptJsString);
+      fs.writeFileSync(scriptJsFilePath, torytisScriptJsString);
+
       // 8) .torytis/script.ts 파일 제거하기
       // console.log(`8) .torytis/script.ts 파일 제거하기`);
       fs.rmSync(scriptTsFilePath);
@@ -121,9 +126,7 @@ export function CommandBuild(program: Command) {
       // 9) skin.html 파일 생성하기
       let convertedHtml = html.replace(`</head>`, `<link href="./index.css" type="text/css" rel="stylesheet" /></head>`);
       convertedHtml = convertedHtml.replace(`</head>`, `<script src="./images/script.js"></script></head>`);
-      convertedHtml = ttAttrReplace(convertedHtml);
-      convertedHtml = ttHtmlCommentReplace(convertedHtml);
-      convertedHtml = metaTagReplace(convertedHtml);
+      convertedHtml = allInOneReplace(convertedHtml);
       fs.writeFileSync(path.join(repositoryRootPath, '.torytis', 'skin.html'), convertedHtml);
 
       // 10) tailwind 로 변환하기

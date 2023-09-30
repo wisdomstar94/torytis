@@ -6,3 +6,4 @@ out
 .torytis
 bin
 tsconfig.package.tsbuildinfo
+.DS_Store

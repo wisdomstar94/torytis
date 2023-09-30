@@ -1,3 +1,11 @@
+export function allInOneReplace(html: string) {
+  let convertedHtml = html;
+  convertedHtml = ttAttrReplace(convertedHtml);
+  convertedHtml = ttHtmlCommentReplace(convertedHtml);
+  convertedHtml = metaTagReplace(convertedHtml);
+  return convertedHtml;
+}
+
 export function ttAttrReplace(html: string) {
   let convertedHtml = html;
 
