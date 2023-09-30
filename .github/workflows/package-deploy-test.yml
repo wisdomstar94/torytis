@@ -31,7 +31,8 @@ jobs:
       - run: rm -rf ./tailwind.config.js
       - run: rm -rf ./postcss.config.js
       - run: rm -rf ./tsconfig.json
-      - run: rm -rf ./esbuild.config.js
+      - run: rm -rf ./esbuild.cli.config.js
+      - run: rm -rf ./esbuild.lib.config.js
       - run: rm -rf ./global.d.ts
       - run: mv ./lib/src-lib ./src-lib
       - run: mv ./index.ts ./index.d.ts
