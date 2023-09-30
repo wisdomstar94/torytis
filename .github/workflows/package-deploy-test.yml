@@ -34,7 +34,7 @@ jobs:
       - run: rm -rf ./esbuild.cli.config.js
       - run: rm -rf ./esbuild.lib.config.js
       - run: rm -rf ./global.d.ts
-      - run: mv ./lib/src-lib ./src-lib
+      # - run: mv ./lib/src-lib ./src-lib
       - run: mv ./index.ts ./index.d.ts
       - run: npm publish
         env:
