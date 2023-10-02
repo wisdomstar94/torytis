@@ -124,7 +124,7 @@ export function CommandBuild(program: Command) {
       fs.rmSync(scriptTsFilePath);
 
       // 9) skin.html 파일 생성하기
-      let convertedHtml = html.replace(`</head>`, `<link href="./index.css" type="text/css" rel="stylesheet" /></head>`);
+      let convertedHtml = html.replace(`</head>`, `<link href="./style.css" type="text/css" rel="stylesheet" /></head>`);
       convertedHtml = convertedHtml.replace(`</head>`, `<script src="./images/script.js"></script></head>`);
       convertedHtml = allInOneReplace(convertedHtml);
       fs.writeFileSync(path.join(repositoryRootPath, '.torytis', 'skin.html'), convertedHtml);
@@ -137,7 +137,11 @@ export function CommandBuild(program: Command) {
         });
       }); 
 
-      // 11) src/public 밑에 있는 파일들 .torytis/ 밑으로 복사하기
+      // 11) .torytis/index.css 파일명을 .torytis/style.css 으로 변경하기
+      const torytisStyleCssPath = path.join(repositoryRootPath, '.torytis', 'style.css');
+      fs.renameSync(torytisIndexCssPath, torytisStyleCssPath);
+
+      // 12) src/public 밑에 있는 파일들 .torytis/ 밑으로 복사하기
       const srcPublicFolderPath = path.join(repositoryRootPath, 'src', 'public/');
       if (fs.existsSync(srcPublicFolderPath)) {
         fs.cpSync(srcPublicFolderPath, path.join(repositoryRootPath, '.torytis/'), { recursive: true });
