@@ -18,6 +18,9 @@ export function ttAttrReplace(html: string) {
   // tt-onkeydown
   convertedHtml = convertedHtml.replace(/tt-onkeydown/gi, 'onkeydown');
 
+  // tt-value
+  convertedHtml = convertedHtml.replace(/tt-value/gi, 'value');
+
   return convertedHtml;
 }
 

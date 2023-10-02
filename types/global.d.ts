@@ -44,6 +44,7 @@ declare namespace JSX {
 
 declare namespace React {
   interface HTMLAttributes<T> {
+    'tt-value'?: string;
     'tt-onclick'?: string;
     'tt-onkeypress'?: string;
     'tt-onkeydown'?: string;
