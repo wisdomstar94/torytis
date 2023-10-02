@@ -21,13 +21,17 @@ export function CommandBuild(program: Command) {
 
       const args = options.args;
       const repositoryRootPath = process.cwd();
-      const convertIndexJsxPath = path.join(repositoryRootPath, '.torytis', 'index.js');
 
-      // 1) src 밑에 있는 index.tsx 파일을 index.js 파일로 변환하기
-      // console.log(`1) src 밑에 있는 index.tsx 파일을 index.js 파일로 변환하기`);
+      // 1) .torytis 폴더 생성하기
+      if (!fs.existsSync(path.join(repositoryRootPath, '.torytis/'))) {
+        fs.mkdirSync(path.join(repositoryRootPath, '.torytis/'));
+      }
+
+      // 2) src 밑에 있는 index.component.tsx 파일을 index.js 파일로 변환하기
+      const convertIndexJsxPath = path.join(repositoryRootPath, '.torytis', 'index.js');
       await new Promise(function(resolve, reject) {
         esbuild.build({
-          entryPoints: [path.join(repositoryRootPath, 'src', 'index.tsx')],
+          entryPoints: [path.join(repositoryRootPath, 'src', 'index.component.tsx')],
           bundle: true,
           jsx: 'automatic',
           target: ['es6'],
@@ -43,14 +47,6 @@ export function CommandBuild(program: Command) {
             sassPlugin({
               filter: /\.scss$/,
             }),
-            /*
-            {
-              async transform(source, resolveDir) {
-                const {css} = await postcss([autoprefixer, postcssPresetEnv({stage: 0})]).process(source, {from: undefined})
-                return css
-              },
-            }
-             */
           ],
         }).then(res => {
           resolve(res);
@@ -59,24 +55,15 @@ export function CommandBuild(program: Command) {
         });
       });
 
-      // 2) .torytis 폴더 생성하기
-      // console.log(`2) .torytis 폴더 생성하기`);
-      if (!fs.existsSync(path.join(repositoryRootPath, '.torytis/'))) {
-        fs.mkdirSync(path.join(repositoryRootPath, '.torytis/'));
-      }
-
       // 3) jsx 를 html 으로 변환하기
-      // console.log(`3) jsx 를 html 으로 변환하기`);
-      const indexTsx = await import(convertIndexJsxPath);
-      const App = indexTsx.default.default; 
+      const indexJsx = await import(convertIndexJsxPath);
+      const App = indexJsx.default.default; 
       const html = renderToString(<App />);
 
       // 4) 이제 불필요한 .torytis/index.js 파일 제거하기
-      // console.log(`4) 이제 불필요한 .torytis/index.js 파일 제거하기`);
       fs.rmSync(convertIndexJsxPath);
 
       // 5) src 밑에 있는 .ts 파일 찾기
-      // console.log(`5) src 밑에 있는 .ts 파일 찾기`);
       const targetTsDir = path.join(repositoryRootPath, 'src', `**/*.script.tsx`);
       const tsPathes = globSync(targetTsDir, {
         dot: true,
@@ -91,7 +78,6 @@ export function CommandBuild(program: Command) {
       const scriptTsString = relativeTsPathes.map(k => `import '../src/${k}'`).join(';\n');
 
       // 6) .torytis/script.ts 파일 만들기
-      // console.log(`6) src/script.ts 파일 만들기`);
       const scriptTsFilePath = path.join(repositoryRootPath, '.torytis', 'script.ts');
       fs.writeFileSync(scriptTsFilePath, scriptTsString);
 
@@ -114,22 +100,21 @@ export function CommandBuild(program: Command) {
         });
       });
 
-      // 7.5) .torytis/script.js 파일에 있는 torytis html 문법 치환하기
+      // 8) .torytis/script.js 파일에 있는 torytis html 문법 치환하기
       let torytisScriptJsString = fs.readFileSync(scriptJsFilePath).toString();
       torytisScriptJsString = allInOneReplace(torytisScriptJsString);
       fs.writeFileSync(scriptJsFilePath, torytisScriptJsString);
 
-      // 8) .torytis/script.ts 파일 제거하기
-      // console.log(`8) .torytis/script.ts 파일 제거하기`);
+      // 9) .torytis/script.ts 파일 제거하기
       fs.rmSync(scriptTsFilePath);
 
-      // 9) skin.html 파일 생성하기
+      // 10) skin.html 파일 생성하기
       let convertedHtml = html.replace(`</head>`, `<link href="./style.css" type="text/css" rel="stylesheet" /></head>`);
       convertedHtml = convertedHtml.replace(`</head>`, `<script src="./images/script.js"></script></head>`);
       convertedHtml = allInOneReplace(convertedHtml);
       fs.writeFileSync(path.join(repositoryRootPath, '.torytis', 'skin.html'), convertedHtml);
 
-      // 10) tailwind 로 변환하기
+      // 11) tailwind 로 변환하기
       const torytisIndexCssPath = path.join(repositoryRootPath, '.torytis', 'index.css');
       await new Promise(function(resolve, reject) {
         exec(`npx tailwindcss -i ${torytisIndexCssPath} -o ${torytisIndexCssPath}`, (error, stdout, stderr) => {
@@ -137,79 +122,15 @@ export function CommandBuild(program: Command) {
         });
       }); 
 
-      // 11) .torytis/index.css 파일명을 .torytis/style.css 으로 변경하기
+      // 12) .torytis/index.css 파일명을 .torytis/style.css 으로 변경하기
       const torytisStyleCssPath = path.join(repositoryRootPath, '.torytis', 'style.css');
       fs.renameSync(torytisIndexCssPath, torytisStyleCssPath);
 
-      // 12) src/public 밑에 있는 파일들 .torytis/ 밑으로 복사하기
+      // 13) src/public 밑에 있는 파일들 .torytis/ 밑으로 복사하기
       const srcPublicFolderPath = path.join(repositoryRootPath, 'src', 'public/');
       if (fs.existsSync(srcPublicFolderPath)) {
         fs.cpSync(srcPublicFolderPath, path.join(repositoryRootPath, '.torytis/'), { recursive: true });
       }
-      // return;
-
-      // // 10) src/index.scss 읽기
-      // const srcIndexScssPath = path.join(repositoryRootPath, 'src', 'index.scss');
-      // const srcIndexScss = fs.readFileSync(srcIndexScssPath).toString();
-      // // console.log('@srcIndexScss', srcIndexScss);
-
-      // // 11) src 및에 모든 .scss 파일 읽어오기
-      // const targetScssDir = path.join(repositoryRootPath, 'src', `**/*.scss`);
-      // const allScssFilePathes = globSync(targetScssDir, {
-      //   dot: true,
-      //   // node_modules 은 검색대상에서 제외
-      //   ignore: ['node_modules/**'],
-      // });
-      // const allScssFileRelativePathes = allScssFilePathes.map(k => {
-      //   const replaceTarget = path.join(repositoryRootPath, 'src/');
-      //   return k.replace(replaceTarget, '');
-      // }).filter(x => x !== 'index.scss');
-      // // console.log('@allScssFileRelativePathes', allScssFileRelativePathes);
-      // let convertedIndexScss = srcIndexScss;
-      // allScssFileRelativePathes.forEach((scssPath) => {
-      //   convertedIndexScss = convertedIndexScss.concat('\n@import \'../src/' + scssPath + '\';');
-      // });
-      // console.log('@convertedIndexScss', convertedIndexScss);
-
-      // // 12) .torytis/index.scss 생성하기
-      // const indexScssPath = path.join(repositoryRootPath, '.torytis', '_index.scss');
-      // fs.writeFileSync(indexScssPath, convertedIndexScss);
-
-      // // 13) src/_index.scss 을 .torytis/index.css 으로 번들링하기
-      // await new Promise(function(resolve, reject) {
-      //   esbuild.build({
-      //     entryPoints: [indexScssPath],
-      //     bundle: true,
-      //     jsx: 'automatic',
-      //     target: ['es5'],
-      //     treeShaking: true,
-      //     platform: 'browser',
-      //     format: 'cjs',
-      //     outfile: torytisIndexCssPath,
-      //     plugins: [
-      //       sassPlugin({
-      //         async transform(source, resolveDir) {
-      //           const {css} = await postcss([autoprefixer, postcssPresetEnv({stage: 0})]).process(source, {from: undefined});
-      //           return css
-      //         },
-      //       }),
-      //     ],
-      //   }).then(res => {
-      //     resolve(res);
-      //   }).catch(err => {
-      //     reject(err);
-      //   });
-      // });
-
-      // // 14) .torytis/index.scss 삭제하기
-      // fs.rmSync(indexScssPath);
-
-      // // 15) tailwind 로 변환하기
-      // await new Promise(function(resolve, reject) {
-      //   exec(`npx tailwindcss -i ${torytisIndexCssPath} -o ${torytisIndexCssPath}`, (error, stdout, stderr) => {
-      //     resolve(true);
-      //   });
-      // }); 
     })  
   ;
 }
