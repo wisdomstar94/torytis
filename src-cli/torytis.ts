@@ -2,6 +2,7 @@
 import { Command } from 'commander';
 import { version } from '../package.json';
 import { CommandBuild } from './commands/build';
+import { CommandBuildVariable } from './commands/build_variable';
 const program = new Command();
 
 program
@@ -11,6 +12,7 @@ program
 ;
 
 CommandBuild(program);
+CommandBuildVariable(program);
 
 program.parse();
 
