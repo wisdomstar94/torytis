@@ -74,7 +74,7 @@ export function CommandBuildVariable(program: Command) {
 
 function generateJsxIntrinsicElementsDeclareCode(variable: IBuildVariable.Variable) {
   let string = ``;
-  string += `    s_if_var_${variable.name}: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n`;
-  string += `    s_not_var_${variable.name}: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n`;
+  string += `    's_if_var_${variable.name}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n`;
+  string += `    's_not_var_${variable.name}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n`;
   return string;
 }
