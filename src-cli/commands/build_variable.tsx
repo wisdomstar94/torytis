@@ -51,7 +51,7 @@ export function CommandBuildVariable(program: Command) {
       let variableList: IBuildVariable.Variable[] = [];
       for (const variableGroup of variableGroupArray) {
         const variableArray = Array.isArray(variableGroup.variable) ? variableGroup.variable : [variableGroup.variable];
-        variableList = variableArray;
+        variableList = variableList.concat(variableArray);
       } 
 
       // 3) variableList 를 토대로 declare 파일 작성하기
