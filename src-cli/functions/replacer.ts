@@ -21,6 +21,13 @@ export function ttAttrReplace(html: string) {
   // tt-value
   convertedHtml = convertedHtml.replace(/tt-value/gi, 'value');
 
+  // tt-onlyattr
+  convertedHtml = convertedHtml.replace(/tt-onlyattr="[^"]*"/gi, ((matchedString: string) => {
+    const temp1 = matchedString.replace("tt-onlyattr=\"", "");
+    const temp2 = temp1.slice(0, temp1.length - 1);
+    return temp2;
+  }) as any);
+
   return convertedHtml;
 }
 

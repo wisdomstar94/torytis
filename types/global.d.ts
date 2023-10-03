@@ -48,5 +48,6 @@ declare namespace React {
     'tt-onclick'?: string;
     'tt-onkeypress'?: string;
     'tt-onkeydown'?: string;
+    'tt-onlyattr'?: string;
   }
 }
