@@ -1,18 +1,18 @@
-<div style="width: 100%; display: flex; justify-content: center;">
+<p align="center" style="text-align: center;">
 
   <a href="https://github.com/wisdomstar94/torytis" target="_blank">
-    <img width="180" src="https://cdn.jsdelivr.net/gh/wisdomstar94/torytis/src/public/torytis-logo.png" alt="torytis logo">
+    <img width="180" src="https://cdn.jsdelivr.net/gh/wisdomstar94/torytis/src/public/torytis-logo.png" alt="torytis logo" />
   </a>
 
-</div>
+</p>
 
 <br/>
 
-<div style="width: 100%; display: flex; justify-content: center;">
+<p align="center" style="text-align: center;">
   
 [![GitHub](https://img.shields.io/github/license/wisdomstar94/torytis?logo=square)](https://github.com/wisdomstar94/torytis/blob/main/LICENSE) [![npm](https://img.shields.io/npm/v/%40wisdomstar94%2Ftorytis?logo=npm)](https://www.npmjs.com/package/@wisdomstar94/torytis) [![GitHub release (with filter)](https://img.shields.io/github/v/release/wisdomstar94/torytis?logo=github&label=github)](https://github.com/wisdomstar94/torytis)
 
-</div>
+</p>
 
 <br/>
 
