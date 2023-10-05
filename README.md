@@ -10,7 +10,11 @@
 
 <p align="center" style="text-align: center;">
   
+<span>
+
 [![GitHub](https://img.shields.io/github/license/wisdomstar94/torytis?logo=square)](https://github.com/wisdomstar94/torytis/blob/main/LICENSE) [![npm](https://img.shields.io/npm/v/%40wisdomstar94%2Ftorytis?logo=npm)](https://www.npmjs.com/package/@wisdomstar94/torytis) [![GitHub release (with filter)](https://img.shields.io/github/v/release/wisdomstar94/torytis?logo=github&label=github)](https://github.com/wisdomstar94/torytis)
+
+</span>
 
 </p>
 
