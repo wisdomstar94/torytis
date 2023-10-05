@@ -1,7 +1,7 @@
 <div style="width: 100%; display: flex; justify-content: center;">
 
   <a href="https://github.com/wisdomstar94/torytis" target="_blank">
-    <img width="180" src="https://cdn.jsdelivr.net/wisdomstar94/torytis/src/public/torytis-logo.png" alt="torytis logo">
+    <img width="180" src="https://cdn.jsdelivr.net/gh/wisdomstar94/torytis/src/public/torytis-logo.png" alt="torytis logo">
   </a>
 
 </div>
