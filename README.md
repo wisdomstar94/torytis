@@ -1,5 +1,22 @@
-# [@wisdomstar94/torytis] &middot; [![GitHub](https://img.shields.io/github/license/wisdomstar94/torytis?logo=square)](https://github.com/wisdomstar94/torytis/blob/main/LICENSE) [![npm](https://img.shields.io/npm/v/%40wisdomstar94%2Ftorytis?logo=npm)](https://www.npmjs.com/package/@wisdomstar94/torytis) [![GitHub release (with filter)](https://img.shields.io/github/v/release/wisdomstar94/torytis?logo=github&label=github)](https://github.com/wisdomstar94/torytis)
+<div style="width: 100%; display: flex; justify-content: center;">
 
+  <a href="https://github.com/wisdomstar94/torytis" target="_blank">
+    <img width="180" src="https://cdn.jsdelivr.net/wisdomstar94/torytis/src/public/torytis-logo.png" alt="torytis logo">
+  </a>
+
+</div>
+
+<br/>
+
+<div style="width: 100%; display: flex; justify-content: center;">
+  
+[![GitHub](https://img.shields.io/github/license/wisdomstar94/torytis?logo=square)](https://github.com/wisdomstar94/torytis/blob/main/LICENSE) [![npm](https://img.shields.io/npm/v/%40wisdomstar94%2Ftorytis?logo=npm)](https://www.npmjs.com/package/@wisdomstar94/torytis) [![GitHub release (with filter)](https://img.shields.io/github/v/release/wisdomstar94/torytis?logo=github&label=github)](https://github.com/wisdomstar94/torytis)
+
+</div>
+
+<br/>
+
+# @wisdomstar94/torytis
 
 @wisdomstar94/torytis 는 티스토리 블로그 스킨의 개발을 여러 파일로 나눠서 개발하는 방식으로 할 수 있도록 도와주는 빌드툴이자 프레임워크 입니다.
 
