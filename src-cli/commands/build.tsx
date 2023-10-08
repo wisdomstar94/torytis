@@ -112,6 +112,7 @@ export function CommandBuild(program: Command) {
       let convertedHtml = html.replace(`</head>`, `<link href="./style.css" type="text/css" rel="stylesheet" /></head>`);
       convertedHtml = convertedHtml.replace(`</head>`, `<script src="./images/script.js"></script></head>`);
       convertedHtml = allInOneReplace(convertedHtml);
+      convertedHtml = convertedHtml.replace('<html', '<!DOCTYPE html><html');
       fs.writeFileSync(path.join(repositoryRootPath, '.torytis', 'skin.html'), convertedHtml);
 
       // 11) tailwind 로 변환하기
