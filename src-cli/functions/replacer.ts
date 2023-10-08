@@ -21,6 +21,9 @@ export function ttAttrReplace(html: string) {
   // tt-value
   convertedHtml = convertedHtml.replace(/tt-value/gi, 'value');
 
+  // tt-onload
+  convertedHtml = convertedHtml.replace(/tt-onload/gi, 'onload');
+
   // tt-onerror
   convertedHtml = convertedHtml.replace(/tt-onerror/gi, 'onerror');
 

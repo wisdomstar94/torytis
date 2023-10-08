@@ -77,6 +77,8 @@ npx @wisdomstar94/torytis-create-app new [프로젝트명]
 - onkeypress 치환 : ``<input onkeydown="if (event.keyCode == 13)[##_article_dissolve_##]" />`` 와 같이 작성해야 할 때는 ``<input tt-onkeydown="if (event.keyCode == 13)[##_article_dissolve_##]" />`` 와 같이 작성하면 빌드 될 때 치환됩니다.
 - onclick 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
 - onkeydown 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
+- onload 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
+- onerror 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
 - value 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
 
 ### 최종 결과물 빌드 방법
