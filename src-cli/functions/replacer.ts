@@ -21,6 +21,9 @@ export function ttAttrReplace(html: string) {
   // tt-value
   convertedHtml = convertedHtml.replace(/tt-value/gi, 'value');
 
+  // tt-onerror
+  convertedHtml = convertedHtml.replace(/tt-onerror/gi, 'onerror');
+
   // tt-onlyattr
   convertedHtml = convertedHtml.replace(/tt-onlyattr="[^"]*"/gi, ((matchedString: string) => {
     const temp1 = matchedString.replace("tt-onlyattr=\"", "");
