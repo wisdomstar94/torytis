@@ -60,5 +60,7 @@ declare namespace React {
     'tt-onload'?: string;
     'tt-onerror'?: string;
     'tt-onlyattr'?: string;
+
+    'name'?: string;
   }
 }
