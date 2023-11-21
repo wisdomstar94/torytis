@@ -37,6 +37,11 @@ declare namespace JSX {
     s_tag_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_paging: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_paging_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_ad_div: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_article_prev: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_article_prev_thumbnail: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_article_next: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_article_next_thumbnail: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 
     s_cover_group: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_cover_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
