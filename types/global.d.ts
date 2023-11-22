@@ -42,6 +42,7 @@ declare namespace JSX {
     s_article_prev_thumbnail: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_article_next: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_article_next_thumbnail: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_rp_count: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 
     s_cover_group: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_cover_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
