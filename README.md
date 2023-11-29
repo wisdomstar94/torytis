@@ -63,7 +63,7 @@ npx @wisdomstar94/torytis-create-app new [프로젝트명]
 
 ### 파일 및 폴더 설명
 - src/public/ : public 폴더 밑에 있는 파일들은 모두 빌드되어 .torytis 폴더 밑에 생성될 때 이 폴더 밑에 그대로 복사되어 집니다. public 폴더 밑에 또 다른 폴더를 생성하지 마세요.
-- src/public/index.xml : 티스토리에서 요구하는 스킨에 대한 정의 값들을 선언하는 xml 파일입니다. 해당 경로에 위치시키시면 됩니다.
+- src/public/index.xml : 티스토리에서 요구하는 스킨에 대한 정의 값들을 선언하는 xml 파일입니다. 해당 경로에 위치시키시면 됩니다. version 태그에 ``{ version }``으로 작성하시면 build 될 때 해당 부분이 package.json 에 작성된 version 으로 치환됩니다.
 - src/index.component.tsx : html 코드를 하나로 묶을 때 진입점이 되는 파일입니다.
 - tailwind.config.ts : tailwindcss 환경설정 파일입니다.
 - postcss.config.js : postcss 환경설정 파일입니다.

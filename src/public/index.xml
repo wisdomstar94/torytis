@@ -2,7 +2,7 @@
 <skin>
   <information>
     <name>Sample 스킨</name>
-    <version>0.0.1</version>
+    <version>{ version }</version>
     <description>
       <![CDATA[XHTML 기반의 Tistory Sample 스킨입니다.]]>
     </description>

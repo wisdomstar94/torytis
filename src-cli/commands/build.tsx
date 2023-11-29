@@ -22,6 +22,11 @@ export function CommandBuild(program: Command) {
       const args = options.args;
       const repositoryRootPath = process.cwd();
 
+      // 0) package.json 읽기
+      const packageJsonString = fs.readFileSync(path.join(repositoryRootPath, 'package.json')).toString();
+      const packageJson = JSON.parse(packageJsonString);
+      const version: string = packageJson.version ?? '0.0.1';
+
       // 1) .torytis 폴더 생성하기
       if (!fs.existsSync(path.join(repositoryRootPath, '.torytis/'))) {
         fs.mkdirSync(path.join(repositoryRootPath, '.torytis/'));
@@ -132,6 +137,12 @@ export function CommandBuild(program: Command) {
       if (fs.existsSync(srcPublicFolderPath)) {
         fs.cpSync(srcPublicFolderPath, path.join(repositoryRootPath, '.torytis/'), { recursive: true });
       }
+
+      // 14) .torytis/index.xml 파일에서 { version } 치환하기
+      const indexXmlPath = path.join(repositoryRootPath, '.torytis', 'index.xml');
+      let indexXmlString = fs.readFileSync(indexXmlPath).toString();
+      indexXmlString = indexXmlString.replace(`{ version }`, version);
+      fs.writeFileSync(indexXmlPath, indexXmlString);
     })  
   ;
 }
