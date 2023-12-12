@@ -11,4 +11,5 @@ window.addEventListener('load', () => {
   </>;
 
   console.log('@element', element);
+  console.log('window.tiara.customProps.role', window.tiara.customProps.role)
 });

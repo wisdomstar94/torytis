@@ -70,3 +70,28 @@ declare namespace React {
     'name'?: string;
   }
 }
+
+interface CustomProps {
+  blogId: string;
+  entryId: string;
+  filterTarget: boolean;
+  role: 'user' | 'owner';
+  trackPage: string;
+  userId: string;
+}
+
+interface Tiara {
+  appUserId: string;
+  customProps: CustomProps;
+  entry: unknown;
+  kakaoAppKey: string;
+  key: string;
+  page: string;
+  section: string;
+  svcDomain: string;
+  trackPage: string;
+}
+
+declare interface Window {
+  tiara: Tiara | undefined;
+}
