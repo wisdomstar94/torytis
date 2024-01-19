@@ -1,9 +1,6 @@
-node_modules
-*.env
-lib
-build
-out
-.torytis
-bin
-tsconfig.package.tsbuildinfo
+/target
+test-project
 .DS_Store
+node_modules
+bin
+.npmrc

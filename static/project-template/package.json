@@ -1,0 +1,23 @@
+{
+    "name": "project__name",
+    "version": "0.0.1",
+    "scripts": {
+        "build": "torytis build",
+        "build:variable": "torytis varbuild",
+        "tsc": "tsc",
+        "tailwindcss": "tailwindcss"
+    },
+    "devDependencies": {
+        "@types/node": "^20",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "react": "^18",
+        "react-dom": "^18",
+        "tailwindcss": "^3",
+        "postcss-modules": "^6",
+        "typescript": "^5",
+        "esbuild": "^0",
+        "esbuild-sass-plugin": "^2",
+        "@wisdomstar94/torytis": "^0"
+    }
+}

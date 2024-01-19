@@ -1,50 +1,21 @@
 {
-  "name": "@wisdomstar94/torytis",
-  "private": false,
-  "version": "0.0.37",
-  "description": "tistory 블로그 스킨을 보다 더 편리하게 만들 수 있도록 도와주는 툴입니다.",
-  "scripts": {
-    "pack:cli:build": "node ./esbuild.cli.config.js",
-    "pack:lib:build": "node ./esbuild.lib.config.js",
-    "pack:lib:build:tsc": "tsc --project ./tsconfig.package.json"
+  "name": "torytis",
+  "version": "1.0.0-test.1",
+  "description": "티스토리 블로그 스킨 개발 프레임워크",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
   },
-  "keywords": [
-    "tistory",
-    "skin",
-    "blog",
-    "티스토리",
-    "블로그",
-    "스킨",
-    "torytis"
-  ],
+  "scripts": {
+    "postinstall": "node ./npm/install.js",
+    "new:sample-project": "cargo run new --name=sample-project"
+  },
   "author": "wisdomstar94@gmail.com",
   "license": "MIT",
-  "main": "./bin/torytis.js",
-  "bin": "./bin/torytis.js",
-  "repository": "https://github.com/wisdomstar94/torytis",
-  "peerDependencies": {
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.4",
-    "@types/postcss-import": "^14.0.3",
-    "@types/react": "^18.2.43",
-    "@types/react-dom": "^18.2.17",
-    "autoprefixer": "^10.4.16",
-    "commander": "^11.1.0",
-    "esbuild": "^0.19.9",
-    "esbuild-sass-plugin": "^2.16.0",
-    "glob": "^10.3.10",
-    "postcss": "^8.4.32",
-    "postcss-modules": "^6.0.0",
-    "postcss-preset-env": "^9.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "tailwindcss": "^3.3.6",
-    "typescript": "^5.3.3",
-    "fast-xml-parser": "^4.3.2"
+  "files": [
+    "npm/**/*"
+  ],
+  "dependencies": {
+    "binary-install": "^1.1.0"
   }
 }
