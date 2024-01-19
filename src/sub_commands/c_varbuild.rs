@@ -1,9 +1,8 @@
 use std::{env, fs::{self}};
-use include_dir::{include_dir, Dir};
 use regex::Regex;
 use xmltree::Element;
 
-static STATIC_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/static");
+use crate::statics::STATIC_DIR;
 
 #[derive(clap::Args)]
 #[command(

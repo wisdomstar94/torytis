@@ -1,5 +1,6 @@
-use std::{env, fs::{self, DirEntry}, io};
+use std::{env, fs::{self, DirEntry}, io, collections::HashMap};
 use glob::glob;
+use serde_json::Value;
 use crate::{run_command, replace_skin_html_content};
 
 #[derive(clap::Args)]
@@ -16,6 +17,15 @@ pub fn run(_: CliArgs) {
     let working_dir_path_buf = env::current_dir().unwrap();
     let torytis_build_ts_file_path_buf = working_dir_path_buf.join("torytis-build.tsx");
     let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis-build.js");
+    let dot_torytis_index_xml_path_buf = working_dir_path_buf.join(".torytis").join("index.xml");
+    let dot_torytis_index_xml_path = dot_torytis_index_xml_path_buf.as_path();
+    let src_public_index_xml_path_buf = working_dir_path_buf.join("src").join("public").join("index.xml");
+    let src_public_index_xml_path = src_public_index_xml_path_buf.as_path();
+
+    // src/public/index.xml 체크
+    if let Err(_) = fs::metadata(src_public_index_xml_path) {
+        panic!("src/public/index.xml 파일이 존재하지 않습니다. 해당 파일을 생성 후 다시 시도해주세요. (https://tistory.github.io/document-tistory-skin/common/index.xml.html)")
+    }
 
     // .torytis 폴더 체크 및 생성
     let dot_torytis_dir_path_buf = working_dir_path_buf.join(".torytis/");
@@ -71,7 +81,7 @@ pub fn run(_: CliArgs) {
     // }
     let torytis_dot_index_css_file_path_buf = dot_torytis_dir_path_buf.join("index.css");
     let torytis_dot_style_css_file_path_buf = dot_torytis_dir_path_buf.join("style.css");
-    let tailwind_build_command = format!("npm run tailwindcss -- -c ./tailwind.config.js -i {} -o {}", torytis_dot_index_css_file_path_buf.to_str().unwrap(), torytis_dot_style_css_file_path_buf.to_str().unwrap());
+    let tailwind_build_command = format!("npm run tailwindcss -- -c ./tailwind.config.ts -i {} -o {}", torytis_dot_index_css_file_path_buf.to_str().unwrap(), torytis_dot_style_css_file_path_buf.to_str().unwrap());
     println!("> {}", tailwind_build_command);
     {
         let _ = run_command(tailwind_build_command.as_str()).unwrap();
@@ -101,5 +111,20 @@ pub fn run(_: CliArgs) {
         let entry_path_buf = entry.path();
         let after_path_bug = dot_torytis_dir_path_buf.join(entry.file_name());
         fs::copy(entry_path_buf.as_path(), after_path_bug).unwrap();
+    }
+
+    // .torytis/index.xml 에서 문자 치환하기
+    let dot_torytis_index_xml_content = fs::read_to_string(dot_torytis_index_xml_path).unwrap();
+    let mut dot_torytis_index_xml_content_new = dot_torytis_index_xml_content.clone();
+
+    let package_json_path_buf = working_dir_path_buf.join("package.json");
+    let package_json_path = package_json_path_buf.as_path();
+    let package_json_string = fs::read_to_string(package_json_path).unwrap();
+    let package_json = serde_json::from_str::<HashMap<String, Value>>(&package_json_string);
+    if let Ok(result) = package_json {
+        if let Some(version) = result.get("version") {
+            dot_torytis_index_xml_content_new = dot_torytis_index_xml_content_new.replace("{ version }", version.as_str().unwrap());
+            fs::write(dot_torytis_index_xml_path, &dot_torytis_index_xml_content_new).unwrap();
+        }
     }
 }

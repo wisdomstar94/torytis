@@ -3,6 +3,7 @@ use std::process::Stdio;
 use clap::Parser;
 use regex::Regex;
 mod sub_commands;
+mod statics;
 
 #[derive(Parser)] // requires `derive` feature
 #[command(name = "torytis")]
@@ -13,6 +14,7 @@ enum Cli {
     New(sub_commands::c_new::CliArgs), 
     Build(sub_commands::c_build::CliArgs), 
     Varbuild(sub_commands::c_varbuild::CliArgs), 
+    Migrate(sub_commands::c_migrate::CliArgs), 
 }
 
 pub fn run() {
@@ -21,6 +23,7 @@ pub fn run() {
         Cli::New(args) => sub_commands::c_new::run(args),
         Cli::Build(args) => sub_commands::c_build::run(args),
         Cli::Varbuild(args) => sub_commands::c_varbuild::run(args),
+        Cli::Migrate(args) => sub_commands::c_migrate::run(args),
     }
 }
 

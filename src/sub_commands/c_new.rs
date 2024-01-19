@@ -1,10 +1,5 @@
 use std::{env, path::Path, fs};
-use include_dir::{include_dir, Dir};
-
-use crate::run_command;
-
-static STATIC_DIR: Dir<'_> = include_dir!("$CARGO_MANIFEST_DIR/static");
-static PROJECT_TEMPLATE_NAME: &str = "project-template";
+use crate::{run_command, statics::{PROJECT_TEMPLATE_NAME, STATIC_DIR}};
 
 #[derive(clap::Args)]
 #[command(
