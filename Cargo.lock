@@ -229,7 +229,7 @@ dependencies = [
 
 [[package]]
 name = "torytis"
-version = "1.0.0-test.3"
+version = "1.0.0-test.4"
 dependencies = [
  "clap",
  "glob",
