@@ -15,6 +15,7 @@ pub struct CliArgs {
 }
 
 pub fn run(_: CliArgs) {
+    let version = remove_test_tail(&VERSION);
     let working_dir_path_buf = env::current_dir().unwrap();
 
     // ## package.json 파일 체크
@@ -32,11 +33,11 @@ pub fn run(_: CliArgs) {
         panic!("-> package.json 내용에 오류가 있습니다. : {:#?}", err);
     }
 
-    println!("-> migration start!");
-    println!("-> current version : {:#?}", VERSION);
+    println!("-> torytis 마이그레이션 시작!");
+    println!("-> 현재 torytis 버전 : {:#?}", VERSION);
     
     // v0 -> v1 
-    if Version::from("1.0.0").unwrap() <= Version::from(VERSION).unwrap() {
+    if Version::from("1.0.0").unwrap() <= Version::from(version.as_str()).unwrap() {
     // if true {
         // torytis-build.tsx 파일 체크
         let torytis_build_tsx_file_path_buf = working_dir_path_buf.join("torytis-build.tsx");
@@ -97,7 +98,8 @@ pub fn run(_: CliArgs) {
         fs::write(package_json_file_path, &package_json_content_mut).unwrap();
     }
 
-    println!("-> migration end!");
+    println!("-> torytis 마이그레이션 종료!");
+    println!("-> 참고 : package.json 에 새로운 종속성이 추가되었을 경우 'npm install' 명령어를 실행해주세요!");
 }
 
 fn get_scripts_block_regex() -> Regex {
@@ -134,4 +136,10 @@ fn get_dev_dependencies_block_string_from_package_json_content(input: &str) -> O
         }
     }
     result
+}
+
+fn remove_test_tail(version: &str) -> String {
+    let pattern = r#"-test[^{}]*"#;
+    let regex = Regex::new(&pattern).unwrap();
+    regex.replace(version, "").to_string()
 }
