@@ -151,7 +151,7 @@ jobs:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
       - run: |
-          npm publish
+          npm publish --registry=https://npm.pkg.github.com/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_PUBLISH_KEY_GITHUB }}
     needs: build
