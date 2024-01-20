@@ -204,6 +204,10 @@ fn apply_tsconfig_compiler_options_block(tsconfig_json_content: &str) -> String 
                 should_append_compiler_options_items.push(r#""allowSyntheticDefaultImports": true"#.to_string());   
             }
 
+            if !block_string_new.contains("\"strict\"") {
+                should_append_compiler_options_items.push(r#""strict": true"#.to_string());   
+            }
+
             if should_append_compiler_options_items.len() > 0 {
                 let mut insert_string = format!("\"compilerOptions\": {{\n\t\t{}", should_append_compiler_options_items.join(",\n\t\t")); 
                 if is_exist_tsconfig_compiler_options_item(&tsconfig_json_content) {
