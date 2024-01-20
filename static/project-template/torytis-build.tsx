@@ -1,10 +1,9 @@
 // 이 파일을 삭제하거나 수정할 경우 빌드가 되지 않을 수 있습니다.
-import * as React from 'react';
-import * as esbuild from 'esbuild';
+import esbuild from 'esbuild';
 import { sassPlugin, postcssModules } from 'esbuild-sass-plugin';
 import { renderToString } from 'react-dom/server';
-import * as path from "path";
-import * as fs from 'fs';
+import path from "path";
+import fs from 'fs';
 
 (async() => {
     const repositoryRootPath = process.cwd();

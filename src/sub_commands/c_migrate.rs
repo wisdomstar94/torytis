@@ -48,98 +48,109 @@ pub fn run(_: CliArgs) {
             fs::write(torytis_build_tsx_file_path, file_content).unwrap();
         }
         // package.json 파일 체크
-        let scripts_block_string = get_scripts_block_string_from_package_json_content(&package_json_content_mut);
-        if let Some(string) = scripts_block_string {
-            // scripts 블록이 있는 경우
-            let mut scripts_block_string_new = String::from(string);
-            let pattern = r#"\"scripts\":[^{}]*\{"#;
-            let regex = Regex::new(&pattern).unwrap();
-
-            if !scripts_block_string_new.contains("\"tsc\":") {
-                let mut insert_string = String::from("");
-                insert_string.push_str("\"scripts\": {\n");
-                insert_string.push_str("\t\t\"tsc\": \"tsc\",");
-                scripts_block_string_new = regex.replace(&scripts_block_string_new, insert_string).to_string();
-            }
-
-            if !scripts_block_string_new.contains("\"tailwindcss\":") {
-                let mut insert_string = String::from("");
-                insert_string.push_str("\"scripts\": {\n");
-                insert_string.push_str("\t\t\"tailwindcss\": \"tailwindcss\",");
-                scripts_block_string_new = regex.replace(&scripts_block_string_new, insert_string).to_string();
-            }
-
-            package_json_content_mut = get_scripts_block_regex().replace(&package_json_content_mut, &scripts_block_string_new).to_string();
-        } else {
-            // scripts 블록이 없는 경우
-            panic!("package.json 에 \"scripts\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");
-        }
-
-        let dev_dependencies_block_string = get_dev_dependencies_block_string_from_package_json_content(&package_json_content);
-        if let Some(string) = dev_dependencies_block_string {
-            // devDependencies 블록이 있는 경우
-            let mut dev_dependencies_block_string_new = String::from(string);
-            let pattern = r#"\"devDependencies\":[^{}]*\{"#;
-            let regex = Regex::new(&pattern).unwrap();
-
-            if !dev_dependencies_block_string_new.contains("\"esbuild-sass-plugin\":") {
-                let mut insert_string = String::from("");
-                insert_string.push_str("\"devDependencies\": {\n");
-                insert_string.push_str("\t\t\"esbuild-sass-plugin\": \"^2\",");
-                dev_dependencies_block_string_new = regex.replace(&dev_dependencies_block_string_new, insert_string).to_string();
-            }
-
-            package_json_content_mut = get_dev_dependencies_regex().replace(&package_json_content_mut, &dev_dependencies_block_string_new).to_string();
-        } else {
-            // devDependencies 블록이 없는 경우
-            panic!("package.json 에 \"devDependencies\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");
-        }
-
+        package_json_content_mut = apply_scripts_block(&package_json_content_mut);
+        package_json_content_mut = apply_dev_dependencies_block(&package_json_content_mut);
         fs::write(package_json_file_path, &package_json_content_mut).unwrap();
+        // .gitignore 파일 체크
+        let gitignore_file_path_buf = working_dir_path_buf.join(".gitignore");
+        let gitignore_file_path = gitignore_file_path_buf.as_path();
+        if let Ok(_) = fs::metadata(gitignore_file_path) {
+            let mut gitignore_file_content = fs::read_to_string(gitignore_file_path).unwrap();
+            if !gitignore_file_content.contains("torytis-build.js") {
+                gitignore_file_content.push_str("\ntorytis-build.js");
+            }
+            fs::write(gitignore_file_path, gitignore_file_content).unwrap();
+        }
     }
 
     println!("-> torytis 마이그레이션 종료!");
     println!("-> 참고 : package.json 에 새로운 종속성이 추가되었을 경우 'npm install' 명령어를 실행해주세요!");
 }
 
-fn get_scripts_block_regex() -> Regex {
-    let pattern = r#""scripts":[^{}]*\{[^{}]*\}"#;
-    let regex = Regex::new(&pattern).unwrap();
-    regex
-}
-
-fn get_dev_dependencies_regex() -> Regex {
-    let pattern = r#""devDependencies":[^{}]*\{[^{}]*\}"#;
-    let regex = Regex::new(&pattern).unwrap();
-    regex
-}
-
-fn get_scripts_block_string_from_package_json_content(input: &str) -> Option<String> {
-    let mut result: Option<String> = None;
-    if let Some(captured) = get_scripts_block_regex().captures(input) {
-        // 첫 번째 캡처된 그룹 출력
-        if let Some(script_block) = captured.get(0) {
-            // println!("{}", script_block.as_str());
-            result = Some(script_block.as_str().to_string());
-        }
-    }
-    result
-}
-
-fn get_dev_dependencies_block_string_from_package_json_content(input: &str) -> Option<String> {
-    let mut result: Option<String> = None;
-    if let Some(captured) = get_dev_dependencies_regex().captures(input) {
-        // 첫 번째 캡처된 그룹 출력
-        if let Some(script_block) = captured.get(0) {
-            // println!("{}", script_block.as_str());
-            result = Some(script_block.as_str().to_string());
-        }
-    }
-    result
-}
-
 fn remove_test_tail(version: &str) -> String {
     let pattern = r#"-test[^{}]*"#;
     let regex = Regex::new(&pattern).unwrap();
     regex.replace(version, "").to_string()
+}
+
+fn apply_scripts_block(package_json_content: &str) -> String {
+    let mut result = String::from(package_json_content);
+    let pattern = r#""scripts":[^{}]*\{[^{}]*\}"#;
+    let regex = Regex::new(&pattern).unwrap(); // "scripts": { .. }  <-- scripts 전체 블록을 선택
+    if let Some(captured) = regex.captures(package_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(script_block) = captured.get(0) {
+            // scripts 블록이 있는 경우
+            let script_block_string: String = script_block.as_str().to_string();
+            let mut scripts_block_string_new = String::from(script_block_string);
+            let pattern2 = r#"\"scripts\":[^{}]*\{"#;
+            let regex2 = Regex::new(&pattern2).unwrap(); // "scripts": {  <-- 이 한줄을 선택
+
+            // "build:variable" 이 이미 있는 경우 수정
+            if scripts_block_string_new.contains("\"build:variable\":") {
+                let pattern3 = r#"\"build:variable\"[^{}]*:[^{}]*\"[^{}]*\""#; // "build:variable": ".."  <-- 이 한줄을 선택
+                let regex3 = Regex::new(&pattern3).unwrap();
+                scripts_block_string_new = regex3.replace(&scripts_block_string_new, "\"build:variable\": \"torytis varbuild\"").to_string();
+            }
+
+            // "tsc" 가 없는 경우 추가
+            if !scripts_block_string_new.contains("\"tsc\":") {
+                let mut insert_string = String::from("");
+                insert_string.push_str("\"scripts\": {\n");
+                insert_string.push_str("\t\t\"tsc\": \"tsc\",");
+                scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+            }
+
+            // "tailwindcss" 가 없는 경우 추가
+            if !scripts_block_string_new.contains("\"tailwindcss\":") {
+                let mut insert_string = String::from("");
+                insert_string.push_str("\"scripts\": {\n");
+                insert_string.push_str("\t\t\"tailwindcss\": \"tailwindcss\",");
+                scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+            }
+
+            // "torytis" 가 없는 경우 추가
+            if !scripts_block_string_new.contains("\"torytis\":") {
+                let mut insert_string = String::from("");
+                insert_string.push_str("\"scripts\": {\n");
+                insert_string.push_str("\t\t\"torytis\": \"torytis\",");
+                scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+            }
+
+            result = regex.replace(&result, &scripts_block_string_new).to_string();
+        } else {
+            // scripts 블록이 없는 경우
+            panic!("package.json 에 \"scripts\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
+        }
+    }
+    result
+}
+
+fn apply_dev_dependencies_block(package_json_content: &str) -> String {
+    let mut result: String = String::from(package_json_content);
+    let pattern = r#""devDependencies":[^{}]*\{[^{}]*\}"#;
+    let regex = Regex::new(&pattern).unwrap();
+    if let Some(captured) = regex.captures(package_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(script_block) = captured.get(0) {
+            // devDependencies 블록이 있는 경우
+            let script_block_string: String = script_block.as_str().to_string();
+            let mut dev_dependencies_block_string_new = String::from(script_block_string);
+            let pattern2 = r#"\"devDependencies\":[^{}]*\{"#;
+            let regex2 = Regex::new(&pattern2).unwrap();
+
+            if !dev_dependencies_block_string_new.contains("\"esbuild-sass-plugin\":") {
+                let mut insert_string = String::from("");
+                insert_string.push_str("\"devDependencies\": {\n");
+                insert_string.push_str("\t\t\"esbuild-sass-plugin\": \"^2\",");
+                dev_dependencies_block_string_new = regex2.replace(&dev_dependencies_block_string_new, insert_string).to_string();
+            }
+
+            result = regex.replace(&result, &dev_dependencies_block_string_new).to_string();
+        } else {
+            // devDependencies 블록이 없는 경우
+            panic!("package.json 에 \"devDependencies\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
+        }
+    }
+    result
 }
