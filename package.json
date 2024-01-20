@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/torytis",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "티스토리 블로그 스킨 개발 프레임워크",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,9 @@
     "url": "https://github.com/wisdomstar94/torytis/issues"
   },
   "files": [
-    "npm/**/*"
+    "npm/**/*",
+    "index.ts",
+    "types/**/*"
   ],
   "dependencies": {
     "binary-install": "^1.1.0"
