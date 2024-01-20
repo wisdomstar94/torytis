@@ -51,7 +51,7 @@ pub fn run(_: CliArgs) {
 
     // js 를 필요로 하는 로직 실행
     {
-        let command = format!("npm run tsc -- --jsx react --esModuleInterop {}", torytis_build_ts_file_path_buf.to_str().unwrap());
+        let command = format!("npm run tsc -- --jsx react-jsx --esModuleInterop {}", torytis_build_ts_file_path_buf.to_str().unwrap());
         println!("> {}", command);
         let _ = run_command(command.as_str()).unwrap();
         // println!("<- {:?}", output);
@@ -124,7 +124,10 @@ pub fn run(_: CliArgs) {
     if let Ok(result) = package_json {
         if let Some(version) = result.get("version") {
             dot_torytis_index_xml_content_new = dot_torytis_index_xml_content_new.replace("{ version }", version.as_str().unwrap());
-            fs::write(dot_torytis_index_xml_path, &dot_torytis_index_xml_content_new).unwrap();
         }
+        if let Some(name) = result.get("name") {
+            dot_torytis_index_xml_content_new = dot_torytis_index_xml_content_new.replace("{ project_name }", name.as_str().unwrap());
+        }
+        fs::write(dot_torytis_index_xml_path, &dot_torytis_index_xml_content_new).unwrap();
     }
 }
