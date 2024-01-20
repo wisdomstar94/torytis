@@ -1,11 +1,14 @@
 {
     "compilerOptions": {
       "jsx": "react-jsx",
-      "module": "commonjs",
       "resolveJsonModule": true,
       "esModuleInterop": true,
       "allowSyntheticDefaultImports": true
     },
-    "include": ["./src/**/*", "./torytis-build.tsx", "./torytis-env.d.ts", "./torytis-variable.d.ts"],
-    "types": ["node"]
+    "include": [
+        "./src/**/*", 
+        "./torytis-build.tsx", 
+        "./torytis-env.d.ts", 
+        "./torytis-variable.d.ts"
+    ]
 }

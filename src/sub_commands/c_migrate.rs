@@ -61,6 +61,16 @@ pub fn run(_: CliArgs) {
             }
             fs::write(gitignore_file_path, gitignore_file_content).unwrap();
         }
+        // tsconfig.json 파일 체크
+        let tsconfig_json_file_path_buf = working_dir_path_buf.join("tsconfig.json");
+        let tsconfig_json_file_path = tsconfig_json_file_path_buf.as_path();
+        if let Ok(_) = fs::metadata(tsconfig_json_file_path) {
+            let tsconfig_json_content = fs::read_to_string(tsconfig_json_file_path).unwrap();
+            let mut tsconfig_json_content_mut = tsconfig_json_content.clone();
+            tsconfig_json_content_mut = apply_tsconfig_compiler_options_block(&tsconfig_json_content_mut);
+            tsconfig_json_content_mut = apply_tsconfig_include_block(&tsconfig_json_content_mut);
+            fs::write(tsconfig_json_file_path, tsconfig_json_content_mut).unwrap();
+        }
     }
 
     println!("-> torytis 마이그레이션 종료!");
@@ -81,6 +91,8 @@ fn apply_scripts_block(package_json_content: &str) -> String {
         // 첫 번째 캡처된 그룹 출력
         if let Some(script_block) = captured.get(0) {
             // scripts 블록이 있는 경우
+            let mut should_append_items: Vec<String> = Vec::new();
+
             let script_block_string: String = script_block.as_str().to_string();
             let mut scripts_block_string_new = String::from(script_block_string);
             let pattern2 = r#"\"scripts\":[^{}]*\{"#;
@@ -88,32 +100,43 @@ fn apply_scripts_block(package_json_content: &str) -> String {
 
             // "build:variable" 이 이미 있는 경우 수정
             if scripts_block_string_new.contains("\"build:variable\":") {
-                let pattern3 = r#"\"build:variable\"[^{}]*:[^{}]*\"[^{}]*\""#; // "build:variable": ".."  <-- 이 한줄을 선택
+                let pattern3 = r#""build:variable"[^{}]*:"([^"]*)""#; // "build:variable": ".."  <-- 이 한줄을 선택
                 let regex3 = Regex::new(&pattern3).unwrap();
                 scripts_block_string_new = regex3.replace(&scripts_block_string_new, "\"build:variable\": \"torytis varbuild\"").to_string();
             }
 
             // "tsc" 가 없는 경우 추가
             if !scripts_block_string_new.contains("\"tsc\":") {
-                let mut insert_string = String::from("");
-                insert_string.push_str("\"scripts\": {\n");
-                insert_string.push_str("\t\t\"tsc\": \"tsc\",");
-                scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+                // let mut insert_string = String::from("");
+                // insert_string.push_str("\"scripts\": {\n");
+                // insert_string.push_str("\t\t\"tsc\": \"tsc\",");
+                // scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+                should_append_items.push("\"tsc\": \"tsc\"".to_string());
             }
 
             // "tailwindcss" 가 없는 경우 추가
             if !scripts_block_string_new.contains("\"tailwindcss\":") {
-                let mut insert_string = String::from("");
-                insert_string.push_str("\"scripts\": {\n");
-                insert_string.push_str("\t\t\"tailwindcss\": \"tailwindcss\",");
-                scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+                // let mut insert_string = String::from("");
+                // insert_string.push_str("\"scripts\": {\n");
+                // insert_string.push_str("\t\t\"tailwindcss\": \"tailwindcss\",");
+                // scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+                should_append_items.push("\"tailwindcss\": \"tailwindcss\"".to_string());
             }
 
             // "torytis" 가 없는 경우 추가
             if !scripts_block_string_new.contains("\"torytis\":") {
-                let mut insert_string = String::from("");
-                insert_string.push_str("\"scripts\": {\n");
-                insert_string.push_str("\t\t\"torytis\": \"torytis\",");
+                // let mut insert_string = String::from("");
+                // insert_string.push_str("\"scripts\": {\n");
+                // insert_string.push_str("\t\t\"torytis\": \"torytis\",");
+                // scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
+                should_append_items.push("\"torytis\": \"torytis\"".to_string());
+            }
+
+            if should_append_items.len() > 0 {
+                let mut insert_string = format!("\"scripts\": {{\n\t\t{}", should_append_items.join(",\n\t\t")); 
+                if is_exist_package_json_scripts_item(&package_json_content) {
+                    insert_string.push_str(",");
+                }
                 scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
             }
 
@@ -150,6 +173,140 @@ fn apply_dev_dependencies_block(package_json_content: &str) -> String {
         } else {
             // devDependencies 블록이 없는 경우
             panic!("package.json 에 \"devDependencies\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
+        }
+    }
+    result
+}
+
+fn apply_tsconfig_compiler_options_block(tsconfig_json_content: &str) -> String {
+    let mut result: String = String::from(tsconfig_json_content);
+    let pattern = r#""compilerOptions":[^{}]*\{[^{}]*\}"#;
+    let regex = Regex::new(&pattern).unwrap();
+    
+    if let Some(captured) = regex.captures(tsconfig_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(text) = captured.get(0) {
+            // compilerOptions 블록이 있는 경우
+            let mut should_append_compiler_options_items: Vec<String> = Vec::new();
+
+            let block_string: String = text.as_str().to_string();
+            let mut block_string_new = String::from(block_string);
+            let pattern2 = r#"\"compilerOptions\":[^{}]*\{"#;
+            let regex2 = Regex::new(&pattern2).unwrap();
+
+            if !block_string_new.contains("\"jsx\":") {
+                should_append_compiler_options_items.push(r#""jsx": "react-jsx""#.to_string());
+            } else {
+                block_string_new = Regex::new(r#""jsx": "([^"]*)""#).unwrap().replace(&block_string_new, "\"jsx\": \"react-jsx\"").to_string();
+            }
+
+            if !block_string_new.contains("\"allowSyntheticDefaultImports\"") {
+                should_append_compiler_options_items.push(r#""allowSyntheticDefaultImports": true"#.to_string());   
+            }
+
+            if should_append_compiler_options_items.len() > 0 {
+                let mut insert_string = format!("\"compilerOptions\": {{\n\t\t{}", should_append_compiler_options_items.join(",\n\t\t")); 
+                if is_exist_tsconfig_compiler_options_item(&tsconfig_json_content) {
+                    insert_string.push_str(",");
+                }
+                block_string_new = regex2.replace(&block_string_new, insert_string).to_string();
+            }
+
+            result = regex.replace(&result, &block_string_new).to_string();
+        } else {
+            // compilerOptions 블록이 없는 경우
+            panic!("tsconfig.json 에 \"compilerOptions\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
+        }
+    }
+    result
+}
+
+fn apply_tsconfig_include_block(tsconfig_json_content: &str) -> String {
+    let mut result: String = String::from(tsconfig_json_content);
+    let pattern = r#""include":[^{}]*\[[^{}]*\]"#;
+    let regex = Regex::new(&pattern).unwrap();
+    if let Some(captured) = regex.captures(tsconfig_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(text) = captured.get(0) {
+            // include 블록이 있는 경우
+            let mut should_append_include_items: Vec<String> = Vec::new();
+
+            let block_string: String = text.as_str().to_string();
+            let mut block_string_new = String::from(block_string);
+            let pattern2 = r#"\"include\":[^{}]*\["#;
+            let regex2 = Regex::new(&pattern2).unwrap();
+
+            if !block_string_new.contains(r#""./src/**/*""#) {
+                should_append_include_items.push(r#""./src/**/*""#.to_string());
+            }
+
+            if !block_string_new.contains(r#""./torytis-build.tsx""#) {
+                should_append_include_items.push(r#""./torytis-build.tsx""#.to_string());
+            }
+
+            if !block_string_new.contains(r#""./torytis-env.d.ts""#) {
+                should_append_include_items.push(r#""./torytis-env.d.ts""#.to_string());
+            }
+
+            if !block_string_new.contains(r#""./torytis-variable.d.ts""#) {
+                should_append_include_items.push(r#""./torytis-variable.d.ts""#.to_string());
+            }
+
+            if should_append_include_items.len() > 0 {
+                let mut insert_string = format!("\"include\": [\n\t\t{}", should_append_include_items.join(",\n\t\t")); 
+                if is_exist_tsconfig_include_item(&tsconfig_json_content) {
+                    insert_string.push_str(",");
+                } else {
+                    insert_string.push_str("\n\t");
+                }
+                block_string_new = regex2.replace(&block_string_new, insert_string).to_string();
+            }
+
+            result = regex.replace(&result, &block_string_new).to_string();
+        } else {
+            // include 블록이 없는 경우
+            panic!("tsconfig.json 에 \"include\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
+        }
+    } else {
+        panic!("tsconfig.json 에 \"include\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
+    }
+    result
+}
+
+fn is_exist_tsconfig_include_item(tsconfig_json_content: &str) -> bool {
+    let mut result = false;
+    let regex = Regex::new(r#""include"[^{}]*:[^{}]*\[[^{}]*"[^{}]*"[^{}]*\]"#).unwrap();
+
+    if let Some(captured) = regex.captures(tsconfig_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(_) = captured.get(0) {
+            result = true;
+        }
+    }
+    result
+}
+
+fn is_exist_tsconfig_compiler_options_item(tsconfig_json_content: &str) -> bool {
+    let mut result = false;
+    let regex = Regex::new(r#""compilerOptions"[^{}]*:[^{}]*\{[^{}]*"[^{}]*"[^{}]*\}"#).unwrap();
+
+    if let Some(captured) = regex.captures(tsconfig_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(_) = captured.get(0) {
+            result = true;
+        }
+    }
+    result
+}
+
+fn is_exist_package_json_scripts_item(package_json_content: &str) -> bool {
+    let mut result = false;
+    let regex = Regex::new(r#""scripts"[^{}]*:[^{}]*\{[^{}]*"[^{}]*"[^{}]*\}"#).unwrap();
+
+    if let Some(captured) = regex.captures(package_json_content) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(_) = captured.get(0) {
+            result = true;
         }
     }
     result

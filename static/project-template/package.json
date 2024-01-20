@@ -5,7 +5,8 @@
         "build": "torytis build",
         "build:variable": "torytis varbuild",
         "tsc": "tsc",
-        "tailwindcss": "tailwindcss"
+        "tailwindcss": "tailwindcss",
+        "torytis": "torytis"
     },
     "devDependencies": {
         "@types/node": "^20",
