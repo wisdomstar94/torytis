@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skin>
+  <information>
+    <name>{ project_name }</name>
+    <version>{ version }</version>
+    <description>
+      <![CDATA[XHTML torytis 프레임워크로 개발된 tistory 스킨입니다.]]>
+    </description>
+    <license>
+      <![CDATA[자유롭게 수정이 가능하며, 저작권 표시하에 재배포 가능합니다.]]>
+    </license>
+  </information>
+  <author>
+    <name>이름</name>
+    <homepage>홈페이지</homepage>
+    <email>이메일주소</email>
+  </author>
+  <default>
+    <!-- 사이드바의 최근글 표시 갯수 -->
+    <recentEntries>5</recentEntries> 
+    <!-- 사이드바의 최근 댓글 표시 갯수 -->
+    <recentComments>5</recentComments>
+    <!-- 사이드바의 최근 트랙백 표시 갯수 -->
+    <recentTrackbacks>5</recentTrackbacks>
+    <!-- 한페이지에 표시될 방명록 갯수 -->
+    <itemsOnGuestbook>10</itemsOnGuestbook>
+    <!-- 사이드바에 표시될 태그 갯수 -->
+    <tagsInCloud>30</tagsInCloud>
+    <!-- 태그 클라우드 표현 방식 (1:인기도순, 2:이름순, 3:랜덤) -->
+    <sortInCloud>3</sortInCloud>
+    <!-- 댓글영역 표현 방식 (0:감추기, 1:펼치기) -->
+    <expandComment>0</expandComment>
+    <!-- 트랙백영역 표현 방식 (0:감추기, 1:펼치기) -->
+    <expandTrackback>0</expandTrackback>
+    <!-- 최근 공지 표현될 글자수 -->
+    <lengthOfRecentNotice>25</lengthOfRecentNotice>
+    <!-- 최근 글 표현될 글자수 -->
+    <lengthOfRecentEntry>27</lengthOfRecentEntry>
+    <!-- 최근 댓글에 표현될 글자수 -->
+    <lengthOfRecentComment>30</lengthOfRecentComment>
+    <!-- 최근 트랙백에 표현될 글자수 -->
+    <lengthOfRecentTrackback>30</lengthOfRecentTrackback>
+    <!-- 링크에 표현될 글자수 -->
+    <lengthOfLink>30</lengthOfLink>
+    <!-- 커버 미사용 홈에서 글 목록 표현(0:내용만, 1:목록만, 2: 내용+목록) -->
+    <showListOnCategory>1</showListOnCategory>
+    <!-- ??? -->
+    <showListOnArchive>1</showListOnArchive>
+    <!-- ??? -->
+    <commentMessage>
+      <none>댓글이 없습니다.</none>
+      <single>댓글 &lt;span class="cnt"&gt;하나&lt;/span&gt; 달렸습니다.</single>
+    </commentMessage>
+    <!-- ??? -->
+    <trackbackMessage>
+      <none>받은 트랙백이 없고</none>
+      <single>트랙백이 &lt;span class="cnt"&gt;하나&lt;/span&gt;이고</single>
+    </trackbackMessage>
+    <!-- 카테고리 -->
+    <tree>
+      <!-- 카테고리 글자색 -->
+      <color>000000</color>
+      <!-- 카테고리 배경색 -->
+      <bgColor>ffffff</bgColor>
+      <!-- 선택시 글자색 -->
+      <activeColor>000000</activeColor>
+      <!-- 선택시 배경색 -->
+      <activeBgColor>eeeeee</activeBgColor>
+      <!-- 표현될 카테고리 글자 수 -->
+      <labelLength>27</labelLength>
+      <!-- 카테고리 글 수 표현(0:숨김, 1:보임) -->
+      <showValue>1</showValue>
+    </tree>
+    <!-- 콘텐츠영역 가로 사이즈, 이 사이즈에 맞춰 에디터의 위지윅이 제대로 구현된다. -->
+    <contentWidth>500</contentWidth>
+  </default>
+  <variables>
+    <!-- 
+        variables 내용 수정 후에 터미널에 "npm run build:variable" 명령어를 입력하시면, 
+        torytis-variable.d.ts 파일이 생성되며 variable 태그 자동완성이 지원됩니다. 
+    -->
+    <!-- example -->
+    <!-- 
+    <variablegroup name="구글애드센스">
+      <variable>
+        <name>google_adsense_script_url</name>
+        <label>
+          <![CDATA[ 구글애드센스 script url ]]>
+        </label>
+        <description>구글애드센스 script url을 입력하세요.</description>
+        <type>STRING</type>
+      </variable>
+    </variablegroup>
+    <variablegroup name="테마">
+      <variable>
+        <name>dark_mode_type</name>
+        <label>
+          <![CDATA[ 다크 모드 타입 ]]>
+        </label>
+        <description>다크 모드를 방문자가 컨트롤 할 수 있도록 할 것인지, 강제로 적용할 것인지에 대한 설정 값입니다.</description>
+        <type>SELECT</type>
+        <option><![CDATA[
+          [
+            {"name":"darkmode_loose", "label":"방문자가 다크모드 컨트롤 가능", "value":"darkmode_loose"},
+            {"name":"darkmode_fixed", "label":"블로그를 항상 다크모드로 고정", "value":"darkmode_fixed"}
+          ]
+        ]]></option>
+      </variable>
+    </variablegroup> 
+    -->
+  </variables>
+  <cover>
+    <!-- example -->
+    <!-- 
+    <item>
+      <name>list</name>
+      <label><![CDATA[리스트]]></label>
+      <description><![CDATA[글 리스트를 표시합니다.]]></description>
+    </item>
+    <item>
+      <name>list_half</name>
+      <label><![CDATA[리스트(절반크기)]]></label>
+      <description><![CDATA[글 리스트를 표시합니다.]]></description>
+    </item> 
+    -->
+  </cover>
+</skin>

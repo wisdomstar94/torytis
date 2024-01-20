@@ -25,6 +25,34 @@
 - 화면: html 코드들을 React 로 개발할 수 있도록 관련 환경을 제공합니다.
 - 스타일: 기본적으로 Tailwindcss 와 scss 를 바로 사용 가능하도록 해주는 환경을 제공합니다.
 - 타입스크립트 : 디폴트로 타입스크립트로 개발할 수 있는 환경을 제공합니다.
+- rust : torytis v1 로 업데이트 되면서 기존 node.js 에서 rust 로 재작성되었습니다.
+
+<br />
+
+## torytis 메이저 버전 업데이트 후 프로젝트 마이그레이션 방법
+
+1. 기존에 설치된 torytis 를 제거합니다.
+```
+npm uninstall torytis
+```
+2. 최신버전 torytis 를 설치합니다.
+```
+npm install -D torytis
+```
+3. package.json 의 scripts 에 아래 항목을 추가해주세요.
+```
+{
+    "scripts": {
+        ...
+        "torytis": "torytis"
+        ...
+    }
+}
+```
+4. 아래 명령어로 마이그레이션을 진행합니다. (일부 파일이 새로 생성되거나 package.json 파일의 내용이 수정될 수 있습니다.)
+```
+npm run torytis -- migrate
+```
 
 <br />
 
@@ -46,10 +74,9 @@
 <br />
 
 ## 프로젝트 생성 방법
-torytis 를 사용하기 위해 필요한 폴더구조 및 파일을 편리하게 셋팅할 수 있도록 도와주는 별도 [@wisdomstar94/torytis-create-app](https://github.com/wisdomstar94/torytis-create-app) 패키지가 준비되어 있습니다. 아래 명령어를 이용하여 프로젝트 생성 가능합니다.
 
 ```
-npx @wisdomstar94/torytis-create-app new [프로젝트명]
+npx torytis new --name=프로젝트명
 ```
 
 <br />
