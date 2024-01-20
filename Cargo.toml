@@ -1,6 +1,6 @@
 [package]
 name = "torytis"
-version = "1.0.0-test.7"
+version = "1.0.0"
 edition = "2021"
 
 [dependencies]
