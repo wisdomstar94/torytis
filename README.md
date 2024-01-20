@@ -76,7 +76,7 @@ npm run torytis -- migrate
 ## 프로젝트 생성 방법
 
 ```
-npx torytis new --name=프로젝트명
+npx @wisdomstar94/torytis new --name=프로젝트명
 ```
 
 <br />

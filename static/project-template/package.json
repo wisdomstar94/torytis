@@ -18,6 +18,6 @@
         "typescript": "^5",
         "esbuild": "^0",
         "esbuild-sass-plugin": "^2",
-        "@wisdomstar94/torytis": "^0"
+        "@wisdomstar94/torytis": "^1"
     }
 }
