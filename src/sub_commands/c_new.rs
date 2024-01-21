@@ -66,6 +66,25 @@ pub fn run(args: CliArgs) {
     }
 
     // step 3) npm install 진행
-    println!("npm installing...");
-    run_command(format!("npm install --prefix {}", project_dir_path_buf.to_str().unwrap()).as_str()).unwrap();
+    let project_dir_path_str = project_dir_path_buf.to_str().unwrap();
+    println!("created project dir : {:#?}", project_dir_path_str);
+
+    if env::consts::OS == "windows" {
+        let bat_file_path_buf = project_dir_path_buf.join("torytis-temp.bat");
+        let bat_file_path = bat_file_path_buf.as_path();
+        let mut bat_file_content = String::new();
+        bat_file_content.push_str(format!("pushd {}\n", project_dir_path_str).as_str());
+        bat_file_content.push_str("npm i\n");
+        bat_file_content.push_str("popd");
+
+        let bat_file_content_euc_kr = encoding_rs::EUC_KR.encode(bat_file_content.as_str());
+        fs::write(bat_file_path, bat_file_content_euc_kr.0).unwrap();
+        println!("npm installing...");
+        run_command(bat_file_path.to_str().unwrap()).unwrap();
+        fs::remove_file(bat_file_path).unwrap();
+    } else {
+        println!("npm installing...");
+        let command = format!("npm install --prefix {}", project_dir_path_str);
+        run_command(command.as_str()).unwrap();
+    }
 }
