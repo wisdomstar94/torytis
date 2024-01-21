@@ -44,7 +44,7 @@ pub fn run(_: CliArgs) {
             let absolute_path_str = path_buf.to_str().unwrap();
             let relative_path_str = absolute_path_str.replace(working_dir_path_buf.to_str().unwrap(), "");          
             // println!("relative_path_str : {}", relative_path_str);
-            script_ts_content.push_str(format!("import \"..{}\";\n", relative_path_str).as_str());
+            script_ts_content.push_str(format!("import \"..{}\";\n", relative_path_str).replace("\\", "/").as_str());
         }
     }
     fs::write(dot_torytis_script_ts_path_buf.as_path(), script_ts_content).unwrap();
