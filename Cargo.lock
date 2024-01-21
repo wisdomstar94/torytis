@@ -267,7 +267,7 @@ dependencies = [
 
 [[package]]
 name = "torytis"
-version = "1.0.7"
+version = "1.0.8"
 dependencies = [
  "clap",
  "encoding_rs",

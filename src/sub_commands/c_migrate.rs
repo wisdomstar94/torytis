@@ -39,13 +39,19 @@ pub fn run(_: CliArgs) {
     // v0 -> v1 
     if Version::from("1.0.0").unwrap() <= Version::from(version.as_str()).unwrap() {
     // if true {
-        // torytis-build.tsx 파일 체크
+        // torytis-build.tsx 파일 삭제
         let torytis_build_tsx_file_path_buf = working_dir_path_buf.join("torytis-build.tsx");
         let torytis_build_tsx_file_path = torytis_build_tsx_file_path_buf.as_path();
-        if let Err(_) = fs::metadata(torytis_build_tsx_file_path) {
-            let file = STATIC_DIR.get_file("project-template/torytis-build.tsx").unwrap();
+        if let Ok(_) = fs::metadata(torytis_build_tsx_file_path) {
+            fs::remove_file(torytis_build_tsx_file_path).unwrap();
+        }
+        // torytis-build.js 파일 체크
+        let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis-build.js");
+        let torytis_build_js_file_path = torytis_build_js_file_path_buf.as_path();
+        if let Err(_) = fs::metadata(torytis_build_js_file_path) {
+            let file = STATIC_DIR.get_file("project-template/torytis-build.js").unwrap();
             let file_content = file.contents_utf8().unwrap();
-            fs::write(torytis_build_tsx_file_path, file_content).unwrap();
+            fs::write(torytis_build_js_file_path, file_content).unwrap();
         }
         // package.json 파일 체크
         package_json_content_mut = apply_scripts_block(&package_json_content_mut);
@@ -55,11 +61,9 @@ pub fn run(_: CliArgs) {
         let gitignore_file_path_buf = working_dir_path_buf.join(".gitignore");
         let gitignore_file_path = gitignore_file_path_buf.as_path();
         if let Ok(_) = fs::metadata(gitignore_file_path) {
-            let mut gitignore_file_content = fs::read_to_string(gitignore_file_path).unwrap();
-            if !gitignore_file_content.contains("torytis-build.js") {
-                gitignore_file_content.push_str("\ntorytis-build.js");
-            }
-            fs::write(gitignore_file_path, gitignore_file_content).unwrap();
+            let gitignore_file_content = fs::read_to_string(gitignore_file_path).unwrap();
+            let gitignore_file_content_mut = apply_gitignore(&gitignore_file_content);
+            fs::write(gitignore_file_path, gitignore_file_content_mut).unwrap();
         }
         // tsconfig.json 파일 체크
         let tsconfig_json_file_path_buf = working_dir_path_buf.join("tsconfig.json");
@@ -70,6 +74,15 @@ pub fn run(_: CliArgs) {
             tsconfig_json_content_mut = apply_tsconfig_compiler_options_block(&tsconfig_json_content_mut);
             tsconfig_json_content_mut = apply_tsconfig_include_block(&tsconfig_json_content_mut);
             fs::write(tsconfig_json_file_path, tsconfig_json_content_mut).unwrap();
+        }
+        // tailwind.config.ts 파일 체크
+        let tailwind_config_ts_file_path_buf = working_dir_path_buf.join("tailwind.config.ts");
+        let tailwind_config_ts_file_path = tailwind_config_ts_file_path_buf.as_path();
+        if let Ok(_) = fs::metadata(tailwind_config_ts_file_path) {
+            let file_content = fs::read_to_string(tailwind_config_ts_file_path).unwrap();
+            let mut file_content_mut = file_content.clone();
+            file_content_mut = apply_tailwind_config_ts_content_block(&file_content_mut);
+            fs::write(tailwind_config_ts_file_path, file_content_mut).unwrap();
         }
     }
 
@@ -244,8 +257,9 @@ fn apply_tsconfig_include_block(tsconfig_json_content: &str) -> String {
                 should_append_include_items.push(r#""./src/**/*""#.to_string());
             }
 
-            if !block_string_new.contains(r#""./torytis-build.tsx""#) {
-                should_append_include_items.push(r#""./torytis-build.tsx""#.to_string());
+            // torytis-build.tsx 에서 torytis-build.js 로 바뀌었으므로 제거하는 마이그레이션 코드로 변경하였음.
+            if block_string_new.contains(r#""./torytis-build.tsx""#) {
+                block_string_new = Regex::new(r#""./torytis-build.tsx"[^{},]*,"#).unwrap().replace(block_string_new.as_str(), "").to_string();
             }
 
             if !block_string_new.contains(r#""./torytis-env.d.ts""#) {
@@ -254,6 +268,10 @@ fn apply_tsconfig_include_block(tsconfig_json_content: &str) -> String {
 
             if !block_string_new.contains(r#""./torytis-variable.d.ts""#) {
                 should_append_include_items.push(r#""./torytis-variable.d.ts""#.to_string());
+            }
+
+            if !block_string_new.contains(r#""./torytis-variable-object.ts""#) {
+                should_append_include_items.push(r#""./torytis-variable-object.ts""#.to_string());
             }
 
             if should_append_include_items.len() > 0 {
@@ -266,6 +284,8 @@ fn apply_tsconfig_include_block(tsconfig_json_content: &str) -> String {
                 block_string_new = regex2.replace(&block_string_new, insert_string).to_string();
             }
 
+            block_string_new = block_string_new.replace("\n\t\t\n", "\n");
+
             result = regex.replace(&result, &block_string_new).to_string();
         } else {
             // include 블록이 없는 경우
@@ -274,6 +294,36 @@ fn apply_tsconfig_include_block(tsconfig_json_content: &str) -> String {
     } else {
         panic!("tsconfig.json 에 \"include\" 가 선언되어 있지 않습니다. 선언 후에 다시 시도해주세요.");   
     }
+    result
+}
+
+fn apply_gitignore(content: &str) -> String {
+    let mut result: String = String::from(content);
+    if result.contains("torytis-build.js") {
+        result = result.replace("\ntorytis-build.js", "").replace("torytis-build.js\n", "");
+    }
+    result
+}
+
+fn apply_tailwind_config_ts_content_block(content: &str) -> String {
+    let mut result: String = String::from(content);
+
+    let pattern = r#"content:[^\[\]]*\[[^\[\]]*\]"#;
+    let regex = Regex::new(&pattern).unwrap();
+    if let Some(captured) = regex.captures(&result) {
+        // 첫 번째 캡처된 그룹 출력
+        if let Some(text) = captured.get(0) {
+            let block_string: String = text.as_str().to_string();
+            let mut block_string_new = String::from(block_string);
+
+            // .torytis/index.css 제거
+            block_string_new = Regex::new(r#"'.\/.torytis\/index.css'[^\,]*\,"#).unwrap().replace(&block_string_new, "").to_string();
+            block_string_new = Regex::new(r#"\,[^\,]*'.\/.torytis\/index.css'"#).unwrap().replace(&block_string_new, "").to_string();
+
+            result = regex.replace(result.as_str(), block_string_new).to_string();
+        }
+    }
+
     result
 }
 

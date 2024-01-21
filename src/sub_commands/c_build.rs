@@ -15,7 +15,6 @@ pub struct CliArgs {
 
 pub fn run(_: CliArgs) {
     let working_dir_path_buf = env::current_dir().unwrap();
-    let torytis_build_ts_file_path_buf = working_dir_path_buf.join("torytis-build.tsx");
     let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis-build.js");
     let dot_torytis_index_xml_path_buf = working_dir_path_buf.join(".torytis").join("index.xml");
     let dot_torytis_index_xml_path = dot_torytis_index_xml_path_buf.as_path();
@@ -50,12 +49,6 @@ pub fn run(_: CliArgs) {
     fs::write(dot_torytis_script_ts_path_buf.as_path(), script_ts_content).unwrap();
 
     // js 를 필요로 하는 로직 실행
-    {
-        let command = format!("npm run tsc -- --jsx react-jsx --esModuleInterop {}", torytis_build_ts_file_path_buf.to_str().unwrap());
-        println!("> {}", command);
-        let _ = run_command(command.as_str()).unwrap();
-        // println!("<- {:?}", output);
-    }
     {
         let command = format!("node {}", torytis_build_js_file_path_buf.to_str().unwrap());
         println!("> {}", command);

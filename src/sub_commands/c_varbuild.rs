@@ -27,6 +27,7 @@ pub fn run(_: CliArgs) {
     let file_content = file.contents_utf8().unwrap();
 
     let mut declaration_text: String = String::from("");
+    let mut var_object_key_and_value_text: String = String::from("");
 
     let variables_list = &variables.children;
     for variable_group in variables_list {
@@ -39,6 +40,8 @@ pub fn run(_: CliArgs) {
                         if let Some(text) = name_element.get_text() {
                             declaration_text.push_str(format!("\t\t's_if_var_{}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n", text).as_str());
                             declaration_text.push_str(format!("\t\t's_not_var_{}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n", text).as_str());
+
+                            var_object_key_and_value_text.push_str(format!("\t\"[##_var_{}_##]\": \"[##_var_{}_##]\",\n", text, text).as_str());
                         }
                     }
                 }
@@ -52,6 +55,12 @@ pub fn run(_: CliArgs) {
     let regex = Regex::new(&pattern).unwrap();
     let result = file_content.replace("//THIS_IS_REPLACE_SPOT//", declaration_text.as_str());
     let result = regex.replace_all(&result, "\n\t}").to_string();
-
     fs::write(torytis_variable_d_ts_file_path, result).unwrap();
+
+    let file2 = STATIC_DIR.get_file("torytis-variable-object.ts").unwrap();
+    let file_content2 = file2.contents_utf8().unwrap();
+    let torytis_variable_object_ts_file_path_buf = working_dir_path_buf.join("torytis-variable-object.ts");
+    let torytis_variable_object_ts_file_path = torytis_variable_object_ts_file_path_buf.as_path();
+    let result2 = file_content2.replace("//THIS_IS_REPLACE_SPOT//", var_object_key_and_value_text.as_str()).replace("\n};", "};");
+    fs::write(torytis_variable_object_ts_file_path, result2).unwrap();
 }

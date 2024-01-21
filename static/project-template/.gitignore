@@ -4,4 +4,5 @@ lib
 build
 out
 .torytis
-torytis-build.js
+.DS_Store
+.npmrc

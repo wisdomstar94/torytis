@@ -8,8 +8,8 @@
     },
     "include": [
         "./src/**/*", 
-        "./torytis-build.tsx", 
         "./torytis-env.d.ts", 
-        "./torytis-variable.d.ts"
+        "./torytis-variable.d.ts",
+        "./torytis-variable-object.ts",
     ]
 }
