@@ -52,6 +52,11 @@ pub fn run(_: CliArgs) {
             let file = STATIC_DIR.get_file("project-template/torytis-build.js").unwrap();
             let file_content = file.contents_utf8().unwrap();
             fs::write(torytis_build_js_file_path, file_content).unwrap();
+        } else {
+            let file_content = fs::read_to_string(torytis_build_js_file_path).unwrap();
+            let mut file_content_mut = file_content.clone();
+            file_content_mut = apply_torytis_build_js(&file_content_mut);
+            fs::write(torytis_build_js_file_path, file_content_mut).unwrap();
         }
         // package.json 파일 체크
         package_json_content_mut = apply_scripts_block(&package_json_content_mut);
@@ -321,6 +326,31 @@ fn apply_tailwind_config_ts_content_block(content: &str) -> String {
             block_string_new = Regex::new(r#"\,[^\,]*'.\/.torytis\/index.css'"#).unwrap().replace(&block_string_new, "").to_string();
 
             result = regex.replace(result.as_str(), block_string_new).to_string();
+        }
+    }
+
+    result
+}
+
+fn apply_torytis_build_js(content: &str) -> String {
+    let mut result = String::new();
+    println!("?");
+    
+    let pattern = r#"^(\s+)const indexJsx = await import\(convertIndexJsxPath\);"#;
+    let const_index_jsx_line_regex = Regex::new(&pattern).unwrap();
+
+    for line in content.lines() {
+        if const_index_jsx_line_regex.is_match(line) {
+            // 일치하는 부분을 공백으로 바꿉니다.
+            let replaced_line = line.replace(r#"const indexJsx = await import(convertIndexJsxPath);"#, r#"const indexJsx = await import('./.torytis/index.js');"#);
+
+            // 바뀐 라인을 결과 문자열에 추가합니다.
+            result.push_str(&replaced_line);
+            result.push('\n');
+        } else {
+            // 일치하지 않는 라인은 그대로 결과 문자열에 추가합니다.
+            result.push_str(line);
+            result.push('\n');
         }
     }
 

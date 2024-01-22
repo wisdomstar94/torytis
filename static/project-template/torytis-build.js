@@ -33,7 +33,7 @@ const jsx_runtime = require("react/jsx-runtime");
                 ],
             });
         
-            const indexJsx = await import(convertIndexJsxPath);
+            const indexJsx = await import('./.torytis/index.js');
             const App = indexJsx.default.default; 
             const html = renderToString(jsx_runtime.jsx(App, {}));
             fs.writeFileSync(skinHtmlPath, html);

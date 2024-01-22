@@ -29,7 +29,7 @@
 
 <br />
 
-## torytis 메이저 버전 업데이트 후 프로젝트 마이그레이션 방법
+## torytis 패키지 버전 업데이트 후 프로젝트 마이그레이션 방법
 
 1. 기존에 설치된 torytis 를 제거합니다.
 ```
@@ -39,7 +39,7 @@ npm uninstall torytis
 ```
 npm install -D torytis
 ```
-3. package.json 의 scripts 에 아래 항목을 추가해주세요.
+3. package.json 의 scripts 에 아래 항목을 추가해주세요. (이미 있다면 다음 단계로 바로 넘어가주세요.)
 ```
 {
     "scripts": {
@@ -49,7 +49,7 @@ npm install -D torytis
     }
 }
 ```
-4. 아래 명령어로 마이그레이션을 진행합니다. (일부 파일이 새로 생성되거나 package.json 파일의 내용이 수정될 수 있습니다.)
+4. 아래 명령어로 마이그레이션을 진행합니다. (경고! : 일부 파일이 새로 생성되거나 일부 파일의 내용이 수정될 수 있습니다. migrate 커맨드는 반드시 프로젝트 원본 소스를 백업 후 시도하세요.)
 ```
 npm run torytis -- migrate
 ```
