@@ -118,7 +118,7 @@ fn apply_scripts_block(package_json_content: &str) -> String {
 
             // "build:variable" 이 이미 있는 경우 수정
             if scripts_block_string_new.contains("\"build:variable\":") {
-                let pattern3 = r#""build:variable"[^{}]*:"([^"]*)""#; // "build:variable": ".."  <-- 이 한줄을 선택
+                let pattern3 = r#""build:variable":[^{}\,]*"[^{}\,]*""#; // "build:variable": ".."  <-- 이 한줄을 선택
                 let regex3 = Regex::new(&pattern3).unwrap();
                 scripts_block_string_new = regex3.replace(&scripts_block_string_new, "\"build:variable\": \"torytis varbuild\"").to_string();
             }
