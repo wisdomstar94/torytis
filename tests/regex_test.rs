@@ -198,8 +198,10 @@ fn html_regex_bucket_test_2() {
                 vec.push(html_string_root_element_unwrap(&mini_root.get_html(), "s_cover"));
             }
             vec.join("")
+            // result
         });
         for child2 in child1.buckets.deref().borrow_mut().take().unwrap() {
+            println!("---------------");
             child2.commit();
         }
     }

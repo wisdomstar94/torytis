@@ -1,4 +1,4 @@
-use std::{borrow::{Borrow, BorrowMut}, cell::{Cell, RefCell}, ops::Deref, rc::{Rc, Weak}};
+use std::{cell::RefCell, ops::Deref, rc::{Rc, Weak}};
 use regex::Regex;
 
 pub struct SelectOptions<'a> {
@@ -9,12 +9,13 @@ pub struct SelectOptions<'a> {
 
 pub struct Bucket {
   pub html: Rc<RefCell<String>>,
-  pub html_snapshot: Rc<String>,
-  pub parent: Cell<Option<Weak<Bucket>>>,
+  pub html_snapshot: Rc<RefCell<String>>,
+  pub parent: Weak<Bucket>,
   pub buckets: Rc<RefCell<Option<Vec<Rc<Bucket>>>>>,
   pub buckets_replacer: Rc<RefCell<Option<Box<dyn Fn(String, Option<String>) -> String>>>>,
   pub select_element_name: Rc<RefCell<Option<String>>>,
   pub is_commited: Rc<RefCell<bool>>,
+//   pub is_last_child: Rc<RefCell<bool>>,
 }
 
 pub fn select_from_html_string(html: &str, search_options: &SelectOptions) -> Vec<String> {
@@ -109,11 +110,11 @@ impl Bucket {
     let r = Rc::new(
       Bucket {
         html: Rc::new(RefCell::new(html.to_owned())),
-        html_snapshot: Rc::new(html.to_owned()),
-        parent: Cell::new(Some(Weak::new())),
+        html_snapshot: Rc::new(RefCell::new(html.to_owned())),
+        parent: Weak::new(),
         buckets: Rc::new(RefCell::new(None)),
         buckets_replacer: Rc::new(RefCell::new(None)),
-        select_element_name: Rc::new(RefCell::new(None)),
+        select_element_name: Rc::new(RefCell::new(Some(String::from("root")))),
         is_commited: Rc::new(RefCell::new(false)),
       } 
     );
@@ -127,8 +128,8 @@ impl Bucket {
       Rc::new(
         Bucket {
           html: Rc::new(RefCell::new(x.as_str().to_owned())),
-          html_snapshot: Rc::new(x.as_str().to_owned()),
-          parent: Cell::new(Some(Rc::downgrade(&Rc::clone(&parent)))),
+          html_snapshot: Rc::new(RefCell::new(x.as_str().to_owned())),
+          parent: Rc::downgrade(&Rc::clone(&parent)),
           buckets: Rc::new(RefCell::new(None)),
           buckets_replacer: Rc::new(RefCell::new(None)),
           select_element_name: Rc::new(RefCell::new(Some(String::from(search_options.element_name)))),
@@ -156,37 +157,59 @@ impl Bucket {
   }
 
   pub fn commit(&self) {
+    let bbb = &self.select_element_name;
+    let select_element_name_option = bbb.deref().borrow().to_owned();
+    // let select_element_name_option = &bbb;
+    if let Some(_) = &select_element_name_option {
+      // println!("this select_element_name {}", select_element_name);
+    }
+
     let mut is_commited_borrow_mut = self.is_commited.deref().borrow_mut();
-    let current = &self.parent.take();
+    let current = self.parent.upgrade();
     if let Some(v) = current {
-      let v = v.upgrade();
-      if let Some(v) = v {
-        let binding = v.deref().buckets_replacer.deref().borrow();
-        if let Some(p) = binding.deref() {
-          let callback = p.deref();
-          let mut html_borrow_mut = v.html.deref().borrow_mut();
-          let binding3 = self.html_snapshot.deref();
-          let original_html = binding3.as_str();
+    
+    //   println!("commit try!!");
+    //   println!("commit!!");
+      let binding = v.deref().buckets_replacer.deref().borrow();
+      if let Some(p) = binding.deref() {
+        let callback = p.deref();
+        let mut html_borrow_mut = v.html.deref().borrow_mut();
+        let mut html_snapshot_borrow_mut = v.html_snapshot.deref().borrow_mut();
 
-          let changed_html = self.html.deref().take();
-          let target = html_borrow_mut.as_str().to_owned();
-        
-          let mut unwrap_original_html: Option<String> = None;
-          let binding2 = self.select_element_name.deref().borrow();
-          let binding2 = binding2.deref();
-          if let Some(select_element_name) = binding2 {
-            unwrap_original_html = Some(html_string_root_element_unwrap(&changed_html, select_element_name));
-          }
+        // let mut html_snapshot_borrow_mut = v.html_snapshot.deref().borrow_mut();
+        let binding3 = self.html_snapshot.deref().borrow();
+        let mut replace_from_html = binding3.as_str();
 
-          let to = callback(changed_html, unwrap_original_html);
-          let result = target.replace(original_html, to.as_str());
-          *html_borrow_mut = result;
+        let mut kkk = self.html.deref().borrow_mut();
+        let changed_html = kkk.to_owned();
+        let parent_html = html_borrow_mut.as_str().to_owned();
+        *html_snapshot_borrow_mut = parent_html.clone();
+      
+        // println!("parent_html {}", parent_html);
+        // println!("replace_from_html {}", replace_from_html);
+
+        let is_matched = parent_html.matches(replace_from_html).count() >= 1;
+        if !is_matched {
+          replace_from_html = &changed_html;
         }
-        
-        *is_commited_borrow_mut = true;
 
-        let _ = &v.deref().borrow_mut().commit();
+        let mut unwrap_replace_from_html: Option<String> = None;
+        if let Some(select_element_name) = &select_element_name_option {
+          // println!("select_element_name!! {}", select_element_name);
+          unwrap_replace_from_html = Some(html_string_root_element_unwrap(&changed_html, select_element_name));
+        }
+        // println!("is_matched : {}", is_matched);
+        let to = callback(changed_html.to_string(), unwrap_replace_from_html);
+        *kkk = to.clone();
+        let result = parent_html.replace(replace_from_html, to.as_str());
+        *html_borrow_mut = result.clone();
       }
+      
+      *is_commited_borrow_mut = true;
+
+      // println!("부모({:#?}) commit() 호출됨", v.select_element_name.deref());
+      // v.commit();
+      v.commit();
     }
   }
 
