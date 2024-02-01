@@ -1,36 +1,75 @@
-use std::{cell::RefCell, ops::Deref, rc::Rc};
-use html_regex::Bucket;
+use std::rc::Rc;
+use html_regex::{Bucket, SelectOptions};
 
 use crate::structs::torytis_dev_config::TorytisDevConfig;
 
 pub struct Replacer {
-    html: Rc<RefCell<String>>,
+    root: Rc<Bucket>,
     config: TorytisDevConfig,
 }
 
 impl Replacer {
     pub fn new(html: &str) -> Self {
         Self {
-            html: Rc::new(RefCell::new(html.to_owned())),
+            root: Bucket::new(html),
             config: TorytisDevConfig::new(),
         }
     }
 
     pub fn get_html(&self) -> String {
-        self.html.deref().borrow().to_string()
-    }
-
-    pub fn get_torytis_dev_config(&self) -> &TorytisDevConfig {
-        &self.config
+        self.root.get_html()
     }
 }
 
 impl Replacer {
-    pub fn apply_index_page(&self) -> Self {
-        let self_html_borrow_mut = self.html.deref().borrow_mut();
-        let html = self_html_borrow_mut.deref();
-        let root = Bucket::new(html);
-        Self::new(&root.get_html())
+    fn apply_common(&self) {
+        // let me = self;
+        let root = Rc::clone(&self.root);
+        let blog_title = self.config.get_blog_title();
+        let category_list_html = self.config.get_category_list_html();
+        // let config = &self.config;
+        root
+            .html_str_replace(|html| {
+                html.replace(r#"[##_title_##]"#, &blog_title.unwrap())
+            })
+            .html_str_replace(|html| {
+                html.replace(r#"<link href="./style.css" type="text/css" rel="stylesheet" />"#, r#"<link href="/virtualcdn/style.css" type="text/css" rel="stylesheet" />"#)
+            })
+            .html_str_replace(|html| {
+                html.replace(r#"<script src="./images/script.js"></script>"#, r#"<script src="/virtualcdn/images/script.js"></script>"#)
+            })
+            .select(SelectOptions {
+                element_name: "s_sidebar",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(|_, unwrap_matched_str| {
+                unwrap_matched_str.unwrap()
+            })
+            .select(SelectOptions {
+                element_name: "s_sidebar_element",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, unwrap_matched_str| {
+                let mut result = unwrap_matched_str.unwrap();
+                
+                // [##_category_list_##] 치환
+                result = result.replace(r#"[##_category_list_##]"#, &category_list_html);
+
+                result
+            })
+            
+            .commit()
+        ;
+    }
+} 
+
+impl Replacer {
+    pub fn apply_index_page(&self) -> &Self {
+        self.apply_common();
+
+        &self
     }
 }
 

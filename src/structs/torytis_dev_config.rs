@@ -1,4 +1,7 @@
+use std::{ops::Deref, rc::Rc};
+
 use chrono::NaiveDateTime;
+use html_regex::{Bucket, SelectOptions};
 use serde::Deserialize;
 use xmltree::Element;
 
@@ -61,6 +64,107 @@ impl TorytisDevConfig {
         } else {
             None
         }
+    }
+
+    pub fn get_category_list_html(&self) -> String {
+        let category_list = self.get_category_list().unwrap().clone();
+        let html = r#"
+            <ul class="tt_category">
+                <li class="">
+                    <a href="/category" class="link_tit">
+                        분류 전체보기 <span class="c_cnt">(212)</span>
+                    </a>
+                    <ul class="category_list">
+                        <s_category_item>
+                            <li class="">
+                                <a href="/category/[##_category_name_##]" class="link_item">
+                                    [##_category_name_##] <span class="c_cnt">(25)</span>
+                                </a>
+                                <s_sub_category_rep>
+                                    <ul class="sub_category_list">
+                                        <s_sub_category_item>
+                                            <li class="">
+                                                <a href="/category/[##_category_name2_##]/[##_sub_category_name2_##]" class="link_sub_item">
+                                                    [##_sub_category_name2_##] <span class="c_cnt">(10)</span>
+                                                </a>
+                                            </li>
+                                        </s_sub_category_item>
+                                    </ul>
+                                </s_sub_category_rep>
+                            </li>
+                        </s_category_item>
+                    </ul>
+                </li>
+            </ul>
+        "#;
+        let root = Bucket::new(html);
+        root  
+            .select(SelectOptions {
+                element_name: "s_category_item",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, matched_str_unwrap| {
+                let template_html =  matched_str_unwrap.unwrap();
+                let mut list_html_vec: Vec<String> = Vec::new();
+                for item in &category_list {
+                    let sub_category_list = Rc::new(item.category_list.clone());
+                    let sub_category_list1 = Rc::clone(&sub_category_list);
+                    let sub_category_list2 = Rc::clone(&sub_category_list);
+                    let parent_category_name = Rc::new(item.name.clone());
+                    
+                    let mini_root = Bucket::new(&template_html);
+                    mini_root
+                        .html_str_replace(|h| {
+                            h.replace(r#"[##_category_name_##]"#, item.name.as_str())
+                        })
+                        .select(SelectOptions { 
+                            element_name: "s_sub_category_rep", 
+                            attrs: None, 
+                            is_attrs_check_string_contain: true 
+                        })
+                        .replacer(move |_, matched_str_unwrap| {
+                            if let Some(_) = Rc::clone(&sub_category_list1).deref() {
+                                matched_str_unwrap.unwrap()
+                            } else {
+                                String::new()
+                            }
+                        })
+                        .select(SelectOptions { 
+                            element_name: "s_sub_category_item", 
+                            attrs: None, 
+                            is_attrs_check_string_contain: true 
+                        })
+                        .replacer(move |_, matched_str_unwrap| {
+                            let template_html =  matched_str_unwrap.unwrap();
+                            let mut list_html_vec2: Vec<String> = Vec::new();
+                            if let Some(v) = Rc::clone(&sub_category_list2).deref() {
+                                for sub_category in v {
+                                    let sub_category_name = Rc::new(sub_category.name.clone());
+                                    let m_root = Bucket::new(&template_html);
+                                    m_root
+                                        .html_str_replace(|s| {
+                                            let pn = parent_category_name.clone();
+                                            s.replace(r#"[##_category_name2_##]"#, pn.as_str())
+                                        })
+                                        .html_str_replace(|s| {
+                                            s.replace(r#"[##_sub_category_name2_##]"#, sub_category_name.as_str())
+                                        })
+                                    ;
+                                    list_html_vec2.push(m_root.get_html());
+                                }
+                            } 
+                            list_html_vec2.join("")
+                        })
+                        .commit()
+                    ;
+                    list_html_vec.push(mini_root.get_html());
+                }
+                list_html_vec.join("")
+            })
+            .commit()
+        ;
+        root.get_html()
     }
 
     pub fn get_recent_comment_list(&self) -> Option<Vec<Comment>> {
@@ -161,11 +265,11 @@ impl TorytisDevConfig {
     }
 
     pub fn get_posts_from_category_name(&self, category_name: &str) -> Vec<Post> {
-        let mut result: Vec<Post> = vec![];
+        // let mut result: Vec<Post> = vec![];
         // let categorys = category_name.split("///").collect::<Vec<&str>>();
         // let is_exist_subcategory = categorys.len() == 2;
         let posts = self.get_posts(None).unwrap_or_else(|| vec![]);
-        result = posts.iter().filter(|p| {
+        let result: Vec<Post> = posts.iter().filter(|p| {
             p.category_name.clone().unwrap() == category_name
         }).map(|s| s.clone()).collect::<Vec<Post>>();
         result
