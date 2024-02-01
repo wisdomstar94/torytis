@@ -1,4 +1,3 @@
-use std::ops::Deref;
 use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
 use regex::Regex;
 use torytis::common::get_temp_html_content;
@@ -155,27 +154,27 @@ fn html_regex_bucket_test_2() {
         </html>
     "#;
 
+
     let root = Bucket::new(&html);
-    root.select(&root, SelectOptions {
-        element_name: "s_cover_group",
-        attrs: None,
-        is_attrs_check_string_contain: true,
-    });
-    root.replacer(|_, unwrap_str| {
-        let result = unwrap_str.unwrap();
-        result
-    });
-    for child1 in root.buckets.deref().borrow_mut().take().unwrap() {
-        // child1.commit();
-        println!("???");
-        child1.select(&child1, SelectOptions {
+    root
+        .select(SelectOptions {
+            element_name: "s_cover_group",
+            attrs: None,
+            is_attrs_check_string_contain: true,
+        })
+        .replacer(|_, unwrap_str| {
+            let result = unwrap_str.unwrap();
+            println!("@@@ result {}", result);
+            result
+        })
+        .chain()
+        .select(SelectOptions {
             element_name: "s_cover_rep",
             attrs: None,
             is_attrs_check_string_contain: true,
-        });
-        child1.replacer(|_, unwrap_str| {
+        })
+        .replacer(|_, unwrap_str| {
             let result = unwrap_str.unwrap();
-
             let mut vec: Vec<String> = Vec::new();
             for item in vec!["list", "list-half", "list-half"] {
                 let mini_root_html = select_from_html_string_one(&result, &SelectOptions {
@@ -184,27 +183,75 @@ fn html_regex_bucket_test_2() {
                     is_attrs_check_string_contain: true,
                 }).unwrap();
                 let mini_root = Bucket::new(&mini_root_html);
-                mini_root.select(&mini_root, SelectOptions {
-                    element_name: "s_cover_item_thumbnail",
-                    attrs: None,
-                    is_attrs_check_string_contain: true,
-                });
-                mini_root.replacer(|_, s2| {
-                    s2.unwrap()
-                });
-                for mini_child in mini_root.buckets.deref().borrow_mut().take().unwrap() {
-                    mini_child.commit();
-                }
+                mini_root
+                    .select(SelectOptions {
+                        element_name: "s_cover_item_thumbnail",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(|_, s2| {
+                        s2.unwrap()
+                    })
+                    .commit()
+                ;
                 vec.push(html_string_root_element_unwrap(&mini_root.get_html(), "s_cover"));
             }
             vec.join("")
             // result
-        });
-        for child2 in child1.buckets.deref().borrow_mut().take().unwrap() {
-            println!("---------------");
-            child2.commit();
-        }
-    }
+        })
+        .chain()
+        .commit()
+    ;
+
+    // let root = Bucket::new(&html);
+    // root.select(&root, SelectOptions {
+    //     element_name: "s_cover_group",
+    //     attrs: None,
+    //     is_attrs_check_string_contain: true,
+    // });
+    // root.replacer(|_, unwrap_str| {
+    //     let result = unwrap_str.unwrap();
+    //     result
+    // });
+    // for child1 in root.get_selected_buckets() {
+    //     // child1.commit();
+    //     println!("???");
+    //     child1.select(&child1, SelectOptions {
+    //         element_name: "s_cover_rep",
+    //         attrs: None,
+    //         is_attrs_check_string_contain: true,
+    //     });
+    //     child1.replacer(|_, unwrap_str| {
+    //         let result = unwrap_str.unwrap();
+
+    //         let mut vec: Vec<String> = Vec::new();
+    //         for item in vec!["list", "list-half", "list-half"] {
+    //             let mini_root_html = select_from_html_string_one(&result, &SelectOptions {
+    //                 element_name: "s_cover",
+    //                 attrs: Some(vec![("name", item)]),
+    //                 is_attrs_check_string_contain: true,
+    //             }).unwrap();
+    //             let mini_root = Bucket::new(&mini_root_html);
+    //             mini_root.select(&mini_root, SelectOptions {
+    //                 element_name: "s_cover_item_thumbnail",
+    //                 attrs: None,
+    //                 is_attrs_check_string_contain: true,
+    //             });
+    //             mini_root.replacer(|_, s2| {
+    //                 s2.unwrap()
+    //             });
+    //             for mini_child in mini_root.buckets.deref().borrow_mut().take().unwrap() {
+    //                 mini_child.commit();
+    //             }
+    //             vec.push(html_string_root_element_unwrap(&mini_root.get_html(), "s_cover"));
+    //         }
+    //         vec.join("")
+    //         // result
+    //     });
+    //     for child2 in child1.get_selected_buckets() {
+    //         child2.commit();
+    //     }
+    // }
 
     println!("html {}", root.get_html());
 }
