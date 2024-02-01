@@ -1,6 +1,68 @@
-use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
+use html_regex::{html_string_root_element_unwrap, select_from_html_string, select_from_html_string_one, Bucket, SelectOptions};
 use regex::Regex;
 use torytis::common::get_temp_html_content;
+
+fn get_test_html() -> &'static str {
+    let html = r#"
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title></title>
+            </head>
+            <body>
+                <s3>
+                    <div>
+                        <s_cover_group>
+                            <section>
+                                <div>
+                                    <s_cover_rep>
+                                        <s_cover name="list">
+                                            <!-- 1.1 -->
+                                            <div class="list">
+                                                <s_cover_item_thumbnail>
+                                                    list 썸네일입니다..
+                                                </s_cover_item_thumbnail>
+                                            </div>
+                                        </s_cover>
+                                        <s_cover name="list-half">
+                                            <!-- 1.2 -->
+                                            <div class="list-half">
+                                                <s_cover_item_thumbnail>
+                                                    list-half 썸네일입니다..
+                                                </s_cover_item_thumbnail>
+                                            </div>
+                                        </s_cover>
+                                    </s_cover_rep>
+                                </div>
+                                <div>
+                                    <s_cover_rep>
+                                        <s_cover name="list">
+                                            <!-- 2.1 -->
+                                            <div class="list">
+                                                <s_cover_item_thumbnail>
+                                                    22 list 썸네일입니다..
+                                                </s_cover_item_thumbnail>
+                                            </div>
+                                        </s_cover>
+                                        <s_cover name="list-half">
+                                            <!-- 2.2 -->
+                                            <div class="list-half">
+                                                <s_cover_item_thumbnail>
+                                                    22 list-half 썸네일입니다..
+                                                </s_cover_item_thumbnail>
+                                            </div>
+                                        </s_cover>
+                                    </s_cover_rep>
+                                </div>
+                            </section>
+                        </s_cover_group>
+                    </div>
+                </s3>
+            </body>
+        </html>
+    "#;
+    html
+}
 
 #[test]
 fn regex_html_tag_select_test() {
@@ -93,70 +155,25 @@ fn test2() {
 }
 
 #[test]
+fn test3() {
+    let html = get_test_html();
+    let buckets = select_from_html_string(html, &SelectOptions {
+        element_name: "s3",
+        attrs: None,
+        is_attrs_check_string_contain: true,
+    });
+    println!("buckets : {:#?}", buckets);
+    for item in buckets {
+        let is_match = html.matches(&item);
+        println!("is_match : {}", is_match.count() > 0);
+    }
+}
+
+#[test]
 fn html_regex_bucket_test_2() {
     // let html = get_temp_html_content();
-    let html = r#"
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title></title>
-            </head>
-            <body>
-                <s3>
-                    <div>
-                        <s_cover_group>
-                            <section>
-                                <div>
-                                    <s_cover_rep>
-                                        <s_cover name="list">
-                                            <!-- 1.1 -->
-                                            <div class="list">
-                                                <s_cover_item_thumbnail>
-                                                    list 썸네일입니다..
-                                                </s_cover_item_thumbnail>
-                                            </div>
-                                        </s_cover>
-                                        <s_cover name="list-half">
-                                            <!-- 1.2 -->
-                                            <div class="list-half">
-                                                <s_cover_item_thumbnail>
-                                                    list-half 썸네일입니다..
-                                                </s_cover_item_thumbnail>
-                                            </div>
-                                        </s_cover>
-                                    </s_cover_rep>
-                                </div>
-                                <div>
-                                    <s_cover_rep>
-                                        <s_cover name="list">
-                                            <!-- 2.1 -->
-                                            <div class="list">
-                                                <s_cover_item_thumbnail>
-                                                    22 list 썸네일입니다..
-                                                </s_cover_item_thumbnail>
-                                            </div>
-                                        </s_cover>
-                                        <s_cover name="list-half">
-                                            <!-- 2.2 -->
-                                            <div class="list-half">
-                                                <s_cover_item_thumbnail>
-                                                    22 list-half 썸네일입니다..
-                                                </s_cover_item_thumbnail>
-                                            </div>
-                                        </s_cover>
-                                    </s_cover_rep>
-                                </div>
-                            </section>
-                        </s_cover_group>
-                    </div>
-                </s3>
-            </body>
-        </html>
-    "#;
-
-
-    let root = Bucket::new(&html);
-    root
+    let html = get_test_html();
+    let root = Bucket::new(&html)
         .select(SelectOptions {
             element_name: "s_cover_group",
             attrs: None,
@@ -167,7 +184,6 @@ fn html_regex_bucket_test_2() {
             println!("@@@ result {}", result);
             result
         })
-        .chain()
         .select(SelectOptions {
             element_name: "s_cover_rep",
             attrs: None,
@@ -199,59 +215,19 @@ fn html_regex_bucket_test_2() {
             vec.join("")
             // result
         })
-        .chain()
+        .commit()
+        .select(SelectOptions {
+            element_name: "s3",
+            attrs: None,
+            is_attrs_check_string_contain: true,
+        })
+        .replacer(|_, unwrap_str| {
+            let result = unwrap_str.unwrap();
+            // format!("<>{}</>", str)
+            result
+        })
         .commit()
     ;
-
-    // let root = Bucket::new(&html);
-    // root.select(&root, SelectOptions {
-    //     element_name: "s_cover_group",
-    //     attrs: None,
-    //     is_attrs_check_string_contain: true,
-    // });
-    // root.replacer(|_, unwrap_str| {
-    //     let result = unwrap_str.unwrap();
-    //     result
-    // });
-    // for child1 in root.get_selected_buckets() {
-    //     // child1.commit();
-    //     println!("???");
-    //     child1.select(&child1, SelectOptions {
-    //         element_name: "s_cover_rep",
-    //         attrs: None,
-    //         is_attrs_check_string_contain: true,
-    //     });
-    //     child1.replacer(|_, unwrap_str| {
-    //         let result = unwrap_str.unwrap();
-
-    //         let mut vec: Vec<String> = Vec::new();
-    //         for item in vec!["list", "list-half", "list-half"] {
-    //             let mini_root_html = select_from_html_string_one(&result, &SelectOptions {
-    //                 element_name: "s_cover",
-    //                 attrs: Some(vec![("name", item)]),
-    //                 is_attrs_check_string_contain: true,
-    //             }).unwrap();
-    //             let mini_root = Bucket::new(&mini_root_html);
-    //             mini_root.select(&mini_root, SelectOptions {
-    //                 element_name: "s_cover_item_thumbnail",
-    //                 attrs: None,
-    //                 is_attrs_check_string_contain: true,
-    //             });
-    //             mini_root.replacer(|_, s2| {
-    //                 s2.unwrap()
-    //             });
-    //             for mini_child in mini_root.buckets.deref().borrow_mut().take().unwrap() {
-    //                 mini_child.commit();
-    //             }
-    //             vec.push(html_string_root_element_unwrap(&mini_root.get_html(), "s_cover"));
-    //         }
-    //         vec.join("")
-    //         // result
-    //     });
-    //     for child2 in child1.get_selected_buckets() {
-    //         child2.commit();
-    //     }
-    // }
 
     println!("html {}", root.get_html());
 }

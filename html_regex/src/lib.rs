@@ -80,27 +80,26 @@ fn get_attr_list_from_html<'a>(target_html_block: &'a str, element_name: &'a str
   if let Some(v) = Regex::new(format!(r#"<{}\s?(([^\"<>]*)=\"([^\"]*)\")*>"#, element_name).as_str()).unwrap().find(target_html_block) {
       let matched_str = v.as_str();
       for item in Regex::new(format!(r#"[^(<{}\s?)](([^\"<>]*)=\"([^\"]*)\")"#, element_name).as_str()).unwrap().find_iter(matched_str) {
-          let item_str = item.as_str();
-          let item_str_convert = item_str.replacen("=", "@@@_@@@", 1);
-          let item_split = item_str_convert.split("@@@_@@@");
-          let item_split_vec = item_split.collect::<Vec<&str>>();
-          let attr_name = item_split_vec.get(0).unwrap().trim();
-          let attr_value = item_split_vec.get(1).unwrap().trim();
-          let mut attr_real_value = String::new();
-          let mut index: usize = 0;
-          let chars = attr_value.chars().collect::<Vec<char>>();
-          let chars_len = chars.len();
-          for item in chars {
-              if index == 0 || index == chars_len - 1 {
-                //   println!("char {}", item);
-                  index = index + 1;
-                  continue;
-              }
-              attr_real_value.push(item);
-              index = index + 1;
+        let item_str = item.as_str();
+        let item_str_convert = item_str.replacen("=", "@@@_@@@", 1);
+        let item_split = item_str_convert.split("@@@_@@@");
+        let item_split_vec = item_split.collect::<Vec<&str>>();
+        let attr_name = item_split_vec.get(0).unwrap().trim();
+        let attr_value = item_split_vec.get(1).unwrap().trim();
+        let mut attr_real_value = String::new();
+        let mut index: usize = 0;
+        let chars = attr_value.chars().collect::<Vec<char>>();
+        let chars_len = chars.len();
+        for item in chars {
+          if index == 0 || index == chars_len - 1 {
+            index = index + 1;
+            continue;
           }
-          vec.push((attr_name.to_owned(), attr_real_value.to_owned()));
-      }
+          attr_real_value.push(item);
+          index = index + 1;
+        }
+        vec.push((attr_name.to_owned(), attr_real_value.to_owned()));
+    }
   }
   vec
 }
@@ -123,6 +122,7 @@ impl Bucket {
   }
 
   pub fn select(&self, search_options: SelectOptions) -> &Self {
+    // println!("select!!");
     if self.chaining_list.deref().borrow().len() == 0 {
       let binding3 = self.html.deref().borrow();
       let target_html = binding3.as_str();
@@ -140,6 +140,7 @@ impl Bucket {
           }
         )
       }).collect::<Vec<Rc<Bucket>>>();
+    //   println!("buckets.len()!! {}", buckets.len());
       *self.buckets.deref().borrow_mut() = Some(buckets);
     } else {
       let binding = self.chaining_list.deref().borrow();
@@ -175,10 +176,11 @@ impl Bucket {
 
   pub fn replacer(&self, f: impl Fn(String, Option<String>) -> String + 'static) -> &Self {
     *self.buckets_replacer.deref().borrow_mut() = Some(Box::new(f));
+    let _ = &self.chain();
     &self
   }
 
-  pub fn chain(&self) -> &Self {
+  fn chain(&self) -> &Self {
     let b = self.buckets.take();
     let buckets = b.unwrap(); // temp
 
@@ -194,7 +196,7 @@ impl Bucket {
     &self
   }
 
-  pub fn commit(&self) {
+  pub fn commit(&self) -> Rc<Self> {
     let mut l = self.chaining_list.take();
     l.reverse();
     for item in l {
@@ -235,7 +237,7 @@ impl Bucket {
         }
         // println!("is_matched : {}", is_matched);
         let to = callback(changed_html.to_string(), unwrap_replace_from_html);
-        println!("to : {}", to);
+        // println!("to : {}", to);
         *self_html_borrow_mut = to.to_string();
         let result = parent_html.replace(replace_from_html, to.as_str());
         *parent_html_borrow_mut = result.clone();
@@ -244,6 +246,7 @@ impl Bucket {
         
       }
     }
+    Self::new(self.html.deref().borrow().as_str())
   }
 
   pub fn get_html(&self) -> String {
