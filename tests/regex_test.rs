@@ -173,7 +173,8 @@ fn test3() {
 fn html_regex_bucket_test_2() {
     // let html = get_temp_html_content();
     let html = get_test_html();
-    let root = Bucket::new(&html)
+    let root = Bucket::new(&html);
+    root
         .select(SelectOptions {
             element_name: "s_cover_group",
             attrs: None,
@@ -227,7 +228,9 @@ fn html_regex_bucket_test_2() {
             result
         })
         .commit()
-    ;
+        .html_str_replace(|html| {
+            html.replace("<html>", r#"<html lang="ko">"#)
+        });
 
     println!("html {}", root.get_html());
 }

@@ -1,4 +1,6 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, ops::Deref, rc::Rc};
+use html_regex::Bucket;
+
 use crate::structs::torytis_dev_config::TorytisDevConfig;
 
 pub struct Replacer {
@@ -12,6 +14,23 @@ impl Replacer {
             html: Rc::new(RefCell::new(html.to_owned())),
             config: TorytisDevConfig::new(),
         }
+    }
+
+    pub fn get_html(&self) -> String {
+        self.html.deref().borrow().to_string()
+    }
+
+    pub fn get_torytis_dev_config(&self) -> &TorytisDevConfig {
+        &self.config
+    }
+}
+
+impl Replacer {
+    pub fn apply_index_page(&self) -> Self {
+        let self_html_borrow_mut = self.html.deref().borrow_mut();
+        let html = self_html_borrow_mut.deref();
+        let root = Bucket::new(html);
+        Self::new(&root.get_html())
     }
 }
 

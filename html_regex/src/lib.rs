@@ -11,11 +11,11 @@ pub struct Bucket {
   pub html: Rc<RefCell<String>>,
   pub html_snapshot: Rc<RefCell<String>>,
   pub parent: Weak<Bucket>,
-  pub buckets: Rc<RefCell<Option<Vec<Rc<Bucket>>>>>,
-  pub buckets_replacer: Rc<RefCell<Option<Box<dyn Fn(String, Option<String>) -> String>>>>,
+  pub buckets: Rc<RefCell<Option<Rc<Vec<Rc<Bucket>>>>>>,
+  pub buckets_replacer: Rc<RefCell<Option<Rc<Box<dyn Fn(String, Option<String>) -> String>>>>>,
   pub select_element_name: Rc<RefCell<String>>,
   pub is_commited: Rc<RefCell<bool>>,
-  pub chaining_list: Rc<RefCell<Vec<(Vec<Rc<Bucket>>, Box<dyn Fn(String, Option<String>) -> String>)>>>,
+  pub chaining_list: Rc<RefCell<Vec<(Rc<Vec<Rc<Bucket>>>, Rc<Box<dyn Fn(String, Option<String>) -> String>>)>>>,
 }
 
 pub fn select_from_html_string(html: &str, search_options: &SelectOptions) -> Vec<String> {
@@ -141,15 +141,16 @@ impl Bucket {
         )
       }).collect::<Vec<Rc<Bucket>>>();
     //   println!("buckets.len()!! {}", buckets.len());
-      *self.buckets.deref().borrow_mut() = Some(buckets);
+      *self.buckets.deref().borrow_mut() = Some(Rc::new(buckets));
     } else {
       let binding = self.chaining_list.deref().borrow();
+      let binding = binding.deref();
       let last_child = binding.last().unwrap();
       
       let parent_buckets = &last_child.0;
       
       let mut total_vec_rc_bucket: Vec<Rc<Bucket>> = vec![];
-      for item in parent_buckets {
+      for item in parent_buckets.deref() {
         let target_html = item.html.deref().borrow().to_owned();
         let buckets = select_from_html_string(&target_html, &search_options).iter().map(|x| -> Rc<Bucket> {
           Rc::new(
@@ -169,39 +170,60 @@ impl Bucket {
           total_vec_rc_bucket.push(b);
         }
       }
-      *self.buckets.deref().borrow_mut() = Some(total_vec_rc_bucket);
+      *self.buckets.deref().borrow_mut() = Some(Rc::new(total_vec_rc_bucket));
     }
     &self
   }
 
   pub fn replacer(&self, f: impl Fn(String, Option<String>) -> String + 'static) -> &Self {
-    *self.buckets_replacer.deref().borrow_mut() = Some(Box::new(f));
+    *self.buckets_replacer.deref().borrow_mut() = Some(Rc::new(Box::new(f)));
     let _ = &self.chain();
     &self
   }
 
   fn chain(&self) -> &Self {
-    let b = self.buckets.take();
-    let buckets = b.unwrap(); // temp
+    let b = &self.buckets.deref().borrow();
+    let buckets = b.deref(); // temp
 
-    let p = self.buckets_replacer.take();
-    let replacer = p.unwrap(); // temp
+    let p = &self.buckets_replacer.deref().borrow();
+    let replacer = p.deref(); // temp
 
-    let mut k = self.chaining_list.borrow_mut();
-    k.push((
-      buckets,
-      replacer,
-    ));
+    if let (Some(b1), Some(p1)) = (buckets, replacer) {
+      let mut k = self.chaining_list.borrow_mut();
+      k.push((
+        Rc::clone(b1),
+        Rc::clone(p1),
+      ));
+    }
 
     &self
   }
 
-  pub fn commit(&self) -> Rc<Self> {
-    let mut l = self.chaining_list.take();
-    l.reverse();
-    for item in l {
-      let childs = item.0;
-      let callback = item.1;
+  pub fn html_str_replace(&self, callback: impl Fn(&str) -> String) -> &Self {
+    // let mut self_html_borrow_mut = self.html.deref().borrow_mut();
+    let self_chaining_list_borrow = self.chaining_list.deref().borrow();
+    if self_chaining_list_borrow.len() > 0 {
+        panic!("html_str_replace 함수를 호출하기 전에 select 또는 replacer 함수가 호출되어 있으면 안됩니다.");
+    }
+
+    let mut self_html_borrow_mut = self.html.deref().borrow_mut();
+    // *self_html_borrow_mut = callback(&*self_html_borrow_mut.as_str());
+    // &self
+
+    let html = callback(&*self_html_borrow_mut.as_str());
+    // Self::new(&html)
+    *self_html_borrow_mut = html;
+    &self
+  }
+
+  pub fn commit(&self) -> &Self {
+    let mut self_chaining_list_borrow_mut = self.chaining_list.deref().borrow_mut();
+    // let l = binding.deref();
+    // l.reverse();
+    self_chaining_list_borrow_mut.reverse();
+    for item in self_chaining_list_borrow_mut.deref() {
+      let childs = item.0.deref();
+      let callback = item.1.deref();
 
       for self2 in childs {
         let bbb = &self2.select_element_name;
@@ -246,7 +268,9 @@ impl Bucket {
         
       }
     }
-    Self::new(self.html.deref().borrow().as_str())
+    // Self::new(self.html.deref().borrow().as_str())
+    *self_chaining_list_borrow_mut = vec![];
+    &self
   }
 
   pub fn get_html(&self) -> String {

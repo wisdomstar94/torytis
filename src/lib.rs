@@ -5,7 +5,6 @@ use regex::Regex;
 pub mod sub_commands;
 pub mod statics;
 pub mod common;
-pub mod replacer;
 pub mod structs;
 
 #[derive(Parser)] // requires `derive` feature

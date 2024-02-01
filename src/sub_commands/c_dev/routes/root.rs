@@ -1,6 +1,6 @@
 use axum::{Router, routing::get, response::Response, http::StatusCode, body::Body};
 
-use crate::{common::get_skin_html_content, structs::torytis_dev_config::TorytisDevConfig};
+use crate::{common::get_skin_html_content, structs::{replacer::Replacer, torytis_dev_config::TorytisDevConfig}};
 
 pub fn routes() -> Router {
     Router::new()
@@ -9,9 +9,8 @@ pub fn routes() -> Router {
 }
 
 async fn root_route() -> Response {
-    let config = TorytisDevConfig::new();
-    // println!("config is {:#?}", config);
-    let mut skin_html_content = get_skin_html_content();
+    let skin_html_content = get_skin_html_content();
+    let replacer = Replacer::new(&skin_html_content).apply_index_page();
     // skin_html_content = replace_s_search(&skin_html_content, "");
     // skin_html_content = replace_common(&config, &skin_html_content);
     // skin_html_content = replace_home_display(&config, &skin_html_content);
@@ -22,7 +21,7 @@ async fn root_route() -> Response {
     return Response::builder()
       .status(StatusCode::OK)
       .header("Content-Type", "text/html")
-      .body(Body::from(skin_html_content))
+      .body(Body::from(replacer.get_html()))
       .unwrap();
 }
 
