@@ -26,6 +26,10 @@ impl TorytisDevConfig {
         result
     }
 
+    pub fn get_clone_rc(&self) -> Rc<Self> {
+        Rc::new(self.clone())
+    }
+
     pub fn get_blog_title(&self) -> Option<&str> {
         if let Some(v) = &self.blog_title {
             Some(v)
@@ -289,14 +293,14 @@ impl TorytisDevConfig {
             }
 
             for parent_category in &v {
-                if let Some(child_category_list) = &parent_category.category_list {
-                    let mut child_category_list: Vec<String> = child_category_list.iter().map(|x| -> String {
+                if let Some(k) = &parent_category.category_list {
+                    let mut child_category_list: Vec<String> = k.iter().map(|x| -> String {
                         String::from(&x.name)
                     }).collect();
                     child_category_list.sort_unstable();
                     child_category_list.dedup();
-        
-                    if v.len() != child_category_list.len() {
+
+                    if k.len() != child_category_list.len() {
                         panic!("torytis-dev.config.json 파일에 기재된 category_list 중에 중복된 카테고리명이 존재합니다! 중복되지 않게 수정해주세요!");
                     }
                 }

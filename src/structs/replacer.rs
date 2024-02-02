@@ -1,4 +1,5 @@
-use std::rc::Rc;
+use std::{ops::Deref, rc::Rc};
+use chrono::NaiveDateTime;
 use html_regex::{Bucket, SelectOptions};
 
 use crate::structs::torytis_dev_config::TorytisDevConfig;
@@ -22,15 +23,29 @@ impl Replacer {
 }
 
 impl Replacer {
-    fn apply_common(&self) {
+    fn apply_common(&self, options: Option<ApplyCommonOptions>) {
         // let me = self;
         let root = Rc::clone(&self.root);
-        let blog_title = self.config.get_blog_title();
-        let category_list_html = self.config.get_category_list_html();
+        let config = self.config.get_clone_rc();
+        // let recent_comment_list = Rc::new(config.get_recent_comment_list().clone().unwrap());
+        // let blog_title = self.config.get_blog_title();
+        // let category_list_html = self.config.get_category_list_html();
         // let config = &self.config;
+        let category_list_html = Rc::new(config.get_category_list_html());
+        let count_total = Rc::new(config.get_visitor().unwrap().count_total.unwrap().to_string());
+        let count_today = Rc::new(config.get_visitor().unwrap().count_today.unwrap().to_string());
+        let count_yesterday = Rc::new(config.get_visitor().unwrap().count_yesterday.unwrap().to_string());
+        let recent_comment_list = Rc::new(config.get_recent_comment_list().clone().unwrap());
+
+        let options_search = if let Some(v) = options {
+            v.search
+        } else {
+            String::new()
+        };
+
         root
             .html_str_replace(|html| {
-                html.replace(r#"[##_title_##]"#, &blog_title.unwrap())
+                html.replace(r#"[##_title_##]"#, &config.get_blog_title().unwrap())
             })
             .html_str_replace(|html| {
                 html.replace(r#"<link href="./style.css" type="text/css" rel="stylesheet" />"#, r#"<link href="/virtualcdn/style.css" type="text/css" rel="stylesheet" />"#)
@@ -53,9 +68,76 @@ impl Replacer {
             })
             .replacer(move |_, unwrap_matched_str| {
                 let mut result = unwrap_matched_str.unwrap();
-                
-                // [##_category_list_##] 치환
+                let recent_comment_list = recent_comment_list.clone();
+
+                // 카테고리 리스트 치환
                 result = result.replace(r#"[##_category_list_##]"#, &category_list_html);
+
+                // 방문자수 치환
+                result = result.replace(r#"[##_count_total_##]"#, &count_total.as_str());
+                result = result.replace(r#"[##_count_today_##]"#, &count_today.as_str());
+                result = result.replace(r#"[##_count_yesterday_##]"#, &count_yesterday.as_str());
+
+                // 최근 댓글
+                let recent_comment_bucket = Bucket::new(&result);
+                recent_comment_bucket
+                    .select(SelectOptions {
+                        element_name: "s_rctrp_rep",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(move |_, matched_str_unwrap| {
+                        let recent_comment_list = recent_comment_list.clone();
+                        let html_template: String = matched_str_unwrap.unwrap();
+                        let mut li_vec: Vec<String> = Vec::new();
+                        // let k = recent_comment_list.clone();
+                        for item in recent_comment_list.deref() {
+                            let bucket = Bucket::new(&html_template);
+                            let name = item.name.as_ref().unwrap().to_owned();
+                            let time = item.datetime.as_ref().unwrap().to_owned();
+                            let desc = item.content.as_ref().unwrap().to_owned();
+                            bucket
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctrp_rep_name_##]"#, &name)
+                                })
+                                .html_str_replace(|s| {
+                                    let time = NaiveDateTime::parse_from_str(&time, "%Y-%m-%d %H:%M:%S").unwrap().format("%m.%d").to_string();
+                                    s.replace(r#"[##_rctrp_rep_time_##]"#, &time)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctrp_rep_desc_##]"#, &desc)
+                                })
+                            ;
+                            li_vec.push(bucket.get_html());
+                        }
+                        li_vec.join("")
+                    })
+                    .commit()
+                ;
+                result = recent_comment_bucket.get_html();
+
+                // 검색
+                let search_bucket = Bucket::new(&result);
+                search_bucket
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_search_name_##]"#, "search")
+                    })
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_search_text_##]"#, &options_search)
+                    })
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_search_onclick_submit_##]"#, r#"
+                            try {
+                                window.location.href = '/search' + '/' + encodeURI(document.getElementsByName('search')[0].value);
+                                document.getElementsByName('search')[0].value = '';
+                                return false;
+                            } catch (e) {
+                                
+                            } 
+                        "#)
+                    })
+                ;
+                result = search_bucket.get_html();
 
                 result
             })
@@ -67,15 +149,15 @@ impl Replacer {
 
 impl Replacer {
     pub fn apply_index_page(&self) -> &Self {
-        self.apply_common();
+        self.apply_common(None);
 
         &self
     }
 }
 
-
-
-
+struct ApplyCommonOptions {
+    search: String,
+}
 
 // use chrono::NaiveDateTime;
 // use regex::Regex;
