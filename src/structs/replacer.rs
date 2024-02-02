@@ -27,15 +27,13 @@ impl Replacer {
         // let me = self;
         let root = Rc::clone(&self.root);
         let config = self.config.get_clone_rc();
-        // let recent_comment_list = Rc::new(config.get_recent_comment_list().clone().unwrap());
-        // let blog_title = self.config.get_blog_title();
-        // let category_list_html = self.config.get_category_list_html();
-        // let config = &self.config;
+
         let category_list_html = Rc::new(config.get_category_list_html());
         let count_total = Rc::new(config.get_visitor().unwrap().count_total.unwrap().to_string());
         let count_today = Rc::new(config.get_visitor().unwrap().count_today.unwrap().to_string());
         let count_yesterday = Rc::new(config.get_visitor().unwrap().count_yesterday.unwrap().to_string());
         let recent_comment_list = Rc::new(config.get_recent_comment_list().clone().unwrap());
+        let recent_notice_list = Rc::new(config.get_recent_notice_list().clone().unwrap());
 
         let options_search = if let Some(v) = options {
             v.search
@@ -67,20 +65,34 @@ impl Replacer {
                 is_attrs_check_string_contain: true,
             })
             .replacer(move |_, unwrap_matched_str| {
-                let mut result = unwrap_matched_str.unwrap();
+                // let mut result = unwrap_matched_str.unwrap();
+                let s_sidebar_element_unwrap = Bucket::new(&unwrap_matched_str.unwrap());
+
                 let recent_comment_list = recent_comment_list.clone();
+                let recent_notice_list = recent_notice_list.clone();
 
                 // 카테고리 리스트 치환
-                result = result.replace(r#"[##_category_list_##]"#, &category_list_html);
+                s_sidebar_element_unwrap
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_category_list_##]"#, &category_list_html)
+                    })
+                ;
 
                 // 방문자수 치환
-                result = result.replace(r#"[##_count_total_##]"#, &count_total.as_str());
-                result = result.replace(r#"[##_count_today_##]"#, &count_today.as_str());
-                result = result.replace(r#"[##_count_yesterday_##]"#, &count_yesterday.as_str());
+                s_sidebar_element_unwrap
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_count_total_##]"#, &count_total.as_str())
+                    })
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_count_today_##]"#, &count_today.as_str())
+                    })
+                    .html_str_replace(|s| {
+                        s.replace(r#"[##_count_yesterday_##]"#, &count_yesterday.as_str())
+                    })
+                ;
 
                 // 최근 댓글
-                let recent_comment_bucket = Bucket::new(&result);
-                recent_comment_bucket
+                s_sidebar_element_unwrap
                     .select(SelectOptions {
                         element_name: "s_rctrp_rep",
                         attrs: None,
@@ -114,11 +126,9 @@ impl Replacer {
                     })
                     .commit()
                 ;
-                result = recent_comment_bucket.get_html();
 
                 // 검색
-                let search_bucket = Bucket::new(&result);
-                search_bucket
+                s_sidebar_element_unwrap
                     .html_str_replace(|s| {
                         s.replace(r#"[##_search_name_##]"#, "search")
                     })
@@ -137,9 +147,47 @@ impl Replacer {
                         "#)
                     })
                 ;
-                result = search_bucket.get_html();
 
-                result
+                // 최근 공지사항
+                s_sidebar_element_unwrap
+                    .select(SelectOptions {
+                        element_name: "s_rct_notice",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(|_, matched_str_unwrap| {
+                        matched_str_unwrap.unwrap()
+                    })
+                    .select(SelectOptions {
+                        element_name: "s_rct_notice_rep",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(move |_, matched_str_unwrap| {
+                        let recent_notice_list = recent_notice_list.clone();
+                        let html_template = matched_str_unwrap.unwrap();
+                        let mut list_vec: Vec<String> = Vec::new();
+                        let iter = recent_notice_list.iter();
+                        for item in iter {
+                            let bucket = Bucket::new(&html_template);
+                            let post_id = item.post_id.clone().unwrap();
+                            let notice_title = item.title.clone().unwrap();
+                            bucket
+                                .html_str_replace(move |s| {
+                                    s.replace(r#"[##_notice_rep_link_##]"#, format!("/notice/{}", post_id).as_str())
+                                })
+                                .html_str_replace(move |s| {
+                                    s.replace(r#"[##_notice_rep_title_##]"#, &notice_title)
+                                })
+                            ;
+                            list_vec.push(bucket.get_html());
+                        }
+                        list_vec.join("")
+                    })
+                    .commit()
+                ;
+
+                s_sidebar_element_unwrap.get_html()
             })
             
             .commit()

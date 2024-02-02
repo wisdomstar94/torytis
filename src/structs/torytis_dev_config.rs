@@ -206,6 +206,15 @@ impl TorytisDevConfig {
         }
     }
 
+    pub fn get_recent_notice_list(&self) -> Option<Vec<Post>> {
+        let mut result:Option<Vec<Post>> = None;
+        let list = self.get_posts(Some(&PostType::Notice));
+        if let Some(v) = list {
+            result = Some(v.iter().take(5).map(|s| s.clone()).collect::<Vec<Post>>())
+        }
+        result
+    }
+
     pub fn get_post_id_from_comment_id(&self, comment_id: &str) -> Option<String> {
         let mut result: Option<String> = None;
         let posts = self.posts.clone().unwrap_or_else(|| vec![]);
