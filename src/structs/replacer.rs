@@ -2,9 +2,9 @@ use std::{ops::Deref, rc::Rc};
 use chrono::NaiveDateTime;
 use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
 
-use crate::{common::get_pagination_calculate, structs::torytis_dev_config::{Post, PostType, TorytisDevConfig}};
+use crate::{common::{date_format, get_pagination_calculate}, structs::torytis_dev_config::{Post, PostType, TorytisDevConfig}};
 
-use super::torytis_dev_config::{get_skin_variable_info_map, PostSelectOption};
+use super::torytis_dev_config::{get_skin_variable_info_map, GuestbookSelectOption, PostSelectOption};
 
 pub struct Replacer {
     root: Rc<Bucket>,
@@ -572,6 +572,9 @@ impl Replacer {
     fn apply_guest_book(&self, option: ApplyGuestBookOptions) {
         let is_hide = option.is_hide;
         let root = Rc::clone(&self.root);
+        let guestbook_list = Rc::new(self.config.get_guestbooks(option.guestbook_select_option));
+        // let guestbook_select_option = Rc::new(option.guestbook_select_option);
+        let is_guest = Rc::new(self.config.get_is_guest());
 
         root    
             .select(SelectOptions {
@@ -579,12 +582,162 @@ impl Replacer {
                 attrs: None,
                 is_attrs_check_string_contain: true,
             })
-            .replacer(move |_, _| {
+            .replacer(move |_, matched_str_unwrap| {
                 if is_hide {
                     return String::new();
                 }
 
-                todo!()
+                let mini_root = Bucket::new(&matched_str_unwrap.unwrap());
+                let guestbook_list = Rc::clone(&guestbook_list);
+                let is_guest = Rc::clone(&is_guest);
+
+                // s_guest_container
+                mini_root
+                    .select(SelectOptions {
+                        element_name: "s_guest_container",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(move |_, matched_str_unwrap| {
+                        matched_str_unwrap.unwrap()
+                    })
+                    .select(SelectOptions {
+                        element_name: "s_guest_rep",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(move |_, matched_str_unwrap| {
+                        let guestbook_list = Rc::clone(&guestbook_list);
+                        let html_template = matched_str_unwrap.unwrap();
+                        let mut list_vec: Vec<String> = Vec::new();
+                        for item in guestbook_list.iter() {
+                            let child_guestbook_list = Rc::new(item.guestbook_list.clone());
+                            let child_guestbook_list2 = Rc::new(item.guestbook_list.clone());
+                            let item_bucket = Bucket::new(&html_template);
+                            item_bucket
+                                .html_str_replace(|html| {
+                                    html.replacen(r#"[##_guest_rep_id_##]"#, &item.guest_rep_id.clone().unwrap(), 1)
+                                })
+                                .html_str_replace(|html| {
+                                    html.replacen(r#"[##_guest_rep_logo_##]"#, &item.guest_rep_logo.clone().unwrap(), 1)
+                                })
+                                .html_str_replace(|html| {
+                                    html.replacen(r#"[##_guest_rep_name_##]"#, &item.name.clone().unwrap(), 1)
+                                })
+                                .html_str_replace(|html| {
+                                    html.replacen(r#"[##_guest_rep_date_##]"#, date_format(&item.created_at.clone().unwrap(), "%Y-%m-%d %H:%M").as_str(), 1)
+                                })
+                                .html_str_replace(|html| {
+                                    html.replacen(r#"[##_guest_rep_desc_##]"#, &item.content.clone().unwrap(), 1)
+                                })
+                                .html_str_replace(|html| {
+                                    html.replace(r#"[##_guest_rep_onclick_reply_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#)
+                                })
+                                .html_str_replace(|html| {
+                                    html.replace(r#"[##_guest_rep_onclick_delete_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#)
+                                })
+                                .select(SelectOptions {
+                                    element_name: "s_guest_reply_container",
+                                    attrs: None,
+                                    is_attrs_check_string_contain: true,
+                                })
+                                .replacer(move |_, matched_str_unwrap| {
+                                    if let None = child_guestbook_list.deref() {
+                                        return String::new();
+                                    }
+                                    matched_str_unwrap.unwrap()
+                                })
+                                .select(SelectOptions {
+                                    element_name: "s_guest_reply_rep",
+                                    attrs: None,
+                                    is_attrs_check_string_contain: true,
+                                })
+                                .replacer(move |_, matched_str_unwrap| {
+                                    let html_template = matched_str_unwrap.unwrap();
+                                    let mut li_vec: Vec<String> = Vec::new();
+                                    if let Some(k) = child_guestbook_list2.deref() {
+                                        for item in k {
+                                            let mut result = html_template.clone();
+                                            result = result.replace(r#"[##_guest_rep_id_##]"#, &item.guest_rep_id.clone().unwrap());
+                                            result = result.replace(r#"[##_guest_rep_logo_##]"#, &item.guest_rep_logo.clone().unwrap());
+                                            result = result.replace(r#"[##_guest_rep_name_##]"#, &item.name.clone().unwrap());
+                                            result = result.replace(r#"[##_guest_rep_date_##]"#, date_format(&item.created_at.clone().unwrap(), "%Y-%m-%d %H:%M").as_str());
+                                            result = result.replace(r#"[##_guest_rep_desc_##]"#, &item.content.clone().unwrap());
+                                            li_vec.push(result);
+                                        }
+                                    }
+                                    li_vec.join("") 
+                                })
+                                .commit()
+                            ;
+                            list_vec.push(item_bucket.get_html());
+                        }
+                        list_vec.join("")
+                    })
+                    .commit()
+                ;
+
+                // s_guest_input_form
+                mini_root
+                    .select(SelectOptions { 
+                        element_name: "s_guest_input_form", 
+                        attrs: None, 
+                        is_attrs_check_string_contain: true, 
+                    })
+                    .replacer(move |_, matched_str_unwrap| {
+                        let is_guest = Rc::clone(&is_guest);
+                        let mut result = matched_str_unwrap.unwrap();
+                        result = result.replace(r#"[##_guest_input_comment_##]"#, "comment");
+                        result = result.replace(r#"[##_guest_onclick_submit_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#);
+
+                        let mini_root = Bucket::new(&result);
+
+                        // s_guest_form
+                        mini_root
+                            .select(SelectOptions {
+                                element_name: "s_guest_form",
+                                attrs: None,
+                                is_attrs_check_string_contain: true,
+                            })
+                            .replacer(move |_, matched_str_unwrap| {
+                                let is_guest = Rc::clone(&is_guest);
+                                if let Some(v) = is_guest.deref() {
+                                    if v != &true {
+                                        return String::new();
+                                    }
+                                }
+
+                                let mut result = matched_str_unwrap.unwrap();
+                                result = result.replace(r#"[##_guest_input_name_##]"#, r#"name"#);
+                                result = result.replace(r#"[##_guest_name_##]"#, r#""#);
+                                result = result.replace(r#"[##_guest_input_password_##]"#, r#"password"#);
+                                result = result.replace(r#"[##_guest_password_##]"#, r#""#);
+                                result
+                            })
+                            .commit()
+                        ;
+
+                        // s_rp_member
+                        mini_root
+                            .select(SelectOptions {
+                                element_name: "s_rp_member",
+                                attrs: None,
+                                is_attrs_check_string_contain: true,
+                            })
+                            .replacer(move |_, matched_str_unwrap| {
+                                let mut result = matched_str_unwrap.unwrap();
+                                result = result.replace(r#"[##_rp_input_is_secret_##]"#, r#"secret"#);
+                                result
+                            })
+                            .commit()
+                        ;
+
+                        mini_root.get_html()
+                    })
+                    .commit()
+                ;
+
+                mini_root.get_html()
             })
             .commit()
         ;
@@ -725,6 +878,7 @@ impl Replacer {
         let post_select_option = option.apply_index_list_option.post_select_option.clone().unwrap();
         let apply_guest_book_option = ApplyGuestBookOptions {
             is_hide: true,
+            guestbook_select_option: None,
         };
         let apply_tag_list_option = ApplyTagListOptions {
             is_hide: true,
@@ -765,7 +919,8 @@ impl Replacer {
             post_select_option: None,
         });
         self.apply_guest_book(ApplyGuestBookOptions { 
-            is_hide: true 
+            is_hide: true,
+            guestbook_select_option: None,
         });
         self.apply_tag_list(ApplyTagListOptions { 
             is_hide: false,
@@ -773,6 +928,40 @@ impl Replacer {
         self.apply_pagination(ApplyPaginationOptions { 
             is_hide: true, 
             pagination_info: None 
+        });
+        &self
+    }
+
+    pub fn apply_guestbook_page(&self, option: ApplyGuestbookPageOptions) -> &Self {
+        let guestbook_select_option: GuestbookSelectOption = option.guestbook_select_option;
+
+        self.apply_common(ApplyCommonOptions { 
+            search: String::new(), 
+            body_id: String::from("tt-body-guestbook"),
+        });
+        self.apply_home_cover();
+        self.apply_index_list(ApplyIndexListOptions {
+            is_hide: true,
+            post_select_option: None,
+        });
+        self.apply_guest_book(ApplyGuestBookOptions { 
+            is_hide: false, 
+            guestbook_select_option: Some(guestbook_select_option.clone()),
+        });
+        self.apply_tag_list(ApplyTagListOptions { 
+            is_hide: true,
+        });
+        let mut guestbook_select_option_clone = guestbook_select_option.clone();
+        guestbook_select_option_clone.set_size(None);
+        guestbook_select_option_clone.set_page(None);
+        self.apply_pagination(ApplyPaginationOptions {
+            is_hide: false,
+            pagination_info: Some(PaginationInfo {
+                base_url: option.base_url,
+                total_count: self.config.get_guestbooks(Some(guestbook_select_option_clone)).len(),
+                page: guestbook_select_option.page.unwrap(),
+                size: guestbook_select_option.size.unwrap(),
+            }),
         });
         &self
     }
@@ -793,6 +982,11 @@ pub struct ApplyIndexPageOptions {
     // pub apply_pagination: ApplyPaginationOptions,
 }
 
+pub struct ApplyGuestbookPageOptions {
+    pub base_url: String,
+    pub guestbook_select_option: GuestbookSelectOption,
+}
+
 pub struct ApplyIndexListOptions {
     pub is_hide: bool,
     pub post_select_option: Option<PostSelectOption>,
@@ -800,6 +994,7 @@ pub struct ApplyIndexListOptions {
 
 pub struct ApplyGuestBookOptions {
     pub is_hide: bool,
+    pub guestbook_select_option: Option<GuestbookSelectOption>,
 }
 
 pub struct ApplyTagListOptions {

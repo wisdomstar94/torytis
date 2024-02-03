@@ -1,5 +1,7 @@
 use std::{env, path::PathBuf, fs};
 
+use chrono::NaiveDateTime;
+
 pub fn get_working_dir_path_buf() -> PathBuf {
     env::current_dir().unwrap()
 }
@@ -108,4 +110,9 @@ pub fn get_pagination_calculate(total_count: usize, page: u32, size: u32) -> Pag
         center_page_num_list,
         best_right_num,
     }
+}
+
+pub fn date_format(datetime_str: &str, format: &str) -> String {
+    let time = NaiveDateTime::parse_from_str(datetime_str, "%Y-%m-%d %H:%M:%S").unwrap().format(format).to_string();
+    time
 }

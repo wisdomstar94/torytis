@@ -9,6 +9,7 @@ use crate::common::{get_index_xml_content, get_torytis_dev_config_json_content};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct TorytisDevConfig {
+    is_guest: Option<bool>,
     blog_title: Option<String>,
     blog_description: Option<String>,
     visitor: Option<Visitor>,
@@ -17,6 +18,7 @@ pub struct TorytisDevConfig {
     skin_home_cover: Option<SkinHomeCover>,
     category_list: Option<Vec<Category>>,
     skin_setting_variables: Option<HashMap<String, String>>,
+    guestbook_list: Option<Vec<GuestBook>>,
 }
 
 impl TorytisDevConfig {
@@ -29,6 +31,20 @@ impl TorytisDevConfig {
 
     pub fn get_clone_rc(&self) -> Rc<Self> {
         Rc::new(self.clone())
+    }
+
+    pub fn get_is_guest(&self) -> Option<bool> {
+        self.is_guest.clone()
+    }
+
+    pub fn get_guestbook_list(&self) -> Vec<GuestBook> {
+        let mut result: Vec<GuestBook> = Vec::new();
+        if let Some(guestbook_list) = &self.guestbook_list {
+            for item in guestbook_list {
+                result.push(item.clone());
+            }
+        }
+        result
     }
 
     pub fn get_blog_title(&self) -> Option<&str> {
@@ -342,6 +358,33 @@ impl TorytisDevConfig {
         posts
     }
 
+    pub fn get_guestbooks(&self, select_option: Option<GuestbookSelectOption>) -> Vec<GuestBook> {
+        let mut result: Vec<GuestBook> = Vec::new();
+        if let Some(v) = &self.guestbook_list {
+            let filterd_iter = v.iter().map(|s| s.clone());
+            let mut filterd_vec = filterd_iter.collect::<Vec<GuestBook>>();
+            if let Some(select_option) = select_option {
+                if let (Some(page), Some(size)) = (select_option.page, select_option.size) {
+                    let start_index = (page - 1) * size;
+                    let end_index = start_index + size - 1;
+                    let filterd_vec_clone = filterd_vec.clone();
+                    // println!("start_index: {}, end_index: {}", start_index, end_index);
+                    filterd_vec = Vec::new();
+                    let mut index = 0;
+                    for item in filterd_vec_clone {
+                        if index >= start_index && index <= end_index {
+                            filterd_vec.push(item);      
+                        }
+                        index += 1;
+                    }
+                    // println!("filterd_vec: {:#?}", filterd_vec);
+                }
+            }
+            result = filterd_vec;
+        }
+        result
+    }
+
     pub fn get_tag_unique_list(&self) -> Vec<String> {
         let mut result: Vec<String> = Vec::new();
         let posts = self.get_posts(None);
@@ -584,6 +627,22 @@ impl PostSelectOption {
 }
 
 #[derive(Deserialize, Debug, Clone)]
+pub struct GuestbookSelectOption {
+    pub page: Option<u32>,
+    pub size: Option<u32>,
+}
+
+impl GuestbookSelectOption {
+    pub fn set_page(&mut self, p: Option<u32>) {
+        self.page = p;
+    }
+
+    pub fn set_size(&mut self, s: Option<u32>) {
+        self.size = s;
+    }
+}
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct SkinVariableInfo {
     pub var_label: String,
     pub var_description: String,
@@ -632,4 +691,14 @@ pub fn get_skin_variable_info_map() -> HashMap<String, SkinVariableInfo> {
         }
     }
     result
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct GuestBook {
+    pub name: Option<String>,
+    pub guest_rep_id: Option<String>,
+    pub guest_rep_logo: Option<String>,
+    pub created_at: Option<String>,
+    pub content: Option<String>,
+    pub guestbook_list: Option<Vec<GuestBook>>,
 }
