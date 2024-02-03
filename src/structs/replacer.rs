@@ -2,7 +2,7 @@ use std::{ops::Deref, rc::Rc};
 use chrono::NaiveDateTime;
 use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
 
-use crate::{common::get_pagination_calculate, structs::torytis_dev_config::{Post, TorytisDevConfig}, sub_commands::c_new};
+use crate::{common::get_pagination_calculate, structs::torytis_dev_config::{Post, TorytisDevConfig}};
 
 use super::torytis_dev_config::{get_skin_variable_info_map, PostSelectOption};
 
@@ -24,10 +24,10 @@ impl Replacer {
         let mut skin_variable_info_map = get_skin_variable_info_map();
 
         let skin_setting_variables = config.get_skin_setting_variables();
-        for (key, info) in skin_variable_info_map.drain() {
+        for (_, info) in skin_variable_info_map.drain() {
             let mut seted_value: Option<String> = None;
             if let Some(hashmap) = &skin_setting_variables {
-                if let Some(sv) = hashmap.get(&key) {
+                if let Some(sv) = hashmap.get(&info.var_name) {
                     seted_value = Some(sv.clone());
                 }
             }
