@@ -1,6 +1,6 @@
 use axum::{body::Body, extract::{Path, Request}, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
-use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestBookOptions, ApplyIndexListOptions, ApplyIndexPageOptions, ApplyTagListOptions, Replacer}, torytis_dev_config::PostSelectOption}};
+use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOptions, ApplyIndexPageOptions, Replacer}, torytis_dev_config::PostSelectOption}};
 
 pub fn routes() -> Router {
     Router::new()
@@ -48,6 +48,7 @@ async fn tag_post_index_route(Path(tag_name): Path<String>, req: Request) -> Res
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
     replacer.apply_index_page(ApplyIndexPageOptions {
+        search_keyword: String::from(""),
         base_url: format!(r#"/tag/{}"#, tag_name),
         body_id: String::from("tt-body-tag"),
         apply_index_list_option: ApplyIndexListOptions {
@@ -59,6 +60,7 @@ async fn tag_post_index_route(Path(tag_name): Path<String>, req: Request) -> Res
                 category_name: None,
                 sub_category_name: None,
                 tag_name: Some(tag_name),
+                title: None,
             }),
         },
     });

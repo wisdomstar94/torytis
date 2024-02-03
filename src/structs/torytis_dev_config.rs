@@ -1,11 +1,11 @@
-use std::{collections::HashMap, hash::Hash, ops::Deref, rc::Rc};
+use std::{collections::HashMap, ops::Deref, rc::Rc};
 
 use chrono::NaiveDateTime;
 use html_regex::{Bucket, SelectOptions};
 use serde::Deserialize;
 use xmltree::Element;
 
-use crate::common::{get_index_xml_content, get_skin_html_content, get_torytis_dev_config_json_content};
+use crate::common::{get_index_xml_content, get_torytis_dev_config_json_content};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct TorytisDevConfig {
@@ -216,6 +216,7 @@ impl TorytisDevConfig {
             category_name: None, 
             sub_category_name: None,
             tag_name: None,
+            title: None,
         }));
         if let Some(v) = list {
             result = Some(v.iter().take(5).map(|s| s.clone()).collect::<Vec<Post>>())
@@ -292,6 +293,15 @@ impl TorytisDevConfig {
                         required_option_count += 1;
                         if let Some(this_tag_list) = &x.tag_list {
                             if this_tag_list.contains(tag_name) {
+                                required_option_matched_count += 1;
+                            }
+                        }
+                    }
+
+                    if let Some(title) = &select_option.title {
+                        required_option_count += 1;
+                        if let Some(this_title) = &x.title {
+                            if this_title.contains(title) {
                                 required_option_matched_count += 1;
                             }
                         }
@@ -560,6 +570,7 @@ pub struct PostSelectOption {
     pub category_name: Option<String>,
     pub sub_category_name: Option<String>,
     pub tag_name: Option<String>,
+    pub title: Option<String>,
 }
 
 impl PostSelectOption {

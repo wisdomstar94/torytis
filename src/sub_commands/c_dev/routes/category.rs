@@ -1,6 +1,6 @@
 use axum::{body::Body, extract::{Path, Request}, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
-use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestBookOptions, ApplyIndexListOptions, ApplyIndexPageOptions, ApplyTagListOptions, Replacer}, torytis_dev_config::PostSelectOption}};
+use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOptions, ApplyIndexPageOptions, Replacer}, torytis_dev_config::PostSelectOption}};
 
 pub fn routes() -> Router {
     Router::new()
@@ -35,6 +35,7 @@ async fn root_route(req: Request) -> Response {
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
     replacer.apply_index_page(ApplyIndexPageOptions {
+        search_keyword: String::from(""),
         base_url: format!(r#"/category"#),
         body_id: String::from("tt-body-category"),
         apply_index_list_option: ApplyIndexListOptions {
@@ -46,6 +47,7 @@ async fn root_route(req: Request) -> Response {
                 category_name: None,
                 sub_category_name: None,
                 tag_name: None,
+                title: None,
             }),
         },
     });
@@ -77,6 +79,7 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
     replacer.apply_index_page(ApplyIndexPageOptions {
+        search_keyword: String::from(""),
         base_url: format!(r#"/category/{}"#, category_name),
         body_id: String::from("tt-body-category"),
         apply_index_list_option: ApplyIndexListOptions {
@@ -88,6 +91,7 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
                 category_name: Some(category_name.clone()),
                 sub_category_name: None,
                 tag_name: None,
+                title: None,
             }),
         },
     });
@@ -119,6 +123,7 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
     replacer.apply_index_page(ApplyIndexPageOptions {
+        search_keyword: String::from(""),
         base_url: format!(r#"/category/{}/{}"#, category_name, sub_category_name),
         body_id: String::from("tt-body-category"),
         apply_index_list_option: ApplyIndexListOptions {
@@ -130,6 +135,7 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
                 category_name: Some(category_name.clone()),
                 sub_category_name: Some(sub_category_name.clone()),
                 tag_name: None,
+                title: None,
             }),
         },
     });

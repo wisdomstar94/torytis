@@ -731,7 +731,7 @@ impl Replacer {
         };
 
         self.apply_common(ApplyCommonOptions { 
-            search: String::new(), 
+            search: option.search_keyword, 
             body_id: option.body_id,
         });
         self.apply_home_cover();
@@ -784,6 +784,7 @@ struct ApplyCommonOptions {
 }
 
 pub struct ApplyIndexPageOptions {
+    pub search_keyword: String,
     pub base_url: String,
     pub body_id: String,
     pub apply_index_list_option: ApplyIndexListOptions,
