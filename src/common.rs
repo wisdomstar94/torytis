@@ -63,12 +63,12 @@ pub fn get_pagination_calculate(total_count: usize, page: u32, size: u32) -> Pag
 
     let temp: i32 = center_center as i32 - 3;
     if temp <= 2 {
-        let mut current_page = &center_center - 1;
+        let mut current_page: i32 = center_center.clone() as i32 - 1 as i32;
         loop {
-            if current_page == 0 {
+            if current_page <= 0 {
                 break;
             }
-            center_left_vec.push(current_page);
+            center_left_vec.push(current_page as u32);
             current_page -= 1;
         }
         center_left_vec.reverse();
@@ -95,7 +95,7 @@ pub fn get_pagination_calculate(total_count: usize, page: u32, size: u32) -> Pag
     } else {
         let temp: Vec<u32> = vec![center_center + 1, center_center + 2, center_center + 3];
         for index in temp {
-            center_left_vec.push(index);
+            center_right_vec.push(index);
         }
         best_right_num = Some(max_page_num);
     }
