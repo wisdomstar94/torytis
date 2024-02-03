@@ -214,7 +214,8 @@ impl TorytisDevConfig {
             size: None, 
             post_type: Some(PostType::Notice), 
             category_name: None, 
-            sub_category_name: None 
+            sub_category_name: None,
+            tag_name: None,
         }));
         if let Some(v) = list {
             result = Some(v.iter().take(5).map(|s| s.clone()).collect::<Vec<Post>>())
@@ -282,6 +283,15 @@ impl TorytisDevConfig {
                         let category_name = select_option.category_name.as_ref().unwrap();
                         if let Some(this_category_name) = &x.category_name {
                             if this_category_name.as_str() == category_name.as_str() || this_category_name.as_str().contains(format!(r#"{}///"#, category_name.as_str()).as_str()) {
+                                required_option_matched_count += 1;
+                            }
+                        }
+                    }
+
+                    if let Some(tag_name) = &select_option.tag_name {
+                        required_option_count += 1;
+                        if let Some(this_tag_list) = &x.tag_list {
+                            if this_tag_list.contains(tag_name) {
                                 required_option_matched_count += 1;
                             }
                         }
@@ -549,6 +559,7 @@ pub struct PostSelectOption {
     pub post_type: Option<PostType>,
     pub category_name: Option<String>,
     pub sub_category_name: Option<String>,
+    pub tag_name: Option<String>,
 }
 
 impl PostSelectOption {

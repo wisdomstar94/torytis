@@ -43,6 +43,7 @@ async fn root_route(req: Request) -> Response {
                 post_type: None,
                 category_name: None,
                 sub_category_name: None,
+                tag_name: None,
             }),
         },
         apply_guest_book_option: ApplyGuestBookOptions {

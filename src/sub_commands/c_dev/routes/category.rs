@@ -45,6 +45,7 @@ async fn root_route(req: Request) -> Response {
                 post_type: None,
                 category_name: None,
                 sub_category_name: None,
+                tag_name: None,
             }),
         },
         apply_guest_book_option: ApplyGuestBookOptions {
@@ -92,6 +93,7 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
                 post_type: None,
                 category_name: Some(category_name.clone()),
                 sub_category_name: None,
+                tag_name: None,
             }),
         },
         apply_guest_book_option: ApplyGuestBookOptions {
@@ -139,6 +141,7 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
                 post_type: None,
                 category_name: Some(category_name.clone()),
                 sub_category_name: Some(sub_category_name.clone()),
+                tag_name: None,
             }),
         },
         apply_guest_book_option: ApplyGuestBookOptions {
