@@ -240,9 +240,9 @@ impl TorytisDevConfig {
         result
     }
 
-    pub fn get_post_id_from_comment_id(&self, comment_id: &str) -> Option<String> {
+    pub fn get_post_id_from_comment_id(posts: Option<Vec<Post>>, comment_id: &str) -> Option<String> {
         let mut result: Option<String> = None;
-        let posts = self.posts.clone().unwrap_or_else(|| vec![]);
+        let posts = posts.clone().unwrap_or_else(|| vec![]);
         for post in posts {
             let post_id = post.post_id.unwrap_or_else(|| String::new());
             for parent_comment in post.comment_list.unwrap_or_else(|| vec![]) {

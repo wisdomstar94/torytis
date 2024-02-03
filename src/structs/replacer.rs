@@ -242,6 +242,8 @@ impl Replacer {
         let options_search = options.search;
         let body_id = options.body_id;
 
+        let total_posts = Rc::new(self.config.get_posts(None));
+
         root
             .html_str_replace(|html| {
                 html.replace(r#"[##_body_id_##]"#, &body_id)
@@ -301,6 +303,7 @@ impl Replacer {
                     })
                 ;
 
+                let total_posts = Rc::clone(&total_posts);
                 // 최근 댓글
                 s_sidebar_element_unwrap
                     .select(SelectOptions {
@@ -318,6 +321,9 @@ impl Replacer {
                             let name = item.name.as_ref().unwrap().to_owned();
                             let time = item.datetime.as_ref().unwrap().to_owned();
                             let desc = item.content.as_ref().unwrap().to_owned();
+                            let total_posts = Rc::clone(&total_posts);
+                            let target_post_id = TorytisDevConfig::get_post_id_from_comment_id(total_posts.deref().clone(), item.comment_id.clone().unwrap().as_str()).unwrap();
+                            let post_url = format!("/{}#{}", target_post_id, item.comment_id.clone().unwrap().as_str());
                             bucket
                                 .html_str_replace(|s| {
                                     s.replace(r#"[##_rctrp_rep_name_##]"#, &name)
@@ -325,6 +331,9 @@ impl Replacer {
                                 .html_str_replace(|s| {
                                     let time = NaiveDateTime::parse_from_str(&time, "%Y-%m-%d %H:%M:%S").unwrap().format("%m.%d").to_string();
                                     s.replace(r#"[##_rctrp_rep_time_##]"#, &time)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctrp_rep_link_##]"#, post_url.as_str())
                                 })
                                 .html_str_replace(|s| {
                                     s.replace(r#"[##_rctrp_rep_desc_##]"#, &desc)
