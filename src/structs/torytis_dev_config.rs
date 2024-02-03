@@ -1,11 +1,11 @@
-use std::{ops::Deref, rc::Rc};
+use std::{collections::HashMap, hash::Hash, ops::Deref, rc::Rc};
 
 use chrono::NaiveDateTime;
 use html_regex::{Bucket, SelectOptions};
 use serde::Deserialize;
 use xmltree::Element;
 
-use crate::common::{get_index_xml_content, get_torytis_dev_config_json_content};
+use crate::common::{get_index_xml_content, get_skin_html_content, get_torytis_dev_config_json_content};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct TorytisDevConfig {
@@ -16,6 +16,7 @@ pub struct TorytisDevConfig {
     // recent_comment_list: Option<Vec<RecentComment>>,
     skin_home_cover: Option<SkinHomeCover>,
     category_list: Option<Vec<Category>>,
+    skin_setting_variables: Option<HashMap<String, String>>,
 }
 
 impl TorytisDevConfig {
@@ -208,7 +209,13 @@ impl TorytisDevConfig {
 
     pub fn get_recent_notice_list(&self) -> Option<Vec<Post>> {
         let mut result:Option<Vec<Post>> = None;
-        let list = self.get_posts(Some(&PostType::Notice));
+        let list = self.get_posts(Some(PostSelectOption { 
+            page: None, 
+            size: None, 
+            post_type: Some(PostType::Notice), 
+            category_name: None, 
+            sub_category_name: None 
+        }));
         if let Some(v) = list {
             result = Some(v.iter().take(5).map(|s| s.clone()).collect::<Vec<Post>>())
         }
@@ -239,18 +246,78 @@ impl TorytisDevConfig {
         result
     }
 
-    pub fn get_posts(&self, post_type: Option<&PostType>) -> Option<Vec<Post>> {
+    pub fn get_posts(&self, select_option: Option<PostSelectOption>) -> Option<Vec<Post>> {
+        // println!("**get_posts.select_option {:#?}", select_option);
         let mut posts: Option<Vec<Post>> = None;
         if let Some(v) = &self.posts {
             let v = v.clone();
             let filterd_iter = v.iter().filter(|x| -> bool {
+                let mut required_option_count = 0;
+                let mut required_option_matched_count = 0;
                 let mut is_allow = true;
-                if let (Some(pt), Some(pp)) = (post_type, &x.post_type) {
-                    is_allow = pt.is_equal(pp);
+
+                if let Some(select_option) = &select_option {
+                    if let Some(post_type) = &select_option.post_type {
+                        required_option_count += 1;
+                        if let Some(this_post_type) = &x.post_type {
+                            if post_type.is_equal(&this_post_type) {
+                                required_option_matched_count += 1;
+                            }
+                        }
+                    }
+                    if select_option.category_name.is_some() && select_option.sub_category_name.is_some() {
+                        required_option_count += 1;
+                        let category_name = select_option.category_name.as_ref().unwrap();
+                        let sub_category_name = select_option.sub_category_name.as_ref().unwrap();
+                        if let Some(this_category_name) = &x.category_name {
+                            let category_info: Vec<&str> = this_category_name.split("///").collect();
+                            if let (Some(cn), Some(scn)) = (category_info.get(0), category_info.get(1)) {
+                                if *cn == category_name.as_str() && *scn == sub_category_name.as_str() {
+                                    required_option_matched_count += 1;
+                                }
+                            }
+                        }
+                    } else if select_option.category_name.is_some() && select_option.sub_category_name.is_none() {
+                        required_option_count += 1;
+                        let category_name = select_option.category_name.as_ref().unwrap();
+                        if let Some(this_category_name) = &x.category_name {
+                            if this_category_name.as_str() == category_name.as_str() {
+                                required_option_matched_count += 1;
+                            }
+                        }
+                    }
                 }
+
+                if required_option_count > 0 {
+                    is_allow = required_option_count == required_option_matched_count;
+                }
+
+                // if let (Some(pt), Some(pp)) = (post_type, &x.post_type) {
+                //     is_allow = pt.is_equal(pp);
+                // }
                 is_allow
             }).map(|z| z.clone());
-            posts = Some(filterd_iter.collect::<Vec<Post>>());
+            let mut filterd_vec: Vec<Post> = filterd_iter.collect::<Vec<Post>>();
+            
+            if let Some(select_option) = select_option {
+                if let (Some(page), Some(size)) = (select_option.page, select_option.size) {
+                    let start_index = (page - 1) * size;
+                    let end_index = start_index + size - 1;
+                    let filterd_vec_clone = filterd_vec.clone();
+                    // println!("start_index: {}, end_index: {}", start_index, end_index);
+                    filterd_vec = Vec::new();
+                    let mut index = 0;
+                    for item in filterd_vec_clone {
+                        if index >= start_index && index <= end_index {
+                            filterd_vec.push(item);      
+                        }
+                        index += 1;
+                    }
+                    // println!("filterd_vec: {:#?}", filterd_vec);
+                }
+            }
+
+            posts = Some(filterd_vec);
         }
         posts
     }
@@ -286,6 +353,10 @@ impl TorytisDevConfig {
             p.category_name.clone().unwrap() == category_name
         }).map(|s| s.clone()).collect::<Vec<Post>>();
         result
+    }
+
+    pub fn get_skin_setting_variables(&self) -> Option<HashMap<String, String>> {
+        self.skin_setting_variables.clone()
     }
 
     pub fn valid_check(&self) {
@@ -355,6 +426,7 @@ pub struct Comment {
 pub enum PostType {
     Normal,
     Notice,
+    Protected,
 }
 
 impl PostType {
@@ -367,6 +439,11 @@ impl PostType {
             },
             PostType::Notice => {
                 if let PostType::Notice = p {
+                    return true;
+                }
+            },
+            PostType::Protected => {
+                if let PostType::Protected = p {
                     return true;
                 }
             },
@@ -445,4 +522,64 @@ pub struct XmlCoverItem {
     pub name: String,
     pub label: String,
     pub description: String,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct PostSelectOption {
+    pub page: Option<u32>,
+    pub size: Option<u32>,
+    pub post_type: Option<PostType>,
+    pub category_name: Option<String>,
+    pub sub_category_name: Option<String>,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct SkinVariableInfo {
+    pub var_label: String,
+    pub var_description: String,
+    pub var_name: String,
+    pub var_code_name: String,
+    pub var_type: String,
+    pub default: Option<String>,
+}   
+
+pub fn get_skin_variable_info_map() -> HashMap<String, SkinVariableInfo> {
+    let mut result: HashMap<String, SkinVariableInfo> = HashMap::new();
+    let index_xml_content = get_index_xml_content();
+
+    let element = Element::parse(index_xml_content.as_bytes()).unwrap();
+    let variables = element.get_child("variables").unwrap();
+    let variables_list = &variables.children;
+    for variable_group in variables_list {
+        if let Some(variable_group_element) = variable_group.as_element() {
+            let variable = &variable_group_element.children;
+            for item in variable {
+                if let Some(variable_element) = item.as_element() {
+                    let name = variable_element.get_child("name").unwrap().get_text().unwrap().to_string();
+                    let label = variable_element.get_child("label").unwrap().get_text().unwrap().to_string();
+                    let description = variable_element.get_child("description").unwrap().get_text().unwrap().to_string();
+                    let r#type = variable_element.get_child("type").unwrap().get_text().unwrap().to_string();
+                    let mut default: Option<String> = None;
+                    if let Some(variable_element) = variable_element.get_child("default") {
+                        if let Some(text) = variable_element.get_text() {
+                            default = Some(text.to_string());
+                        }
+                    }
+                    let var_code_name = format!("[##_var_{}_##]", name);
+                    result.insert(
+                        var_code_name.to_owned(), 
+                        SkinVariableInfo { 
+                            var_label: label,
+                            var_description: description,
+                            var_name: name,
+                            var_code_name,
+                            var_type: r#type,
+                            default,
+                        }
+                    );
+                }
+            }
+        }
+    }
+    result
 }

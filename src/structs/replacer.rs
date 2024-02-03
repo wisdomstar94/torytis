@@ -1,20 +1,220 @@
 use std::{ops::Deref, rc::Rc};
 use chrono::NaiveDateTime;
-use html_regex::{Bucket, SelectOptions};
+use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
 
-use crate::structs::torytis_dev_config::TorytisDevConfig;
+use crate::{common::get_pagination_calculate, structs::torytis_dev_config::{Post, TorytisDevConfig}, sub_commands::c_new};
+
+use super::torytis_dev_config::{get_skin_variable_info_map, PostSelectOption};
 
 pub struct Replacer {
     root: Rc<Bucket>,
     config: TorytisDevConfig,
+    s_article_index_rep_template: String,
+    s_article_permalink_rep_template: String,
+    s_notice_index_rep_template: String,
+    s_notice_permalink_rep_template: String,
+    s_article_protected_index_rep_template: String,
+    s_article_protected_permalink_rep_template: String,
 }
 
 impl Replacer {
     pub fn new(html: &str) -> Self {
-        Self {
-            root: Bucket::new(html),
-            config: TorytisDevConfig::new(),
+        let config = TorytisDevConfig::new();
+        let mut result = html.to_owned();
+        let mut skin_variable_info_map = get_skin_variable_info_map();
+
+        let skin_setting_variables = config.get_skin_setting_variables();
+        for (key, info) in skin_variable_info_map.drain() {
+            let mut seted_value: Option<String> = None;
+            if let Some(hashmap) = &skin_setting_variables {
+                if let Some(sv) = hashmap.get(&key) {
+                    seted_value = Some(sv.clone());
+                }
+            }
+            let default: Option<String> = info.default;
+            let mut this_var_value: Option<String> = None;
+            if let Some(v) = seted_value {
+                this_var_value = Some(v);
+            } else if let Some(v) = default {
+                this_var_value = Some(v);
+            }
+
+            let if_tag_name = format!("s_if_var_{}", info.var_name);
+            let not_tag_name = format!("s_not_var_{}", info.var_name);
+            if let Some(v) = this_var_value {
+                result = result.replace(info.var_code_name.as_str(), v.as_str());
+                let root = Bucket::new(&result);
+                root
+                    .select(SelectOptions { 
+                        element_name: if_tag_name.as_str(),
+                        attrs: None,
+                        is_attrs_check_string_contain: true, 
+                    })
+                    .replacer(|_, matched_str_unwarp| {
+                        matched_str_unwarp.unwrap()
+                    })
+                    .commit()
+                ;
+                root
+                    .select(SelectOptions { 
+                        element_name: not_tag_name.as_str(),
+                        attrs: None,
+                        is_attrs_check_string_contain: true, 
+                    })
+                    .replacer(|_, _| {
+                        String::new()
+                    })  
+                    .commit()
+                ;
+                result = root.get_html();
+            } else {
+                let root = Bucket::new(&result);
+                root
+                    .select(SelectOptions { 
+                        element_name: if_tag_name.as_str(),
+                        attrs: None,
+                        is_attrs_check_string_contain: true, 
+                    })
+                    .replacer(|_, _| {
+                        String::new()
+                    })
+                    .commit()
+                ;
+                root
+                    .select(SelectOptions { 
+                        element_name: not_tag_name.as_str(),
+                        attrs: None,
+                        is_attrs_check_string_contain: true, 
+                    })  
+                    .replacer(|_, matched_str_unwarp| {
+                        matched_str_unwarp.unwrap()
+                    })
+                    .commit()
+                ;
+                result = root.get_html();
+            }
         }
+
+        let mut s_article_index_rep_template: String = String::new();
+        let mut s_article_permalink_rep_template: String = String::new();
+        let mut s_notice_index_rep_template: String = String::new();
+        let mut s_notice_permalink_rep_template: String = String::new();
+        let mut s_article_protected_index_rep_template: String = String::new();
+        let mut s_article_protected_permalink_rep_template: String = String::new();
+
+        // s_article_rep
+        let s_article_rep = select_from_html_string_one(&result, &SelectOptions {
+            element_name: "s_article_rep",
+            attrs: None,
+            is_attrs_check_string_contain: true
+        });
+        if let Some(s_article_rep) = s_article_rep {
+            let index_template = select_from_html_string_one(&s_article_rep, &SelectOptions {
+                element_name: "s_index_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            }); 
+            if let Some(index_template) = index_template {
+                s_article_index_rep_template = html_string_root_element_unwrap(&index_template, "s_index_article_rep");
+            }
+            let permalink_template = select_from_html_string_one(&s_article_rep, &SelectOptions {
+                element_name: "s_permalink_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            }); 
+            if let Some(permalink_template) = permalink_template {
+                s_article_permalink_rep_template = html_string_root_element_unwrap(&permalink_template, "s_permalink_article_rep");
+            }
+            result = result.replace(s_article_rep.as_str(), "<s_article_rep></s_article_rep>");
+        }
+
+        // s_notice_rep
+        let s_notice_rep = select_from_html_string_one(&result, &SelectOptions {
+            element_name: "s_notice_rep",
+            attrs: None,
+            is_attrs_check_string_contain: true
+        });
+        if let Some(s_notice_rep) = s_notice_rep {
+            let index_template = select_from_html_string_one(&s_notice_rep, &SelectOptions {
+                element_name: "s_index_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            }); 
+            if let Some(index_template) = index_template {
+                s_notice_index_rep_template = html_string_root_element_unwrap(&index_template, "s_index_article_rep");
+                // println!("s_notice_index_rep_template {}", s_notice_index_rep_template);
+            }
+            let permalink_template = select_from_html_string_one(&s_notice_rep, &SelectOptions {
+                element_name: "s_permalink_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            }); 
+            if let Some(permalink_template) = permalink_template {
+                // println!("notice permalink_template {}", permalink_template);
+                s_notice_permalink_rep_template = html_string_root_element_unwrap(&permalink_template, "s_permalink_article_rep");
+                // println!("s_notice_permalink_rep_template {}", s_notice_permalink_rep_template);
+            }
+            // let is_matched = result.matches(s_notice_rep.as_str()).count() > 0;
+            // println!("@@@@@@@ s_notice_rep {}", s_notice_rep);
+            // println!("@@@@@@@ is_matched {}", is_matched);
+            result = result.replace(s_notice_rep.as_str(), "");
+        }
+
+        // s_article_protected
+        let s_article_protected = select_from_html_string_one(&result, &SelectOptions {
+            element_name: "s_article_protected",
+            attrs: None,
+            is_attrs_check_string_contain: true
+        });
+        if let Some(s_article_protected) = s_article_protected {
+            let index_template = select_from_html_string_one(&s_article_protected, &SelectOptions {
+                element_name: "s_index_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            }); 
+            if let Some(index_template) = index_template {
+                s_article_protected_index_rep_template = html_string_root_element_unwrap(&index_template, "s_index_article_rep");
+            }
+            let permalink_template = select_from_html_string_one(&s_article_protected, &SelectOptions {
+                element_name: "s_permalink_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            }); 
+            if let Some(permalink_template) = permalink_template {
+                s_article_protected_permalink_rep_template = html_string_root_element_unwrap(&permalink_template, "s_permalink_article_rep");
+            }
+            result = result.replace(s_article_protected.as_str(), "");
+        }
+
+        Self {
+            root: Bucket::new(&result),
+            config,
+            s_article_index_rep_template,
+            s_article_permalink_rep_template,
+            s_notice_index_rep_template,
+            s_notice_permalink_rep_template,
+            s_article_protected_index_rep_template,
+            s_article_protected_permalink_rep_template,
+        }
+    }
+
+    pub fn get_s_article_index_rep_template(&self) -> String {
+        self.s_article_index_rep_template.clone()
+    }
+    pub fn get_s_article_permalink_rep_template(&self) -> String {
+        self.s_article_permalink_rep_template.clone()
+    }
+    pub fn get_s_notice_index_rep_template(&self) -> String {
+        self.s_notice_index_rep_template.clone()
+    }
+    pub fn get_s_notice_permalink_rep_template(&self) -> String {
+        self.s_notice_permalink_rep_template.clone()
+    }
+    pub fn get_s_article_protected_index_rep_template(&self) -> String {
+        self.s_article_protected_index_rep_template.clone()
+    }
+    pub fn get_s_article_protected_permalink_rep_template(&self) -> String {
+        self.s_article_protected_permalink_rep_template.clone()
     }
 
     pub fn get_html(&self) -> String {
@@ -23,7 +223,11 @@ impl Replacer {
 }
 
 impl Replacer {
-    fn apply_common(&self, options: Option<ApplyCommonOptions>) {
+    
+}
+
+impl Replacer {
+    fn apply_common(&self, options: ApplyCommonOptions) {
         // let me = self;
         let root = Rc::clone(&self.root);
         let config = self.config.get_clone_rc();
@@ -35,13 +239,19 @@ impl Replacer {
         let recent_comment_list = Rc::new(config.get_recent_comment_list().clone().unwrap());
         let recent_notice_list = Rc::new(config.get_recent_notice_list().clone().unwrap());
 
-        let options_search = if let Some(v) = options {
-            v.search
-        } else {
-            String::new()
-        };
+        let options_search = options.search;
+        let body_id = options.body_id;
 
         root
+            .html_str_replace(|html| {
+                html.replace(r#"[##_body_id_##]"#, &body_id)
+            })
+            .html_str_replace(|html| {
+                html.replace(r#"[##_revenue_list_upper_##]"#, "")
+            })
+            .html_str_replace(|html| {
+                html.replace(r#"[##_revenue_list_lower_##]"#, "")
+            })
             .html_str_replace(|html| {
                 html.replace(r#"[##_title_##]"#, &config.get_blog_title().unwrap())
             })
@@ -193,18 +403,348 @@ impl Replacer {
             .commit()
         ;
     }
+
+    fn apply_home_cover(&self) {
+        let root = Rc::clone(&self.root);
+        // let config = self.config.get_clone_rc();
+
+        root
+            .select(SelectOptions {
+                element_name: "s_cover_group",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            })
+            .replacer(|_, _| {
+                String::new()  
+            })
+            .commit()
+        ;
+    }
+
+    fn apply_index_list(&self, option: ApplyIndexListOptions) {
+        let is_hide = option.is_hide;
+        let root = Rc::clone(&self.root);
+        // let mut post_select_option: Option<PostSelectOption> = None;
+        // if let Some(v) = option.post_select_option {
+        //     post_select_option = Some(v);
+        // }
+        let post_list = self.config.get_posts(Some(option.post_select_option));
+        // println!(">>> post_list: {:#?}", post_list);
+        let normal_index_rep_template = self.get_s_article_index_rep_template();
+        let notice_index_rep_template = self.get_s_notice_index_rep_template();
+        let protected_index_rep_template = self.get_s_article_protected_index_rep_template();
+        // println!("skin_variable_info_map {:#?}", skin_variable_info_map);
+        
+        fn common(root: &Bucket, item: Post) {
+            let thumbnail_img_url1 = item.thumbnail_img_url.as_ref().unwrap().clone();
+            let thumbnail_img_url2 = item.thumbnail_img_url.as_ref().unwrap().clone();
+            let category_name = item.category_name.as_ref().unwrap().clone();
+            let title = item.title.as_ref().unwrap().clone();
+            let datetime = item.created_at.as_ref().unwrap().clone();
+            let datetime_split: Vec<&str> = datetime.split(" ").collect();
+            let date = datetime_split.get(0).unwrap();
+            let date_split: Vec<&str> = date.split("-").collect();
+            let date_year = date_split.get(0).unwrap().to_string();
+            let date_month = date_split.get(1).unwrap().to_string();
+            let date_date = date_split.get(2).unwrap().to_string();
+            let time = datetime_split.get(1).unwrap();
+            let time_split: Vec<&str> = time.split(":").collect();
+            let time_hour = time_split.get(0).unwrap().to_string();
+            let time_minute = time_split.get(1).unwrap().to_string();
+            let time_second = time_split.get(2).unwrap().to_string();
+            let content_summary = item.get_contents_summary();
+
+            root
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_link_##]"#, format!("/{}", &item.post_id.clone().unwrap()).as_str())
+                })
+            ;
+            root
+                .select(SelectOptions {
+                    element_name: "s_article_rep_thumbnail",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let mut result = matched_str_unwrap.unwrap();
+                    result = result.replace(r#"[##_article_rep_thumbnail_url_##]"#, &thumbnail_img_url1.clone());
+                    result
+                })
+                .commit()
+            ;
+            root
+                .select(SelectOptions {
+                    element_name: "s_notice_rep_thumbnail",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let mut result = matched_str_unwrap.unwrap();
+                    result = result.replace(r#"[##_article_rep_thumbnail_url_##]"#, &thumbnail_img_url2.clone());
+                    result
+                })
+                .commit()
+            ;        
+            root
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_category_##]"#, &category_name.replace("///", "/"))
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_title_##]"#, &title)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_year_##]"#, &date_year)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_month_##]"#, &date_month)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_day_##]"#, &date_date)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_hour_##]"#, &time_hour)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_minute_##]"#, &time_minute)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_second_##]"#, &time_second)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_summary_##]"#, &content_summary)
+                })
+            ;
+        }
+
+        root
+            .select(SelectOptions {
+                element_name: "s_article_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            })
+            .replacer(move |_, _| {
+                // println!("s_article_rep.replacer called!!");
+                // let a = matched_str_unwrap.unwrap();
+                // a
+                if is_hide {
+                    return String::new();
+                }
+
+                let mut list_vec: Vec<String> = Vec::new();
+                if let Some(post_list) = &post_list {
+                    for item in post_list {
+                        match item.post_type.clone().unwrap() {
+                            // 일반 글
+                            super::torytis_dev_config::PostType::Normal => {
+                                let root = Bucket::new(&normal_index_rep_template);
+                                common(&root, item.clone());
+                                list_vec.push(root.get_html());
+                            },
+                            // 공지사항 글
+                            super::torytis_dev_config::PostType::Notice => {
+                                let root = Bucket::new(&notice_index_rep_template);
+                                common(&root, item.clone());
+                                list_vec.push(root.get_html());
+                            },
+                            // 암호로 보호된 글
+                            super::torytis_dev_config::PostType::Protected => {
+                                let root = Bucket::new(&protected_index_rep_template);
+                                common(&root, item.clone());
+                                list_vec.push(root.get_html());
+                            },
+                        }
+                    }
+                }
+                // println!("list_vec: {:#?}", list_vec);
+                list_vec.join("")
+            })
+            .commit()
+        ;
+    }
+
+    fn apply_guest_book(&self, option: ApplyGuestBookOptions) {
+        let is_hide = option.is_hide;
+        let root = Rc::clone(&self.root);
+
+        root    
+            .select(SelectOptions {
+                element_name: "s_guest",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, _| {
+                if is_hide {
+                    return String::new();
+                }
+
+                todo!()
+            })
+            .commit()
+        ;
+    }
+
+    fn apply_tag_list(&self, option: ApplyTagListOptions) {
+        let is_hide = option.is_hide;
+        let root = Rc::clone(&self.root);
+
+        root    
+            .select(SelectOptions {
+                element_name: "s_tag",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, _| {
+                if is_hide {
+                    return String::new();
+                }
+
+                todo!()
+            })
+            .commit()
+        ;
+    }
+
+    fn apply_pagination(&self, option: ApplyPaginationOptions) {
+        let is_hide = option.is_hide;
+        let root = Rc::clone(&self.root);
+        let pagination_info = Rc::new(option.pagination_info);
+        let pagination_info1 = Rc::clone(&pagination_info);
+        let pagination_info2 = Rc::clone(&pagination_info);
+
+        root    
+            .select(SelectOptions {
+                element_name: "s_paging",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, matched_str_unwrap| {
+                if is_hide {
+                    return String::new();
+                }
+
+                let mut result = matched_str_unwrap.unwrap();
+                if let Some(v) = pagination_info1.deref() {
+                    let cal = get_pagination_calculate(v.total_count, v.page, v.size);
+
+                    let mut prev_button_page = v.page - 1;
+                    if prev_button_page <= 0 {
+                        prev_button_page = 1;
+                    }
+                    result = result.replace(r#"[##_prev_page_##]"#, format!(r#" href="{}?page={}" "#, v.base_url, prev_button_page).as_str());
+
+                    let mut next_button_page = v.page + 1;
+                    if next_button_page > cal.max_page_num {
+                        next_button_page = cal.max_page_num.clone();
+                    }
+                    result = result.replace(r#"[##_next_page_##]"#, format!(r#" href="{}?page={}" "#, v.base_url, next_button_page).as_str());
+                }
+
+                result
+            })
+            .select(SelectOptions { 
+                element_name: "s_paging_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, matched_str_unwrap| {
+                let mut list_vec: Vec<String> = Vec::new();
+                let html_template = matched_str_unwrap.unwrap();
+                if let Some(v) = pagination_info2.deref() {
+                    // let mut result = html_template.clone();
+                    let cal = get_pagination_calculate(v.total_count, v.page, v.size);
+
+                    if cal.best_left_num.is_some() {
+                        let best_left_num = cal.best_left_num.unwrap();
+                        list_vec.push(html_template.clone()
+                            .replace(r#"[##_paging_rep_link_##]"#, format!(r#" href="{}?page={}" "#, v.base_url, best_left_num).as_str())
+                            .replace(r#"[##_paging_rep_link_num_##]"#, format!(r#"<span>{}</span>"#, best_left_num.to_string().as_str()).as_str())
+                        );
+                        list_vec.push(html_template.clone()
+                            .replace(r#"[##_paging_rep_link_##]"#, format!(r#""#).as_str())
+                            .replace(r#"[##_paging_rep_link_num_##]"#, format!(r#"<span>···</span>"#).as_str())
+                        );
+                    }
+
+                    for item in cal.center_page_num_list {
+                        let mut span_class = String::new();
+                        if item == v.page {
+                            span_class = String::from("selected");
+                        }
+                        list_vec.push(html_template.clone()
+                            .replace(r#"[##_paging_rep_link_##]"#, format!(r#" href="{}?page={}" "#, v.base_url, item.to_string().as_str()).as_str())
+                            .replace(r#"[##_paging_rep_link_num_##]"#, format!(r#"<span class="{}">{}</span>"#, span_class, item.to_string().as_str()).as_str())
+                        );      
+                    }
+
+                    if cal.best_right_num.is_some() {
+                        let best_right_num = cal.best_right_num.unwrap();
+                        list_vec.push(html_template.clone()
+                            .replace(r#"[##_paging_rep_link_##]"#, format!(r#""#).as_str())
+                            .replace(r#"[##_paging_rep_link_num_##]"#, format!(r#"<span>···</span>"#).as_str())
+                        );
+                        list_vec.push(html_template.clone()
+                            .replace(r#"[##_paging_rep_link_##]"#, format!(r#" href="{}?page={}" "#, v.base_url, best_right_num).as_str())
+                            .replace(r#"[##_paging_rep_link_num_##]"#, format!(r#"<span>{}</span>"#, best_right_num.to_string().as_str()).as_str())
+                        );
+                    }
+                }
+                list_vec.join("")
+            })
+            .commit()
+        ;
+    }
 } 
 
 impl Replacer {
-    pub fn apply_index_page(&self) -> &Self {
-        self.apply_common(None);
-
+    pub fn apply_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
+        self.apply_common(ApplyCommonOptions { 
+            search: String::new(), 
+            body_id: String::from("tt-body-index"),
+        });
+        self.apply_home_cover();
+        self.apply_index_list(option.apply_index_list_option);
+        self.apply_guest_book(option.apply_guest_book_option);
+        self.apply_tag_list(option.apply_tag_list_option);
+        self.apply_pagination(option.apply_pagination);
         &self
     }
 }
 
 struct ApplyCommonOptions {
     search: String,
+    body_id: String,
+}
+
+pub struct ApplyIndexPageOptions {
+    pub apply_index_list_option: ApplyIndexListOptions,
+    pub apply_guest_book_option: ApplyGuestBookOptions,
+    pub apply_tag_list_option: ApplyTagListOptions,
+    pub apply_pagination: ApplyPaginationOptions,
+}
+
+pub struct ApplyIndexListOptions {
+    pub is_hide: bool,
+    pub post_select_option: PostSelectOption,
+}
+
+pub struct ApplyGuestBookOptions {
+    pub is_hide: bool,
+}
+
+pub struct ApplyTagListOptions {
+    pub is_hide: bool,
+}
+
+pub struct ApplyPaginationOptions {
+    pub is_hide: bool,
+    pub pagination_info: Option<PaginationInfo>,
+}
+
+pub struct PaginationInfo {
+    pub base_url: String,
+    pub total_count: usize,
+    pub page: u32,
+    pub size: u32,
 }
 
 // use chrono::NaiveDateTime;

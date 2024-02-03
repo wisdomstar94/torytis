@@ -21,3 +21,4 @@ tower-http = { version = "0.5.1", features = ["fs"] }
 version-compare = "0.1.1"
 xmltree = "0.10.3"
 html_regex = { path = "./html_regex"}
+serde_qs = "0.12.0"

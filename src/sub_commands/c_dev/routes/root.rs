@@ -1,5 +1,6 @@
-use axum::{Router, routing::get, response::Response, http::StatusCode, body::Body};
-use crate::{common::get_skin_html_content, structs::replacer::Replacer};
+use axum::{body::Body, extract::Request, http::StatusCode, response::Response, routing::get, Router};
+use serde::{Serialize, Deserialize};
+use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestBookOptions, ApplyIndexListOptions, ApplyIndexPageOptions, ApplyPaginationOptions, ApplyTagListOptions, PaginationInfo, Replacer}, torytis_dev_config::{PostSelectOption, TorytisDevConfig}}};
 
 pub fn routes() -> Router {
     Router::new()
@@ -7,10 +8,58 @@ pub fn routes() -> Router {
         // .route("/style.css", get(style_css_route))
 }
 
-async fn root_route() -> Response {
+#[derive(Debug, Serialize, Deserialize)]
+struct RootPageQueryPayload {
+    page: Option<u32>,
+}
+
+async fn root_route(req: Request) -> Response {
+    let mut query_option: Option<RootPageQueryPayload> = None;
+    if let Some(query_str) = req.uri().query() {
+        if let Ok(payload) = serde_qs::from_str::<RootPageQueryPayload>(query_str) {
+          query_option = Some(payload);
+        } else {
+          println!("query_str : {:?}", query_str);
+        }
+    }
+
+    let size = 8;
+    let page = if let Some(q) = query_option {
+        q.page.unwrap_or_else(|| 1)
+    } else {
+        1
+    };
+
+    let config = TorytisDevConfig::new();
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
-    replacer.apply_index_page();
+    replacer.apply_index_page(ApplyIndexPageOptions {
+        apply_index_list_option: ApplyIndexListOptions {
+            is_hide: false,
+            post_select_option: PostSelectOption {
+                page: Some(page),
+                size: Some(size),
+                post_type: None,
+                category_name: None,
+                sub_category_name: None,
+            },
+        },
+        apply_guest_book_option: ApplyGuestBookOptions {
+            is_hide: true,
+        },
+        apply_tag_list_option: ApplyTagListOptions {
+            is_hide: true,
+        },
+        apply_pagination: ApplyPaginationOptions {
+            is_hide: false,
+            pagination_info: Some(PaginationInfo {
+                base_url: String::from("/"),
+                total_count: config.get_posts(None).unwrap_or_else(|| vec![]).len(),
+                page,
+                size,
+            }),
+        },
+    });
     // skin_html_content = replace_s_search(&skin_html_content, "");
     // skin_html_content = replace_common(&config, &skin_html_content);
     // skin_html_content = replace_home_display(&config, &skin_html_content);
