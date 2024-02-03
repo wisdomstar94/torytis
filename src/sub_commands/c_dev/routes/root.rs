@@ -46,12 +46,6 @@ async fn root_route(req: Request) -> Response {
                 tag_name: None,
             }),
         },
-        apply_guest_book_option: ApplyGuestBookOptions {
-            is_hide: true,
-        },
-        apply_tag_list_option: ApplyTagListOptions {
-            is_hide: true,
-        },
     });
     
     return Response::builder()

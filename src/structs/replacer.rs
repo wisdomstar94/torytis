@@ -2,7 +2,7 @@ use std::{ops::Deref, rc::Rc};
 use chrono::NaiveDateTime;
 use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
 
-use crate::{common::get_pagination_calculate, structs::torytis_dev_config::{Post, TorytisDevConfig}};
+use crate::{common::get_pagination_calculate, structs::torytis_dev_config::{Post, PostType, TorytisDevConfig}};
 
 use super::torytis_dev_config::{get_skin_variable_info_map, PostSelectOption};
 
@@ -436,6 +436,7 @@ impl Replacer {
         // println!("skin_variable_info_map {:#?}", skin_variable_info_map);
         
         fn common(root: &Bucket, item: Post) {
+            let post_type = &item.post_type;
             let thumbnail_img_url1 = item.thumbnail_img_url.as_ref().unwrap().clone();
             let thumbnail_img_url2 = item.thumbnail_img_url.as_ref().unwrap().clone();
             let category_name = item.category_name.as_ref().unwrap().clone();
@@ -452,11 +453,17 @@ impl Replacer {
             let time_hour = time_split.get(0).unwrap().to_string();
             let time_minute = time_split.get(1).unwrap().to_string();
             let time_second = time_split.get(2).unwrap().to_string();
-            let content_summary = item.get_contents_summary();
+            let content_summary = &item.get_contents_summary();
 
             root
                 .html_str_replace(|html| {
-                    html.replace(r#"[##_article_rep_link_##]"#, format!("/{}", &item.post_id.clone().unwrap()).as_str())
+                    let mut link = format!("/{}", &item.post_id.clone().unwrap());
+                    if let Some(v) = &post_type {
+                        if v.is_equal(&PostType::Notice) {
+                            link = format!("/notice/{}", &item.post_id.clone().unwrap());
+                        }
+                    }
+                    html.replace(r#"[##_article_rep_link_##]"#, link.as_str())
                 })
             ;
             root
@@ -716,6 +723,12 @@ impl Replacer {
 impl Replacer {
     pub fn apply_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
         let post_select_option = option.apply_index_list_option.post_select_option.clone().unwrap();
+        let apply_guest_book_option = ApplyGuestBookOptions {
+            is_hide: true,
+        };
+        let apply_tag_list_option = ApplyTagListOptions {
+            is_hide: true,
+        };
 
         self.apply_common(ApplyCommonOptions { 
             search: String::new(), 
@@ -723,8 +736,8 @@ impl Replacer {
         });
         self.apply_home_cover();
         self.apply_index_list(option.apply_index_list_option);
-        self.apply_guest_book(option.apply_guest_book_option);
-        self.apply_tag_list(option.apply_tag_list_option);
+        self.apply_guest_book(apply_guest_book_option);
+        self.apply_tag_list(apply_tag_list_option);
 
         let mut post_select_option_clone = post_select_option.clone();
         post_select_option_clone.set_size(None);
@@ -774,8 +787,8 @@ pub struct ApplyIndexPageOptions {
     pub base_url: String,
     pub body_id: String,
     pub apply_index_list_option: ApplyIndexListOptions,
-    pub apply_guest_book_option: ApplyGuestBookOptions,
-    pub apply_tag_list_option: ApplyTagListOptions,
+    // pub apply_guest_book_option: ApplyGuestBookOptions,
+    // pub apply_tag_list_option: ApplyTagListOptions,
     // pub apply_pagination: ApplyPaginationOptions,
 }
 

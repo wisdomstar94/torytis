@@ -48,12 +48,6 @@ async fn root_route(req: Request) -> Response {
                 tag_name: None,
             }),
         },
-        apply_guest_book_option: ApplyGuestBookOptions {
-            is_hide: true,
-        },
-        apply_tag_list_option: ApplyTagListOptions {
-            is_hide: true,
-        },
     });
 
     return Response::builder()
@@ -96,12 +90,6 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
                 tag_name: None,
             }),
         },
-        apply_guest_book_option: ApplyGuestBookOptions {
-            is_hide: true,
-        },
-        apply_tag_list_option: ApplyTagListOptions {
-            is_hide: true,
-        },
     });
 
     return Response::builder()
@@ -143,12 +131,6 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
                 sub_category_name: Some(sub_category_name.clone()),
                 tag_name: None,
             }),
-        },
-        apply_guest_book_option: ApplyGuestBookOptions {
-            is_hide: true,
-        },
-        apply_tag_list_option: ApplyTagListOptions {
-            is_hide: true,
         },
     });
 
