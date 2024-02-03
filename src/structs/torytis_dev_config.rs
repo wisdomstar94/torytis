@@ -322,6 +322,23 @@ impl TorytisDevConfig {
         posts
     }
 
+    pub fn get_tag_unique_list(&self) -> Vec<String> {
+        let mut result: Vec<String> = Vec::new();
+        let posts = self.get_posts(None);
+        if let Some(posts) = posts {
+            for item in posts {
+                if let Some(tag_list) = item.tag_list {
+                    for tag in tag_list {
+                        if !result.contains(&tag) {
+                            result.push(tag);
+                        }
+                    }
+                }
+            }
+        }
+        result  
+    }
+
     pub fn get_skin_home_cover(&self) -> Option<SkinHomeCover> {
         self.skin_home_cover.clone()
     }
@@ -455,6 +472,7 @@ impl PostType {
 #[derive(Deserialize, Debug, Clone)]
 pub struct Post {
     pub category_name: Option<String>,
+    pub tag_list: Option<Vec<String>>,
     pub post_id: Option<String>, 
     pub post_type: Option<PostType>,
     pub is_private: Option<bool>,

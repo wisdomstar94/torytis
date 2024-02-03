@@ -37,13 +37,13 @@ async fn root_route(req: Request) -> Response {
         body_id: String::from("tt-body-index"),
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
-            post_select_option: PostSelectOption {
+            post_select_option: Some(PostSelectOption {
                 page: Some(page),
                 size: Some(size),
                 post_type: None,
                 category_name: None,
                 sub_category_name: None,
-            },
+            }),
         },
         apply_guest_book_option: ApplyGuestBookOptions {
             is_hide: true,

@@ -428,7 +428,7 @@ impl Replacer {
         // if let Some(v) = option.post_select_option {
         //     post_select_option = Some(v);
         // }
-        let post_list = self.config.get_posts(Some(option.post_select_option));
+        let post_list = self.config.get_posts(option.post_select_option);
         // println!(">>> post_list: {:#?}", post_list);
         let normal_index_rep_template = self.get_s_article_index_rep_template();
         let notice_index_rep_template = self.get_s_notice_index_rep_template();
@@ -586,6 +586,7 @@ impl Replacer {
     fn apply_tag_list(&self, option: ApplyTagListOptions) {
         let is_hide = option.is_hide;
         let root = Rc::clone(&self.root);
+        let tag_unique_list: Vec<String> = self.config.get_tag_unique_list();
 
         root    
             .select(SelectOptions {
@@ -593,12 +594,29 @@ impl Replacer {
                 attrs: None,
                 is_attrs_check_string_contain: true,
             })
-            .replacer(move |_, _| {
+            .replacer(move |_, matched_str_unwarp| {
                 if is_hide {
                     return String::new();
                 }
+                matched_str_unwarp.unwrap()
+            })
+            .select(SelectOptions {
+                element_name: "s_tag_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, matched_str_unwarp| {
+                let html_template = matched_str_unwarp.unwrap();
 
-                todo!()
+                let mut list_vec: Vec<String> = Vec::new();
+                for item in &tag_unique_list {
+                    let mut result = html_template.clone();
+                    result = result.replace(r#"[##_tag_link_##]"#, format!(r#"/tag/{}"#, item.as_str()).as_str());
+                    result = result.replace(r#"[##_tag_name_##]"#, format!(r#"{}"#, item.as_str()).as_str());
+                    list_vec.push(result);
+                }
+
+                list_vec.join("")
             })
             .commit()
         ;
@@ -697,7 +715,7 @@ impl Replacer {
 
 impl Replacer {
     pub fn apply_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
-        let post_select_option = option.apply_index_list_option.post_select_option.clone();
+        let post_select_option = option.apply_index_list_option.post_select_option.clone().unwrap();
 
         self.apply_common(ApplyCommonOptions { 
             search: String::new(), 
@@ -723,18 +741,28 @@ impl Replacer {
         &self
     }
 
-    // pub fn apply_category_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
-    //     self.apply_common(ApplyCommonOptions { 
-    //         search: String::new(), 
-    //         body_id: String::from("tt-body-category"),
-    //     });
-    //     self.apply_home_cover();
-    //     self.apply_index_list(option.apply_index_list_option);
-    //     self.apply_guest_book(option.apply_guest_book_option);
-    //     self.apply_tag_list(option.apply_tag_list_option);
-    //     self.apply_pagination(option.apply_pagination);
-    //     &self
-    // }
+    pub fn apply_tag_index_page(&self) -> &Self {
+        self.apply_common(ApplyCommonOptions { 
+            search: String::new(), 
+            body_id: String::from("tt-body-tag"),
+        });
+        self.apply_home_cover();
+        self.apply_index_list(ApplyIndexListOptions {
+            is_hide: true,
+            post_select_option: None,
+        });
+        self.apply_guest_book(ApplyGuestBookOptions { 
+            is_hide: true 
+        });
+        self.apply_tag_list(ApplyTagListOptions { 
+            is_hide: false,
+        });
+        self.apply_pagination(ApplyPaginationOptions { 
+            is_hide: true, 
+            pagination_info: None 
+        });
+        &self
+    }
 }
 
 struct ApplyCommonOptions {
@@ -753,7 +781,7 @@ pub struct ApplyIndexPageOptions {
 
 pub struct ApplyIndexListOptions {
     pub is_hide: bool,
-    pub post_select_option: PostSelectOption,
+    pub post_select_option: Option<PostSelectOption>,
 }
 
 pub struct ApplyGuestBookOptions {
