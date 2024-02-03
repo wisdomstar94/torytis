@@ -697,17 +697,44 @@ impl Replacer {
 
 impl Replacer {
     pub fn apply_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
+        let post_select_option = option.apply_index_list_option.post_select_option.clone();
+
         self.apply_common(ApplyCommonOptions { 
             search: String::new(), 
-            body_id: String::from("tt-body-index"),
+            body_id: option.body_id,
         });
         self.apply_home_cover();
         self.apply_index_list(option.apply_index_list_option);
         self.apply_guest_book(option.apply_guest_book_option);
         self.apply_tag_list(option.apply_tag_list_option);
-        self.apply_pagination(option.apply_pagination);
+
+        let mut post_select_option_clone = post_select_option.clone();
+        post_select_option_clone.set_size(None);
+        post_select_option_clone.set_page(None);
+        self.apply_pagination(ApplyPaginationOptions {
+            is_hide: false,
+            pagination_info: Some(PaginationInfo {
+                base_url: option.base_url,
+                total_count: self.config.get_posts(Some(post_select_option_clone)).unwrap_or_else(|| vec![]).len(),
+                page: post_select_option.page.unwrap(),
+                size: post_select_option.size.unwrap(),
+            }),
+        });
         &self
     }
+
+    // pub fn apply_category_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
+    //     self.apply_common(ApplyCommonOptions { 
+    //         search: String::new(), 
+    //         body_id: String::from("tt-body-category"),
+    //     });
+    //     self.apply_home_cover();
+    //     self.apply_index_list(option.apply_index_list_option);
+    //     self.apply_guest_book(option.apply_guest_book_option);
+    //     self.apply_tag_list(option.apply_tag_list_option);
+    //     self.apply_pagination(option.apply_pagination);
+    //     &self
+    // }
 }
 
 struct ApplyCommonOptions {
@@ -716,10 +743,12 @@ struct ApplyCommonOptions {
 }
 
 pub struct ApplyIndexPageOptions {
+    pub base_url: String,
+    pub body_id: String,
     pub apply_index_list_option: ApplyIndexListOptions,
     pub apply_guest_book_option: ApplyGuestBookOptions,
     pub apply_tag_list_option: ApplyTagListOptions,
-    pub apply_pagination: ApplyPaginationOptions,
+    // pub apply_pagination: ApplyPaginationOptions,
 }
 
 pub struct ApplyIndexListOptions {

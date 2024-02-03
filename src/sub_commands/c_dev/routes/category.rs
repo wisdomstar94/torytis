@@ -1,10 +1,10 @@
-use axum::{body::Body, extract::Request, http::StatusCode, response::Response, routing::get, Router};
+use axum::{body::Body, extract::{Path, Request}, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
 use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestBookOptions, ApplyIndexListOptions, ApplyIndexPageOptions, ApplyPaginationOptions, ApplyTagListOptions, PaginationInfo, Replacer}, torytis_dev_config::{PostSelectOption, TorytisDevConfig}}};
 
 pub fn routes() -> Router {
     Router::new()
-        .route("/", get(root_route))
+        .route("/:category_name", get(category_index_route))
         // .route("/style.css", get(style_css_route))
 }
 
@@ -13,7 +13,7 @@ struct RootPageQueryPayload {
     page: Option<u32>,
 }
 
-async fn root_route(req: Request) -> Response {
+async fn category_index_route(Path(category_name): Path<String>, req: Request) -> Response {
     let mut query_option: Option<RootPageQueryPayload> = None;
     if let Some(query_str) = req.uri().query() {
         if let Ok(payload) = serde_qs::from_str::<RootPageQueryPayload>(query_str) {
@@ -34,15 +34,15 @@ async fn root_route(req: Request) -> Response {
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
     replacer.apply_index_page(ApplyIndexPageOptions {
-        base_url: format!(r#"/"#),
-        body_id: String::from("tt-body-index"),
+        base_url: format!(r#"/category/{}"#, category_name),
+        body_id: String::from("tt-body-category"),
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: PostSelectOption {
                 page: Some(page),
                 size: Some(size),
                 post_type: None,
-                category_name: None,
+                category_name: Some(category_name.clone()),
                 sub_category_name: None,
             },
         },
@@ -52,15 +52,6 @@ async fn root_route(req: Request) -> Response {
         apply_tag_list_option: ApplyTagListOptions {
             is_hide: true,
         },
-        // apply_pagination: ApplyPaginationOptions {
-        //     is_hide: false,
-        //     pagination_info: Some(PaginationInfo {
-        //         base_url: String::from("/"),
-        //         total_count: config.get_posts(None).unwrap_or_else(|| vec![]).len(),
-        //         page,
-        //         size,
-        //     }),
-        // },
     });
     // skin_html_content = replace_s_search(&skin_html_content, "");
     // skin_html_content = replace_common(&config, &skin_html_content);

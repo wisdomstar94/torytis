@@ -24,6 +24,7 @@ pub async fn run(args: CliArgs) {
 
     let app = Router::new()
         .nest("/", routes::root::routes())
+        .nest("/category", routes::category::routes())
         .nest("/virtualcdn", routes::virtualcdn::routes())
         // .nest("/test", test::routes())
         // .route_layer(middleware::from_fn(middlewares::header_auth_check::middleware))

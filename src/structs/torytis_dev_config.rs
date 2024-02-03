@@ -281,7 +281,7 @@ impl TorytisDevConfig {
                         required_option_count += 1;
                         let category_name = select_option.category_name.as_ref().unwrap();
                         if let Some(this_category_name) = &x.category_name {
-                            if this_category_name.as_str() == category_name.as_str() {
+                            if this_category_name.as_str() == category_name.as_str() || this_category_name.as_str().contains(format!(r#"{}///"#, category_name.as_str()).as_str()) {
                                 required_option_matched_count += 1;
                             }
                         }
@@ -531,6 +531,16 @@ pub struct PostSelectOption {
     pub post_type: Option<PostType>,
     pub category_name: Option<String>,
     pub sub_category_name: Option<String>,
+}
+
+impl PostSelectOption {
+    pub fn set_page(&mut self, p: Option<u32>) {
+        self.page = p;
+    }
+
+    pub fn set_size(&mut self, s: Option<u32>) {
+        self.size = s;
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
