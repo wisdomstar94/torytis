@@ -39,6 +39,7 @@ async fn root_route(req: Request) -> Response {
         search_keyword: String::from(""),
         base_url: format!(r#"/notice"#),
         body_id: String::from("tt-body-index"),
+        is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: Some(PostSelectOption {

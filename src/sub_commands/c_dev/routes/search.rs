@@ -51,6 +51,7 @@ async fn search_index_route(Path(search_keyword): Path<String>, req: Request) ->
         search_keyword: search_keyword.clone(),
         base_url: format!(r#"/search/{}"#, search_keyword),
         body_id: String::from("tt-body-search"),
+        is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: Some(PostSelectOption {

@@ -38,6 +38,7 @@ async fn root_route(req: Request) -> Response {
         search_keyword: String::from(""),
         base_url: format!(r#"/category"#),
         body_id: String::from("tt-body-category"),
+        is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: Some(PostSelectOption {
@@ -83,6 +84,7 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
         search_keyword: String::from(""),
         base_url: format!(r#"/category/{}"#, category_name),
         body_id: String::from("tt-body-category"),
+        is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: Some(PostSelectOption {
@@ -128,6 +130,7 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
         search_keyword: String::from(""),
         base_url: format!(r#"/category/{}/{}"#, category_name, sub_category_name),
         body_id: String::from("tt-body-category"),
+        is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: Some(PostSelectOption {

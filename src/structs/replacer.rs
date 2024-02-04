@@ -418,9 +418,14 @@ impl Replacer {
         ;
     }
 
-    fn apply_home_cover(&self) {
+    fn apply_home_cover(&self, option: ApplyHomeCoverOptions) {
+        let is_hide = option.is_hide;
+
         let root = Rc::clone(&self.root);
-        // let config = self.config.get_clone_rc();
+        let xml_cover_items = Rc::new(self.config.get_xml_cover_items());
+        let skin_home_cover_setting_info = Rc::new(self.config.get_skin_home_cover());
+
+        let posts = Rc::new(self.config.get_posts(None));
 
         root
             .select(SelectOptions {
@@ -428,8 +433,124 @@ impl Replacer {
                 attrs: None,
                 is_attrs_check_string_contain: true
             })
-            .replacer(|_, _| {
-                String::new()  
+            .replacer(move |_, matched_str_unwrap| {
+                if is_hide {
+                    return String::new();
+                }
+
+                matched_str_unwrap.unwrap()
+            })
+            .select(SelectOptions {
+                element_name: "s_cover_rep",
+                attrs: None,
+                is_attrs_check_string_contain: true
+            })
+            .replacer(move |_, matched_str_unwrap| {
+                let html_stores = matched_str_unwrap.unwrap();
+                let mut list_vec: Vec<String> = Vec::new();
+                
+                let skin_home_cover_setting_info = Rc::clone(&skin_home_cover_setting_info);
+                if let Some(ss) = skin_home_cover_setting_info.deref() {
+                    let cover_items = ss.cover_items.clone().unwrap();
+                    for cover_item in cover_items {
+                        let template_html_wrap = select_from_html_string_one(&html_stores, &SelectOptions {
+                            element_name: "s_cover",
+                            attrs: Some(vec![("name", &cover_item.cover_name.unwrap())]),
+                            is_attrs_check_string_contain: false
+                        });
+                        if let Some(template_html) = template_html_wrap {
+                            let result = html_string_root_element_unwrap(&template_html, "s_cover");
+                            let mini_root = Bucket::new(&result);
+                            mini_root
+                                .html_str_replace(|html| {
+                                    html.replace(r#"[##_cover_title_##]"#, &cover_item.cover_title.clone().unwrap())
+                                })
+                            ;
+
+                            let target_posts = posts.deref().clone().unwrap().iter().filter(|x| {
+                                x.category_name == cover_item.cover_category_name
+                            }).map(|x| x.clone()).collect::<Vec<Post>>();
+
+                            // s_cover_item
+                            mini_root
+                                .select(SelectOptions {
+                                    element_name: "s_cover_item",
+                                    attrs: None,
+                                    is_attrs_check_string_contain: true
+                                })
+                                .replacer(move |_, matched_str_unwrap| {
+                                    let template = matched_str_unwrap.unwrap();
+                                    let mut li_vec: Vec<String> = Vec::new();
+                                    for item in &target_posts {
+                                        let mini_root2 = Bucket::new(&template);
+                                        let post = Rc::new(item.clone());
+
+                                        // s_cover_item_article_info
+                                        mini_root2
+                                            .select(SelectOptions {
+                                                element_name: "s_cover_item_article_info",
+                                                attrs: None,
+                                                is_attrs_check_string_contain: true
+                                            })
+                                            .replacer(move |_, matched_str_unwrap| {
+                                                let r = matched_str_unwrap.unwrap();
+                                                let mini_root3 = Bucket::new(&r);
+                                                let post = Rc::clone(&post);
+
+                                                mini_root3
+                                                    .html_str_replace(|h| {
+                                                        h.replace(r#"[##_cover_item_url_##]"#, format!(r#"/{}"#, post.post_id.clone().unwrap().as_str()).as_str())
+                                                    })
+                                                    .html_str_replace(|h| {
+                                                        h.replace(r#"[##_cover_item_title_##]"#, format!(r#"/{}"#, post.title.clone().unwrap().as_str()).as_str())
+                                                    })
+                                                    .html_str_replace(|h| {
+                                                        h.replace(r#"[##_cover_item_date_##]"#, date_format(post.created_at.clone().unwrap().as_str(), "%Y-%m-%d %H:%M").as_str())
+                                                    })
+                                                    .html_str_replace(|h| {
+                                                        h.replace(r#"[##_cover_item_summary_##]"#, format!(r#"/{}"#, post.get_contents_summary().clone().as_str()).as_str())
+                                                    })
+                                                ;
+
+                                                mini_root3
+                                                    .select(SelectOptions {
+                                                        element_name: "s_cover_item_thumbnail",
+                                                        attrs: None,
+                                                        is_attrs_check_string_contain: true
+                                                    })
+                                                    .replacer(move |_, matched_str_unwrap| {
+                                                        if post.thumbnail_img_url.is_none() {
+                                                            return String::new();
+                                                        }
+                                                        let thumbnail_img_url = post.thumbnail_img_url.clone().unwrap();
+                                                        let mut result = matched_str_unwrap.unwrap();
+                                                        result = result.replace(r#"//i1.daumcdn.net/thumb/C148x148/?fname=[##_cover_item_thumbnail_##]"#, &thumbnail_img_url);
+                                                        result = result.replace(r#"[##_cover_item_thumbnail_##]"#, &thumbnail_img_url);
+                                                        result
+                                                    })
+                                                    .commit()
+                                                ;
+
+                                                mini_root3.get_html()
+                                            })
+                                            .commit()
+                                        ;
+
+                                        li_vec.push(mini_root2.get_html());
+                                    }
+                                    li_vec.join("")
+                                })
+                                .commit()
+                            ;
+
+                            // s_cover_url
+
+                            list_vec.push(mini_root.get_html());
+                        }
+                    }
+                }
+
+                list_vec.join("")
             })
             .commit()
         ;
@@ -1435,7 +1556,9 @@ impl Replacer {
             search: option.search_keyword, 
             body_id: option.body_id,
         });
-        self.apply_home_cover();
+        self.apply_home_cover(ApplyHomeCoverOptions {
+            is_hide: !option.is_show_home_cover,
+        });
         self.apply_index_list(option.apply_index_list_option);
         self.apply_guest_book(apply_guest_book_option);
         self.apply_tag_list(apply_tag_list_option);
@@ -1444,7 +1567,7 @@ impl Replacer {
         post_select_option_clone.set_size(None);
         post_select_option_clone.set_page(None);
         self.apply_pagination(ApplyPaginationOptions {
-            is_hide: false,
+            is_hide: option.is_show_home_cover,
             pagination_info: Some(PaginationInfo {
                 base_url: option.base_url,
                 total_count: self.config.get_posts(Some(post_select_option_clone)).unwrap_or_else(|| vec![]).len(),
@@ -1460,7 +1583,9 @@ impl Replacer {
             search: String::new(), 
             body_id: String::from("tt-body-tag"),
         });
-        self.apply_home_cover();
+        self.apply_home_cover(ApplyHomeCoverOptions {
+            is_hide: true,
+        });
         self.apply_index_list(ApplyIndexListOptions {
             is_hide: true,
             post_select_option: None,
@@ -1486,7 +1611,9 @@ impl Replacer {
             search: String::new(), 
             body_id: String::from("tt-body-guestbook"),
         });
-        self.apply_home_cover();
+        self.apply_home_cover(ApplyHomeCoverOptions {
+            is_hide: true,
+        });
         self.apply_index_list(ApplyIndexListOptions {
             is_hide: true,
             post_select_option: None,
@@ -1519,7 +1646,9 @@ impl Replacer {
             search: String::new(), 
             body_id: String::from("tt-body-page"),
         });
-        self.apply_home_cover();
+        self.apply_home_cover(ApplyHomeCoverOptions {
+            is_hide: true
+        });
         if let Some(v) = apply_post_permalink {
             self.apply_post_permalink(v);
         }
@@ -1547,11 +1676,16 @@ struct ApplyCommonOptions {
     body_id: String,
 }
 
+pub struct ApplyHomeCoverOptions {
+    is_hide: bool,
+}
+
 pub struct ApplyIndexPageOptions {
     pub search_keyword: String,
     pub base_url: String,
     pub body_id: String,
     pub apply_index_list_option: ApplyIndexListOptions,
+    pub is_show_home_cover: bool,
     // pub apply_guest_book_option: ApplyGuestBookOptions,
     // pub apply_tag_list_option: ApplyTagListOptions,
     // pub apply_pagination: ApplyPaginationOptions,

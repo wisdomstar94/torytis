@@ -51,6 +51,7 @@ async fn tag_post_index_route(Path(tag_name): Path<String>, req: Request) -> Res
         search_keyword: String::from(""),
         base_url: format!(r#"/tag/{}"#, tag_name),
         body_id: String::from("tt-body-tag"),
+        is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
             is_hide: false,
             post_select_option: Some(PostSelectOption {
