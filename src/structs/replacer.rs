@@ -1,6 +1,6 @@
 use std::{ops::Deref, rc::Rc};
 use chrono::NaiveDateTime;
-use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, SelectOptions};
+use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, Bucket2, SelectOptions};
 
 use crate::{common::{date_format, get_pagination_calculate}, structs::torytis_dev_config::{Post, PostType, TorytisDevConfig}};
 
@@ -920,7 +920,9 @@ impl Replacer {
             let category_name = Rc::new(post.category_name.clone());
             let post_next_and_prev = Rc::new(config.get_next_and_prev_post(post.post_id.clone()));
             let post_next_and_prev2 = Rc::clone(&post_next_and_prev);
-
+            let comment_list = Rc::new(post.comment_list.clone());
+            let comment_list2 = Rc::clone(&comment_list);
+            // s_ad_div
             target
                 .select(SelectOptions {
                     element_name: "s_ad_div",
@@ -966,6 +968,7 @@ impl Replacer {
                 })
             ;
 
+            // s_tag_label
             target
                 .select(SelectOptions {
                     element_name: "s_tag_label",
@@ -1158,6 +1161,127 @@ impl Replacer {
                     result
                 })
                 .commit()   
+            ;
+
+            // s_rp_count
+            target
+                .select(SelectOptions {
+                    element_name: "s_rp_count",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let mut result = matched_str_unwrap.unwrap();
+                    let mut count = 0;
+                    if let Some(v) = comment_list.deref() {
+                        for item in v {
+                            count += 1;
+                            if let Some(kk) = &item.comment_list {
+                                count += kk.len();
+                            }
+                        }
+                    }
+                    result = result.replace(r#"[##_article_rep_rp_cnt_##]"#, count.to_string().as_str());
+                    result
+                })
+                .commit() 
+            ;
+
+            // s_rp
+            target
+                .select(SelectOptions {
+                    element_name: "s_rp",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let unwarp_html = matched_str_unwrap.unwrap();
+                    let comment_list2 = Rc::clone(&comment_list2);
+                    let mini_root = Bucket::new(&unwarp_html);
+
+                    // s_rp_container
+                    mini_root
+                        .select(SelectOptions {
+                            element_name: "s_rp_container",
+                            attrs: None,
+                            is_attrs_check_string_contain: true,
+                        })
+                        .replacer(move |_, matched_str_unwrap| {
+                            matched_str_unwrap.unwrap()
+                        })
+                        .select(SelectOptions {
+                            element_name: "s_rp_rep",
+                            attrs: None,
+                            is_attrs_check_string_contain: true,
+                        })
+                        .replacer(move |_, matched_str_unwrap| {
+                            let comment_list2 = Rc::clone(&comment_list2);
+                            let html_template = matched_str_unwrap.unwrap();
+                            let mut list_vec: Vec<String> = Vec::new();
+                            if let Some(vv) = comment_list2.deref().as_ref() {
+                                for item in vv {
+                                    let child_comment_list = Rc::new(item.comment_list.clone());
+
+                                    let temp = Bucket2::new(html_template.as_str());
+                                    temp.delete_code_block("s_rp2_container");
+                                    let mut temp_html = temp.get_html();
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_id_##]"#, item.comment_id.clone().unwrap().as_str());
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_logo_##]"#, item.profile_img_url.clone().unwrap().as_str());
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_name_##]"#, item.name.clone().unwrap().as_str());
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_date_##]"#, date_format(item.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M").as_str());
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_desc_##]"#, item.content.clone().unwrap().as_str());
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_onclick_reply_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#);
+                                    temp_html = temp_html.replace(r#"[##_rp_rep_onclick_delete_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#);
+                                    temp.set_html(temp_html);
+                                    temp.delete_revoke();
+                                    let revoke_html = temp.get_html();
+                                    let revoke_bucket = Bucket::new(&revoke_html);
+                                    revoke_bucket
+                                        .select(SelectOptions {
+                                            element_name: "s_rp2_container",
+                                            attrs: None,
+                                            is_attrs_check_string_contain: true,
+                                        })
+                                        .replacer(move |_, matched_str_unwrap| {
+                                            let child_comment_list = Rc::clone(&child_comment_list);
+                                            let kk = child_comment_list.deref().as_ref();
+                                            if kk.is_none() {
+                                                return String::new();
+                                            }
+                                            let h_template = matched_str_unwrap.unwrap();
+                                            let child_comments = kk.unwrap();
+                                            let mut li_vec: Vec<String> = Vec::new();
+                                            for m_item in child_comments {
+                                                let mut push_string = h_template.clone();
+                                                push_string = push_string.replace(r#"[##_rp_rep_id_##]"#, m_item.comment_id.clone().unwrap().as_str());
+                                                push_string = push_string.replace(r#"[##_rp_rep_logo_##]"#, m_item.profile_img_url.clone().unwrap().as_str());
+                                                push_string = push_string.replace(r#"[##_rp_rep_name_##]"#, m_item.name.clone().unwrap().as_str());
+                                                push_string = push_string.replace(r#"[##_rp_rep_date_##]"#, date_format(m_item.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M").as_str());
+                                                push_string = push_string.replace(r#"[##_rp_rep_desc_##]"#, m_item.content.clone().unwrap().as_str());
+                                                push_string = push_string.replace(r#"[##_rp_rep_onclick_reply_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#);
+                                                push_string = push_string.replace(r#"[##_rp_rep_onclick_delete_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#);
+                                                li_vec.push(push_string);
+                                            }
+                                            li_vec.join("")
+                                        })
+                                        .commit()
+                                    ;
+                                    list_vec.push(revoke_bucket.get_html());
+                                }
+                            }
+                                
+                            list_vec.join("")
+                        })
+                        .commit()
+                    ;
+                    // s_rp_input_form
+                    // mini_root
+                        
+                    // ;
+
+                    mini_root.get_html()
+                })
+                .commit()
             ;
         }
 

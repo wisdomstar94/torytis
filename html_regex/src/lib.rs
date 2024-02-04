@@ -278,3 +278,60 @@ impl Bucket {
     binding.to_owned()
   }
 }
+
+pub struct Bucket2 {
+    html: Rc<RefCell<String>>,
+    revoke_html: Rc<RefCell<String>>,
+}
+
+impl Bucket2 {
+    pub fn new(html: &str) -> Self {
+        Self {
+            html: Rc::new(RefCell::new(html.to_string())),
+            revoke_html: Rc::new(RefCell::new(String::new())),
+        }
+    }
+
+    pub fn delete_code_block(&self, element_name: &str) -> &Self {
+        let mut borrow_mut = self.html.deref().borrow_mut();
+        let mut revoke_html_borrow_mut = self.revoke_html.deref().borrow_mut();
+
+        let mut html_string = borrow_mut.to_string();
+        let code_block = select_from_html_string_one(&html_string, &SelectOptions {
+            element_name,
+            attrs: None,
+            is_attrs_check_string_contain: true,
+        });
+        if let Some(v) = code_block {
+            html_string = html_string.replace(v.as_str(), "[##_torytis_will_reboke_place_##]");
+            *revoke_html_borrow_mut = v;
+            *borrow_mut = html_string;
+        }
+        
+        &self
+    }
+
+    pub fn set_html(&self, html: String) -> &Self {
+        let mut borrow_mut = self.html.deref().borrow_mut();
+        *borrow_mut = html;
+        &self
+    }
+
+    pub fn delete_revoke(&self) -> &Self {
+        let mut borrow_mut = self.html.deref().borrow_mut();
+        let mut revoke_html_borrow_mut = self.revoke_html.deref().borrow_mut();
+
+        let mut html_string = borrow_mut.to_string();
+        let revoke_html_string = revoke_html_borrow_mut.to_string();
+        html_string = html_string.replace(r#"[##_torytis_will_reboke_place_##]"#, revoke_html_string.as_str());
+
+        *revoke_html_borrow_mut = String::new();
+        *borrow_mut = html_string;
+
+        &self
+    }
+
+    pub fn get_html(&self) -> String {
+        self.html.deref().borrow().to_string()
+    }
+}
