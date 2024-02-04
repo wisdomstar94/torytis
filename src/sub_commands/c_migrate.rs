@@ -89,6 +89,14 @@ pub fn run(_: CliArgs) {
             file_content_mut = apply_tailwind_config_ts_content_block(&file_content_mut);
             fs::write(tailwind_config_ts_file_path, file_content_mut).unwrap();
         }
+        // torytis-dev.config.json 파일 체크
+        let torytis_dev_config_json_file_path_buf = working_dir_path_buf.join("torytis-dev.config.json");
+        let torytis_dev_config_json_file_path = torytis_dev_config_json_file_path_buf.as_path();
+        if let Err(_) = fs::metadata(torytis_dev_config_json_file_path) {
+            let file = STATIC_DIR.get_file("project-template/torytis-dev.config.json").unwrap();
+            let file_content = file.contents_utf8().unwrap();
+            fs::write(torytis_dev_config_json_file_path, file_content).unwrap();
+        } 
     }
 
     println!("-> torytis 마이그레이션 종료!");
