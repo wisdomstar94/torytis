@@ -451,7 +451,7 @@ impl Replacer {
         let config = Rc::new(self.config.clone());
 
         fn common(root: &Bucket, item: Post, config: &Rc<TorytisDevConfig>) {
-            let post_type = &item.post_type;
+            let post_type = item.post_type.clone();
             let thumbnail_img_url1 = item.thumbnail_img_url.as_ref().unwrap().clone();
             let thumbnail_img_url2 = item.thumbnail_img_url.as_ref().unwrap().clone();
             let category_name = item.category_name.as_ref().unwrap().clone();
@@ -553,7 +553,9 @@ impl Replacer {
                     }
 
                     let is_private = is_private.unwrap();
-                    let status_string: &str = if is_private {
+                    let status_string: &str = if post_type.clone().unwrap().is_equal(&PostType::Protected) {
+                        "보호"
+                    } else if is_private {
                         "비공개"
                     } else {
                         "공개"
@@ -932,6 +934,7 @@ impl Replacer {
             let is_guest2 = Rc::clone(&is_guest);
             let is_private = Rc::new(post.is_private);
             let post_title = Rc::new(post.title.clone());
+            let post_type = post.post_type.clone();
             let post_category_name = Rc::new(post.category_name.clone());
             let tag_list = Rc::new(post.tag_list.clone());
             let post_created_at = Rc::new(post.created_at.clone());
@@ -974,7 +977,9 @@ impl Replacer {
             target
                 .html_str_replace(|html| {
                     let is_private = is_private.deref().unwrap();
-                    let status_string: &str = if is_private {
+                    let status_string: &str = if post_type.clone().unwrap().is_equal(&PostType::Protected) {
+                        "보호"
+                    } else if is_private {
                         "비공개"
                     } else {
                         "공개"
