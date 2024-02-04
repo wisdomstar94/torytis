@@ -1369,6 +1369,11 @@ impl Replacer {
                 PostType::Protected => {
                     let mini_root = Bucket::new(&s_article_protected_permalink_rep_template);
                     common(&mini_root, &config, &my_post);
+                    mini_root
+                        .html_str_replace(|html| {
+                            html.replace(r#"[##_article_dissolve_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#)
+                        })
+                    ;
                     root
                         .html_str_replace(|html| {
                             html.replace(r#"<s_article_rep></s_article_rep>"#, mini_root.get_html().as_str())

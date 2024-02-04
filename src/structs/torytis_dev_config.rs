@@ -667,6 +667,16 @@ impl Post {
                     PostContentType::Image => {
                         // strings.push(value)
                     },
+                    PostContentType::H2 => {
+                        strings.push(item.value.unwrap_or_else(|| String::new()));
+                    },
+                    PostContentType::H3 => {
+                        strings.push(item.value.unwrap_or_else(|| String::new()));
+                    },
+                    PostContentType::H4 => {
+                        strings.push(item.value.unwrap_or_else(|| String::new()));
+                    },
+                    
                 }
             }
             
@@ -692,6 +702,24 @@ impl Post {
                     "#, item.value.clone().unwrap());
                     list_vec.push(html);
                 },
+                PostContentType::H2 => {
+                    let html = format!(r#"
+                        <h2 data-ke-size="size26">{}</h2>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
+                PostContentType::H3 => {
+                    let html = format!(r#"
+                        <h3 data-ke-size="size23">{}</h3>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
+                PostContentType::H4 => {
+                    let html = format!(r#"
+                        <h4 data-ke-size="size20">{}</h4>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
             }
         }
         list_vec.join("")
@@ -702,6 +730,9 @@ impl Post {
 pub enum PostContentType {
     Paragraph,
     Image,
+    H2,
+    H3,
+    H4,
 }
 
 // #[derive(Deserialize, Debug, Clone)]
