@@ -89,6 +89,14 @@ pub fn run(_: CliArgs) {
             file_content_mut = apply_tailwind_config_ts_content_block(&file_content_mut);
             fs::write(tailwind_config_ts_file_path, file_content_mut).unwrap();
         }
+        // torytis-dev.config.json 파일 체크
+        let torytis_dev_config_json_file_path_buf = working_dir_path_buf.join("torytis-dev.config.json");
+        let torytis_dev_config_json_file_path = torytis_dev_config_json_file_path_buf.as_path();
+        if let Err(_) = fs::metadata(torytis_dev_config_json_file_path) {
+            let file = STATIC_DIR.get_file("project-template/torytis-dev.config.json").unwrap();
+            let file_content = file.contents_utf8().unwrap();
+            fs::write(torytis_dev_config_json_file_path, file_content).unwrap();
+        } 
     }
 
     println!("-> torytis 마이그레이션 종료!");
@@ -125,29 +133,22 @@ fn apply_scripts_block(package_json_content: &str) -> String {
 
             // "tsc" 가 없는 경우 추가
             if !scripts_block_string_new.contains("\"tsc\":") {
-                // let mut insert_string = String::from("");
-                // insert_string.push_str("\"scripts\": {\n");
-                // insert_string.push_str("\t\t\"tsc\": \"tsc\",");
-                // scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
                 should_append_items.push("\"tsc\": \"tsc\"".to_string());
             }
 
             // "tailwindcss" 가 없는 경우 추가
             if !scripts_block_string_new.contains("\"tailwindcss\":") {
-                // let mut insert_string = String::from("");
-                // insert_string.push_str("\"scripts\": {\n");
-                // insert_string.push_str("\t\t\"tailwindcss\": \"tailwindcss\",");
-                // scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
                 should_append_items.push("\"tailwindcss\": \"tailwindcss\"".to_string());
             }
 
             // "torytis" 가 없는 경우 추가
             if !scripts_block_string_new.contains("\"torytis\":") {
-                // let mut insert_string = String::from("");
-                // insert_string.push_str("\"scripts\": {\n");
-                // insert_string.push_str("\t\t\"torytis\": \"torytis\",");
-                // scripts_block_string_new = regex2.replace(&scripts_block_string_new, insert_string).to_string();
                 should_append_items.push("\"torytis\": \"torytis\"".to_string());
+            }
+
+            // "dev" 가 없는 경우 추가
+            if !scripts_block_string_new.contains("\"dev\":") {
+                should_append_items.push("\"dev\": \"torytis dev\"".to_string());
             }
 
             if should_append_items.len() > 0 {

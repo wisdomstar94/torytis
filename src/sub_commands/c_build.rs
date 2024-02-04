@@ -9,11 +9,16 @@ use crate::{run_command, replace_skin_html_content};
   long_about = None)
 ]
 pub struct CliArgs {
-    // #[arg(short='n', long="name")]
-    // name: Option<String>,
+    /// true : images/ 폴더 없는 구조로 빌드, false : images/ 폴더 구조로 빌드 (기본 값: true)
+    #[arg(short='f', long="flat")]
+    flat: Option<bool>,
 }
 
-pub fn run(_: CliArgs) {
+pub fn run(args: CliArgs) {
+    let flat = args.flat.unwrap_or_else(|| true);
+
+    let root_filenames: Vec<&str> = vec!["index.xml", "preview1600.jpg", "preview256.jpg", "preview560.jpg", "skin.html", "style.css"];
+
     let working_dir_path_buf = env::current_dir().unwrap();
     let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis-build.js");
     let dot_torytis_index_xml_path_buf = working_dir_path_buf.join(".torytis").join("index.xml");
@@ -31,6 +36,18 @@ pub fn run(_: CliArgs) {
     let dot_torytis_dir_path = dot_torytis_dir_path_buf.as_path();
     if let Err(_) = fs::metadata(dot_torytis_dir_path) {
         fs::create_dir_all(dot_torytis_dir_path).unwrap();
+    } else {
+        fs::remove_dir_all(dot_torytis_dir_path).unwrap();
+        fs::create_dir_all(dot_torytis_dir_path).unwrap();
+    }
+
+    // flat 이 false 일 경우
+    let dot_torytis_images_dir_path_buf = dot_torytis_dir_path_buf.join("images/");
+    let dot_torytis_images_dir_path = dot_torytis_images_dir_path_buf.as_path();
+    if !flat {
+        if let Err(_) = fs::metadata(dot_torytis_images_dir_path) {
+            fs::create_dir_all(dot_torytis_images_dir_path).unwrap();
+        } 
     }
     
     // src/**/*.script.tsx 파일들을 읽어서 .torytis/script.ts 파일 만들기
@@ -65,6 +82,12 @@ pub fn run(_: CliArgs) {
     // script.ts 파일 삭제
     fs::remove_file(dot_torytis_script_ts_path_buf.as_path()).unwrap();
 
+    let script_js_file_path_buf = dot_torytis_dir_path_buf.join("script.js");
+    let images_script_js_file_path_buf = dot_torytis_dir_path_buf.join("images").join("script.js");
+    if !flat {
+        fs::rename(script_js_file_path_buf.as_path(), images_script_js_file_path_buf.as_path()).unwrap()
+    }
+
     // tailwind 빌드하기
     // let tailwind_config_ts_file_path_buf = working_dir_path_buf.join("tailwind.config.ts");
     // {
@@ -90,6 +113,7 @@ pub fn run(_: CliArgs) {
     let skin_html_string = fs::read_to_string(dot_torytis_skin_html_file_path).unwrap();
     let skin_html_string_convert = replace_skin_html_content(&skin_html_string);
     fs::write(dot_torytis_skin_html_file_path, skin_html_string_convert).unwrap();
+    // panic!(",,,,,,,!!");
 
     // src/public 폴더 밑에 있는 파일들을 모두 .torytis/ 폴더 밑으로 복사하기
     let src_public_dir_path_buf = working_dir_path_buf.join("src").join("public");
@@ -102,8 +126,15 @@ pub fn run(_: CliArgs) {
             continue;
         }
         let entry_path_buf = entry.path();
-        let after_path_bug = dot_torytis_dir_path_buf.join(entry.file_name());
-        fs::copy(entry_path_buf.as_path(), after_path_bug).unwrap();
+        let filename = entry_path_buf.as_path().file_name().unwrap().to_str().unwrap();
+
+        let after_path_buf = if !flat && !root_filenames.contains(&filename) {
+            dot_torytis_dir_path_buf.join("images").join(filename)
+        } else {
+            dot_torytis_dir_path_buf.join(filename)
+        };
+
+        fs::copy(entry_path_buf.as_path(), after_path_buf).unwrap();
     }
 
     // .torytis/index.xml 에서 문자 치환하기
@@ -123,4 +154,31 @@ pub fn run(_: CliArgs) {
         }
         fs::write(dot_torytis_index_xml_path, &dot_torytis_index_xml_content_new).unwrap();
     }
+
+    // // .torytis/ 밑에 있는 파일들을 티스토리에 업로드 할 경우 변경되는 실제 구조에 맞춰 .torytis-real-struct 로 복사하기
+    // let dot_torytis_real_struct_dir_path_buf = working_dir_path_buf.join(".torytis-real-struct");
+    // let dot_torytis_real_struct_dir_path = dot_torytis_real_struct_dir_path_buf.as_path();
+    // if let Err(_) = fs::metadata(dot_torytis_real_struct_dir_path) {
+    //     fs::create_dir_all(dot_torytis_real_struct_dir_path).unwrap();
+    // }
+    // let dot_torytis_real_struct_images_dir_path_buf = dot_torytis_real_struct_dir_path_buf.join("images");
+    // let dot_torytis_real_struct_images_dir_path = dot_torytis_real_struct_images_dir_path_buf.as_path();
+    // if let Err(_) = fs::metadata(dot_torytis_real_struct_images_dir_path) {
+    //     fs::create_dir_all(dot_torytis_real_struct_images_dir_path).unwrap();
+    // }
+    // let dot_torytis_under_all_files_path_buf = dot_torytis_dir_path_buf.join("**").join("*");
+    // let target_glob_str = dot_torytis_under_all_files_path_buf.as_path().to_str().unwrap();
+    // for entry in glob(target_glob_str).expect("Failed to read glob pattern") {
+    //     if let Ok(path_buf) = entry {
+    //         let absolute_path = path_buf.as_path();
+    //         let filename = absolute_path.file_name().unwrap().to_str().unwrap();
+    //         let root_filenames: Vec<&str> = vec!["index.xml", "preview1600.jpg", "preview256.jpg", "preview560.jpg", "skin.html", "style.css"];
+    //         let copy_path_buf = if root_filenames.contains(&filename) {
+    //             dot_torytis_real_struct_dir_path_buf.join(filename)
+    //         } else {
+    //             dot_torytis_real_struct_dir_path_buf.join("images").join(filename)
+    //         };
+    //         fs::copy(absolute_path, copy_path_buf.as_path()).unwrap();
+    //     }
+    // }
 }

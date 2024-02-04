@@ -1,0 +1,264 @@
+{
+  "is_guest": false,
+  "blog_title": "torytis 블로그",
+  "blog_description": "torytis 블로그에 오신 것을 환영합니다.",
+  "visitor": {
+    "count_total": 100,
+    "count_today": 50,
+    "count_yesterday": 13
+  },
+  "guestbook_list": [
+    { 
+      "name": "홍길동",
+      "guest_rep_id": "1",
+      "guest_rep_logo": "",
+      "created_at": "2024-02-03 23:34:41",
+      "content": "방명록 남기고 갑니다~!",
+      "guestbook_list": [
+        {
+          "name": "신짱구",
+          "guest_rep_id": "2",
+          "guest_rep_logo": "",
+          "created_at": "2024-02-03 23:36:12",
+          "content": "감사합니다!!"
+        }
+      ]
+    },
+    { 
+      "name": "홍길동2",
+      "guest_rep_id": "3",
+      "guest_rep_logo": "",
+      "created_at": "2024-02-03 20:17:01",
+      "content": "블로그가 멋지네요 ㅎㅎ",
+      "guestbook_list": [
+        {
+          "name": "신짱구",
+          "guest_rep_id": "4",
+          "guest_rep_logo": "",
+          "created_at": "2024-02-03 20:24:12",
+          "content": "칭찬 감사합니다!!"
+        },
+        {
+          "name": "신짱구",
+          "guest_rep_id": "5",
+          "guest_rep_logo": "",
+          "created_at": "2024-02-03 20:25:51",
+          "content": "아참 그리고 요청하신 메일 보냈으니 확인 부탁드릴게요~~^^"
+        }
+      ]
+    }
+  ],
+  "category_list": [
+    { 
+      "name": "카테고리1", 
+      "category_list": [
+        {
+          "name": "서브카테고리 1"
+        },
+        {
+          "name": "서브카테고리 2",
+          "is_new": true
+        },
+        {
+          "name": "서브카테고리 3"
+        }
+      ]
+    },
+    { 
+      "name": "카테고리2", 
+      "category_list": [
+        {
+          "name": "서브카테고리 a"
+        },
+        {
+          "name": "서브카테고리 b"
+        },
+        {
+          "name": "서브카테고리 c"
+        }
+      ]
+    },
+    { 
+      "name": "카테고리3", 
+      "category_list": [
+        {
+          "name": "서브카테고리 가"
+        },
+        {
+          "name": "서브카테고리 나"
+        },
+        {
+          "name": "서브카테고리 다"
+        }
+      ]
+    },
+    { 
+      "name": "카테고리4"
+    }
+  ],
+  "posts": [
+    {
+      "category_name": "공지사항",
+      "tag_list": ["react", "angular", "node.js"],
+      "post_id": "1",
+      "post_type": "Notice",
+      "is_private": true,
+      "is_require_password": false,
+      "require_password": "123123",
+      "created_at": "2024-02-03 15:46:00",
+      "title": "글 제목",
+      "thumbnail_img_url": "",
+      "contents": [
+        {
+          "type": "Paragraph",
+          "value": "안녕하세요. <br /> 반갑습니다."
+        },
+        {
+          "type": "Image",
+          "value": "이미지 URL"
+        }
+      ],
+      "comment_list": [
+        {
+          "comment_id": "comment19900001",
+          "name": "방문자1",
+          "profile_img_url": "이미지 URL",
+          "content": "댓글 남기고 갑니다.",
+          "datetime": "2024-01-24 17:26:00",
+          "comment_list": [
+            {
+              "comment_id": "comment19900002",
+              "name": "방문자2",
+              "profile_img_url": "이미지 URL",
+              "content": "저는 댓글의 댓글 남기고 갑니다~",
+              "datetime": "2024-01-24 17:32:00"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_name": "카테고리3",
+      "tag_list": ["tag1", "tag2", "tag3"],
+      "post_id": "3",
+      "post_type": "Normal",
+      "is_private": false,
+      "is_require_password": false,
+      "require_password": "123123",
+      "created_at": "2024-01-26 14:27:14",
+      "title": "글 제목 3",
+      "thumbnail_img_url": "",
+      "contents": [
+        {
+          "type": "Paragraph",
+          "value": "안녕하세요. <br /> 반갑습니다."
+        },
+        {
+          "type": "H2",
+          "value": "제목1"
+        },
+        {
+          "type": "H3",
+          "value": "제목2"
+        },
+        {
+          "type": "Codeblock",
+          "values": [
+            "function main() {",
+            "  console.log(\"안녕하세요!\");",
+            "}"
+          ]
+        },
+        {
+          "type": "H4",
+          "value": "제목3"
+        },
+        {
+          "type": "Image",
+          "value": "이미지 URL"
+        }
+      ],
+      "comment_list": [
+        {
+          "comment_id": "comment19900033",
+          "name": "방문자3",
+          "profile_img_url": "이미지 URL",
+          "content": "댓글 남기고 갑니다.",
+          "datetime": "2024-01-25 09:01:34",
+          "comment_list": [
+            {
+              "comment_id": "comment19900034",
+              "name": "방문자4",
+              "profile_img_url": "이미지 URL",
+              "content": "저는 댓글의 댓글 남기고 갑니다~",
+              "datetime": "2024-01-25 10:11:35"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "category_name": "카테고리3",
+      "post_id": "5",
+      "post_type": "Protected",
+      "is_private": false,
+      "is_require_password": false,
+      "require_password": "123123",
+      "created_at": "2024-01-26 14:27:14",
+      "title": "글 제목 3",
+      "thumbnail_img_url": "",
+      "contents": [
+        {
+          "type": "Paragraph",
+          "value": "안녕하세요. <br /> 반갑습니다."
+        },
+        {
+          "type": "Image",
+          "value": "이미지 URL"
+        }
+      ],
+      "comment_list": [
+        {
+          "comment_id": "comment19900033",
+          "name": "방문자3",
+          "profile_img_url": "이미지 URL",
+          "content": "댓글 남기고 갑니다.",
+          "datetime": "2024-01-25 09:01:34",
+          "comment_list": [
+            {
+              "comment_id": "comment19900034",
+              "name": "방문자4",
+              "profile_img_url": "이미지 URL",
+              "content": "저는 댓글의 댓글 남기고 갑니다~",
+              "datetime": "2024-01-25 10:11:35"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "skin_home_cover": {
+    "is_active": false,
+    "cover_items": [
+      {
+        "cover_name": "list_half",
+        "cover_title": "OO 컨텐츠 모음1",
+        "cover_category_name": "카테고리1///서브카테고리 3"
+      },
+      {
+        "cover_name": "list_half",
+        "cover_title": "OO 컨텐츠 모음2",
+        "cover_category_name": "카테고리3"
+      },
+      {
+        "cover_name": "list",
+        "cover_title": "OO 컨텐츠 모음3",
+        "cover_category_name": "카테고리3"
+      }
+    ]
+  },
+  "skin_setting_variables": {
+    "total_list_max_col_count": "total_list_max_col_count_4",
+    "blog_screen_max_width": "1660"
+  }
+}

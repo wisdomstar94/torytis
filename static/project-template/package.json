@@ -4,6 +4,7 @@
     "scripts": {
         "build": "torytis build",
         "build:variable": "torytis varbuild",
+        "dev": "torytis dev --port=3000", 
         "tsc": "tsc",
         "tailwindcss": "tailwindcss",
         "torytis": "torytis"
