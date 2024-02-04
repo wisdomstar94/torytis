@@ -676,7 +676,11 @@ impl Post {
                     PostContentType::H4 => {
                         strings.push(item.value.unwrap_or_else(|| String::new()));
                     },
-                    
+                    PostContentType::Codeblock => {
+                        for k in item.values.unwrap() {
+                            strings.push(k);
+                        }
+                    },
                 }
             }
             
@@ -720,6 +724,56 @@ impl Post {
                     "#, item.value.clone().unwrap());
                     list_vec.push(html);
                 },
+                PostContentType::Codeblock => {
+                    // let html = r#"
+                    //     <pre id="code_1706856177241" class="javascript" data-ke-language="javascript" data-ke-type="codeblock">
+                    //         <code class="hljs language-javascript">
+                    //             <table class="hljs-ln">
+                    //                 <tbody>
+                    //                     <tr>
+                    //                         <td class="hljs-ln-line hljs-ln-numbers" data-line-number="1">
+                    //                             <div class="hljs-ln-n" data-line-number="1"></div>
+                    //                         </td>
+                    //                         <td class="hljs-ln-line hljs-ln-code" data-line-number="1">
+                    //                             <span class="hljs-keyword" data-original-color="">function</span> <span class="hljs-title function_" data-original-color="">main</span>(<span class="hljs-params" data-original-color=""></span>) {
+                    //                         </td>
+                    //                     </tr>
+                    //                     <tr>
+                    //                         <td class="hljs-ln-line hljs-ln-numbers" data-line-number="2">
+                    //                             <div class="hljs-ln-n" data-line-number="2"></div>
+                    //                         </td>
+                    //                         <td class="hljs-ln-line hljs-ln-code" data-line-number="2">    
+                    //                             <span class="hljs-variable language_" data-original-color="">console</span>.<span class="hljs-title function_" data-original-color="">log</span>(<span class="hljs-string" data-original-color="">"안녕하세요!"</span>);
+                    //                         </td>
+                    //                     </tr>
+                    //                     <tr>
+                    //                         <td class="hljs-ln-line hljs-ln-numbers" data-line-number="3">
+                    //                             <div class="hljs-ln-n" data-line-number="3"></div>
+                    //                         </td>
+                    //                         <td class="hljs-ln-line hljs-ln-code" data-line-number="3">
+                    //                             }
+                    //                         </td>
+                    //                     </tr>
+                    //                 </tbody>
+                    //             </table>
+                    //         </code>
+                    //     </pre>
+                    // "#;
+                    // list_vec.push(html.to_string());  
+                    let mut html = String::from(r#"
+                        <pre id="code_1706856177241" class="css" data-ke-language="css" data-ke-type="codeblock">
+                            <code class="">[##_toryris_replace_place_##]</code>
+                        </pre>
+                    "#);
+                    let mut l_v: Vec<String> = Vec::new();
+                    for k in item.values.clone().unwrap() {
+                        let temp_template = format!("{}\n", k);
+                        l_v.push(temp_template);
+                    }
+                    let trs = l_v.join("");
+                    html = html.replace(r#"[##_toryris_replace_place_##]"#, trs.as_str());
+                    list_vec.push(html);  
+                },
             }
         }
         list_vec.join("")
@@ -733,6 +787,7 @@ pub enum PostContentType {
     H2,
     H3,
     H4,
+    Codeblock,
 }
 
 // #[derive(Deserialize, Debug, Clone)]

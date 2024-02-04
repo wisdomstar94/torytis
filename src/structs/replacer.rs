@@ -422,7 +422,7 @@ impl Replacer {
         let is_hide = option.is_hide;
 
         let root = Rc::clone(&self.root);
-        let xml_cover_items = Rc::new(self.config.get_xml_cover_items());
+        // let xml_cover_items = Rc::new(self.config.get_xml_cover_items());
         let skin_home_cover_setting_info = Rc::new(self.config.get_skin_home_cover());
 
         let posts = Rc::new(self.config.get_posts(None));
@@ -1069,7 +1069,7 @@ impl Replacer {
             let time = datetime_split.get(1).unwrap();
             let time_split: Vec<&str> = time.split(":").collect();
             let time_hour = Rc::new(time_split.get(0).unwrap().to_string());
-            let time_minute = Rc::new(time_split.get(1).unwrap().to_string());
+            // let time_minute = Rc::new(time_split.get(1).unwrap().to_string());
             let time_second = Rc::new(time_split.get(2).unwrap().to_string());
             let contents = Rc::new(post.get_contents());
             let category_name = Rc::new(post.category_name.clone());

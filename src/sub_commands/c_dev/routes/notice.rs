@@ -62,7 +62,7 @@ async fn root_route(req: Request) -> Response {
       .unwrap();
 }
 
-async fn notice_permalink_route(Path(post_id): Path<String>, req: Request) -> Response {
+async fn notice_permalink_route(Path(post_id): Path<String>, _: Request) -> Response {
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
     replacer.apply_post_permalink_page(ApplyPostPermalinkPageOptions {

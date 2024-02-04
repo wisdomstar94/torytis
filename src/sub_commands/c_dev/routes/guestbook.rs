@@ -1,6 +1,6 @@
 use axum::{body::Body, extract::Request, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
-use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestbookPageOptions, ApplyIndexListOptions, ApplyIndexPageOptions, Replacer}, torytis_dev_config::{GuestbookSelectOption, PostSelectOption, PostType}}};
+use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestbookPageOptions, Replacer}, torytis_dev_config::GuestbookSelectOption}};
 
 pub fn routes() -> Router {
     Router::new()
