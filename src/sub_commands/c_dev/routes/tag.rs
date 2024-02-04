@@ -61,6 +61,7 @@ async fn tag_post_index_route(Path(tag_name): Path<String>, req: Request) -> Res
                 sub_category_name: None,
                 tag_name: Some(tag_name),
                 title: None,
+                post_id: None,
             }),
         },
     });

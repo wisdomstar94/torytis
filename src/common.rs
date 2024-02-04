@@ -1,6 +1,9 @@
 use std::{env, path::PathBuf, fs};
 
 use chrono::NaiveDateTime;
+use include_dir::Dir;
+
+use crate::statics::STATIC_DIR;
 
 pub fn get_working_dir_path_buf() -> PathBuf {
     env::current_dir().unwrap()
@@ -44,6 +47,11 @@ pub fn get_index_xml_content() -> String {
 pub fn get_temp_html_content() -> String {
     let path_buf = get_temp_html_path_buf();
     fs::read_to_string(path_buf.as_path()).unwrap()
+}
+
+pub fn get_static_tistory_cdn_dir_path_buf() -> &'static Dir<'static> {
+    let dir = STATIC_DIR.get_dir("tistory-cdn").unwrap();
+    dir
 }
 
 pub struct PaginationCalculateInfo {

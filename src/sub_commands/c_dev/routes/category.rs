@@ -48,6 +48,7 @@ async fn root_route(req: Request) -> Response {
                 sub_category_name: None,
                 tag_name: None,
                 title: None,
+                post_id: None,
             }),
         },
     });
@@ -92,6 +93,7 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
                 sub_category_name: None,
                 tag_name: None,
                 title: None,
+                post_id: None,
             }),
         },
     });
@@ -136,6 +138,7 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
                 sub_category_name: Some(sub_category_name.clone()),
                 tag_name: None,
                 title: None,
+                post_id: None,
             }),
         },
     });

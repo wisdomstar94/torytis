@@ -233,6 +233,7 @@ impl TorytisDevConfig {
             sub_category_name: None,
             tag_name: None,
             title: None,
+            post_id: None,
         }));
         if let Some(v) = list {
             result = Some(v.iter().take(5).map(|s| s.clone()).collect::<Vec<Post>>())
@@ -322,6 +323,15 @@ impl TorytisDevConfig {
                             }
                         }
                     }
+
+                    if let Some(post_id) = &select_option.post_id {
+                        required_option_count += 1;
+                        if let Some(this_post_id) = &x.post_id {
+                            if this_post_id == post_id {
+                                required_option_matched_count += 1;
+                            }
+                        }
+                    }
                 }
 
                 if required_option_count > 0 {
@@ -356,6 +366,103 @@ impl TorytisDevConfig {
             posts = Some(filterd_vec);
         }
         posts
+    }
+
+    pub fn get_post(&self, post_id: Option<String>) -> Option<Post> {
+        let mut result: Option<Post> = None;
+        let posts = self.get_posts(Some(PostSelectOption {
+            page: None,
+            size: None,
+            post_type: None,
+            category_name: None,
+            sub_category_name: None,
+            tag_name: None,
+            title: None,
+            post_id,
+        }));
+        if let Some(v) = posts {
+            if let Some(k) = v.get(0) {
+                result = Some(k.clone());
+            }
+        }
+        result
+    }
+
+    pub fn get_next_and_prev_post(&self, post_id: Option<String>) -> (Option<Post>, Option<Post>) {
+        if post_id.is_none() {
+            return (None, None);
+        }
+        let post_id = post_id.unwrap();
+
+        let mut next_post: Option<Post> = None;
+        let mut prev_post: Option<Post> = None;
+
+        let posts_wrap = self.get_posts(None);
+        if let Some(posts) = &posts_wrap {
+            let mut index = 0;
+            let mut target_post_index = 0;
+            let mut target_post_category_name = String::new();
+
+            for post in posts {
+                if post.post_id.clone().unwrap() == post_id {
+                    target_post_index = index;
+                    target_post_category_name = post.category_name.clone().unwrap();
+                    break;
+                }
+                index += 1;
+            }
+
+            let mut next_post_index = 99999;
+            let mut current_index = 0;
+            let max_index = target_post_index - 1;
+            loop {
+                if next_post_index != 99999 {
+                    break;
+                }
+
+                if current_index > max_index {
+                    break;
+                }
+
+                let post = posts.get(current_index);
+                if let Some(p) = post {
+                    if p.category_name.clone().unwrap() == target_post_category_name {
+                        next_post_index = current_index;
+                        break;
+                    }
+                }
+
+                current_index += 1;
+            }
+
+            let mut prev_post_index = 99999;
+            let mut current_index = target_post_index + 1;
+            let max_index = posts.len() - 1;
+            loop {
+                if prev_post_index != 99999 {
+                    break;
+                }
+
+                if current_index > max_index {
+                    break;
+                }
+
+                let post = posts.get(current_index);
+                if let Some(p) = post {
+                    if p.category_name.clone().unwrap() == target_post_category_name {
+                        prev_post_index = current_index;
+                        break;
+                    }
+                }
+
+                current_index += 1;
+            }
+
+            next_post = posts.get(next_post_index).cloned();
+            prev_post = posts.get(prev_post_index).cloned();
+        }
+
+        (next_post, prev_post)
     }
 
     pub fn get_guestbooks(&self, select_option: Option<GuestbookSelectOption>) -> Vec<GuestBook> {
@@ -567,9 +674,28 @@ impl Post {
         strings.join("")
     }
 
-    // pub fn get_contents(&self) {
-    //     let content
-    // }
+    pub fn get_contents(&self) -> String {
+        let mut list_vec: Vec<String> = Vec::new();
+        for item in &self.contents.clone().unwrap() {
+            match item.r#type.clone().unwrap() {
+                PostContentType::Paragraph => {
+                    let html = format!(r#"<p data-ke-size="size16" data-original-color="">{}</p>"#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
+                PostContentType::Image => {
+                    let html = format!(r#"
+                        <figure class="imageblock alignCenter" data-ke-mobilestyle="widthOrigin" data-filename="test-image.jpeg" data-origin-width="225" data-origin-height="225">
+                            <span data-url="https://blog.kakaocdn.net/dn/NGOAu/btsAxZe9TJE/HRLbq1QU8UlHP8FhOQlKE0/img.jpg" data-lightbox="lightbox" data-original-color="">
+                                <img src="{}" onerror="this.onerror=null;" data-filename="test-image.jpeg" data-origin-width="225" data-origin-height="225">
+                            </span>
+                        </figure>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
+            }
+        }
+        list_vec.join("")
+    }
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -614,6 +740,7 @@ pub struct PostSelectOption {
     pub sub_category_name: Option<String>,
     pub tag_name: Option<String>,
     pub title: Option<String>,
+    pub post_id: Option<String>,
 }
 
 impl PostSelectOption {

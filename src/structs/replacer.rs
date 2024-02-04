@@ -258,7 +258,12 @@ impl Replacer {
                 html.replace(r#"[##_title_##]"#, &config.get_blog_title().unwrap())
             })
             .html_str_replace(|html| {
-                html.replace(r#"<link href="./style.css" type="text/css" rel="stylesheet" />"#, r#"<link href="/virtualcdn/style.css" type="text/css" rel="stylesheet" />"#)
+                html.replace(r#"<link href="./style.css" type="text/css" rel="stylesheet" />"#, r#"
+                    <link href="/tistorycdn/content.css" type="text/css" rel="stylesheet" />
+                    <link href="/tistorycdn/postBtn.css" type="text/css" rel="stylesheet" />
+                    <link href="/tistorycdn/another_category.css" type="text/css" rel="stylesheet" />
+                    <link href="/virtualcdn/style.css" type="text/css" rel="stylesheet" />
+                "#)
             })
             .html_str_replace(|html| {
                 html.replace(r#"<script src="./images/script.js"></script>"#, r#"<script src="/virtualcdn/images/script.js"></script>"#)
@@ -880,6 +885,316 @@ impl Replacer {
             .commit()
         ;
     }
+
+    fn apply_post_permalink(&self, option: ApplyPostPermalink) {
+        let root = Rc::clone(&self.root);
+        let config = Rc::new(self.config.clone());
+        // let is_guest = Rc::new(self.config.get_is_guest());
+        // let s_article_index_rep_template = Rc::new(self.get_s_article_index_rep_template());
+        let s_article_permalink_rep_template = Rc::new(self.get_s_article_permalink_rep_template());
+        // let s_notice_index_rep_template = Rc::new(self.get_s_notice_index_rep_template());
+        let s_notice_permalink_rep_template = Rc::new(self.get_s_notice_permalink_rep_template());
+        // let s_article_protected_index_rep_template = Rc::new(self.get_s_article_protected_index_rep_template());
+        let s_article_protected_permalink_rep_template = Rc::new(self.get_s_article_protected_permalink_rep_template());
+
+        fn common(target: &Rc<Bucket>, config: &Rc<TorytisDevConfig>, post: &Rc<Post>) {
+            let is_guest = Rc::new(config.get_is_guest());
+            let is_private = Rc::new(post.is_private);
+            let post_title = Rc::new(post.title.clone());
+            let post_category_name = Rc::new(post.category_name.clone());
+            let tag_list = Rc::new(post.tag_list.clone());
+            let post_created_at = Rc::new(post.created_at.clone());
+            let created_at = post_created_at.deref().as_ref().unwrap();
+            let datetime_split: Vec<&str> = created_at.split(" ").collect();
+            let date = datetime_split.get(0).unwrap();
+            let date_split: Vec<&str> = date.split("-").collect();
+            let date_year = Rc::new(date_split.get(0).unwrap().to_string());
+            let date_month = Rc::new(date_split.get(1).unwrap().to_string());
+            let date_date = Rc::new(date_split.get(2).unwrap().to_string());
+            let time = datetime_split.get(1).unwrap();
+            let time_split: Vec<&str> = time.split(":").collect();
+            let time_hour = Rc::new(time_split.get(0).unwrap().to_string());
+            let time_minute = Rc::new(time_split.get(1).unwrap().to_string());
+            let time_second = Rc::new(time_split.get(2).unwrap().to_string());
+            let contents = Rc::new(post.get_contents());
+            let category_name = Rc::new(post.category_name.clone());
+            let post_next_and_prev = Rc::new(config.get_next_and_prev_post(post.post_id.clone()));
+            let post_next_and_prev2 = Rc::clone(&post_next_and_prev);
+
+            target
+                .select(SelectOptions {
+                    element_name: "s_ad_div",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    if let Some(v) = is_guest.deref() {
+                        if v == &true {
+                            return String::new();
+                        }
+                    }
+                    matched_str_unwrap.unwrap()
+                })
+                .commit()
+            ;
+
+            target
+                .html_str_replace(|html| {
+                    let is_private = is_private.deref().unwrap();
+                    let status_string: &str = if is_private {
+                        "비공개"
+                    } else {
+                        "공개"
+                    };
+                    html.replace(r#"[##_s_ad_s1_label_##]"#, status_string)
+                }) 
+                .html_str_replace(|html| {
+                    let title = post_title.deref().as_ref().unwrap();
+                    html.replace(r#"[##_article_rep_title_##]"#, title.as_str())
+                })
+                .html_str_replace(|html| {
+                    let category_name = post_category_name.deref().as_ref().unwrap();
+                    let binding = category_name.replace("///", "/");
+                    let c = binding.as_str();
+                    html.replace(r#"[##_article_rep_category_link_##]"#, format!(r#"/category/{}"#, c).as_str())
+                })
+                .html_str_replace(|html| {
+                    let category_name = post_category_name.deref().as_ref().unwrap();
+                    let binding = category_name.replace("///", "/");
+                    let c = binding.as_str();
+                    html.replace(r#"[##_article_rep_category_##]"#, c)
+                })
+            ;
+
+            target
+                .select(SelectOptions {
+                    element_name: "s_tag_label",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    if let None = tag_list.deref().as_ref() {
+                        return String::new();
+                    }
+                    let tag_list = tag_list.deref().as_ref().unwrap();
+
+                    let mut list_vec: Vec<String> = Vec::new();
+                    for item in tag_list {
+                        let html_str = format!(r#"<a href="/tag/{}" rel="tag">{}</a>"#, item, item);
+                        list_vec.push(html_str);
+                    }
+                    let list_html = list_vec.join(", ");
+
+                    let mut result = matched_str_unwrap.unwrap();
+                    result = result.replace(r#"[##_tag_label_rep_##]"#, &list_html);
+                    result
+                })
+                .commit()
+            ;
+
+            target
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_year_##]"#, &date_year.as_str())
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_month_##]"#, &date_month.as_str())
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_day_##]"#, &date_date.as_str())
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_hour_##]"#, &time_hour.as_str())
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_minute_##]"#, &time_hour.as_str())
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_date_second_##]"#, &time_second.as_str())
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_author_##]"#, "관리자")
+                })
+                .html_str_replace(|html| {
+                    let mut cn = String::new();
+                    if let Some(v) = category_name.deref() {
+                        cn = v.clone().replace(r#"///"#, "/");
+                    }
+
+                    html.replace(r#"[##_article_rep_desc_##]"#, format!(r#"
+                        <div class="tt_article_useless_p_margin contents_style">
+                            {}
+                        </div>
+
+                        <div class="container_postbtn #post_button_group">
+                            <div class="postbtn_like">
+                                <div class="wrap_btn" id="reaction-15">
+                                    <button class="btn_post uoc-icon">
+                                        <div class="uoc-icon">
+                                            <span class="ico_postbtn ico_like">좋아요</span>
+                                            <span class="txt_like uoc-count">1</span>
+                                        </div>
+                                    </button>
+                                </div>
+                                
+                                <div class="wrap_btn wrap_btn_share">
+                                    <button type="button" class="btn_post sns_btn btn_share" aria-expanded="false">
+                                        <span class="ico_postbtn ico_share">공유하기</span>
+                                    </button>
+                                    <div class="layer_post" id="tistorySnsLayer">
+                                        <div class="bundle_post">
+                                            <button class="btn_mark" data-service="url">
+                                                <span class="ico_sns ico_url"></span>
+                                                <span class="txt_sns">URL 복사</span>
+                                            </button>
+                                            <button class="btn_mark" data-service="kakaotalk">
+                                                <span class="ico_sns ico_kt"></span>
+                                                <span class="txt_sns">카카오톡 공유</span>
+                                            </button>
+                                            <button class="btn_mark" data-service="facebook">
+                                                <span class="ico_sns ico_fb"></span>
+                                                <span class="txt_sns">페이스북 공유</span>
+                                            </button>
+                                            <button class="btn_mark" data-service="twitter">
+                                                <span class="ico_sns ico_x"></span>
+                                                <span class="txt_sns">엑스 공유</span>
+                                            </button>
+                                            <span class="ico_postbtn ico_arrbt"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wrap_btn">
+                                    <button type="button" class="btn_post" data-entry-id="15">
+                                        <span class="ico_postbtn ico_statistics">통계</span>
+                                    </button>
+                                </div>
+                                <div class="wrap_btn wrap_btn_etc" data-entry-id="15" data-entry-visibility="public" data-category-visibility="public">
+                                    <button type="button" class="btn_post btn_etc1" aria-expanded="false">
+                                        <span class="ico_postbtn ico_etc">게시글 관리</span>
+                                    </button>
+                                    <div class="layer_post" id="tistoryEtcLayer"></div>
+                                </div>
+                            </div>
+                            <div data-tistory-react-app="SupportButton"></div>
+                        </div>
+
+                        <div class="another_category another_category_color_gray">
+                            <h4>'<a href="/category/A%20%EC%84%B8%EA%B3%84">{}</a>' 카테고리의 다른 글</h4>
+                            <table>
+                            <tbody><tr>
+                                <th><a href="/13">테스트 5</a>&nbsp;&nbsp;<span>(0)</span></th>
+                                <td>2023.10.03</td>
+                            </tr>
+                            <tr>
+                                <th><a href="/12">테스트 4</a>&nbsp;&nbsp;<span>(0)</span></th>
+                                <td>2023.10.03</td>
+                            </tr>
+                            <tr>
+                                <th><a href="/11">테스트 3</a>&nbsp;&nbsp;<span>(0)</span></th>
+                                <td>2023.10.03</td>
+                            </tr>
+                            <tr>
+                                <th><a href="/10">테스트 2</a>&nbsp;&nbsp;<span>(0)</span></th>
+                                <td>2023.10.03</td>
+                            </tr>
+                            <tr>
+                                <th><a href="/9">테스트 1</a>&nbsp;&nbsp;<span>(0)</span></th>
+                                <td>2023.10.03</td>
+                            </tr>
+                            </tbody></table>
+                        </div>
+                    "#, contents.as_str(), cn).as_str())
+                })
+            ;
+
+            // s_article_next
+            target
+                .select(SelectOptions {
+                    element_name: "s_article_next",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let post_next_and_prev = Rc::clone(&post_next_and_prev);
+                    if post_next_and_prev.0.is_none() {
+                        return String::new();
+                    }
+                    let next_post = post_next_and_prev.0.clone().unwrap();
+                    let post_id = next_post.post_id.unwrap();
+                    let next_post_title = next_post.title.unwrap();
+                    let mut result = matched_str_unwrap.unwrap();
+                    let mut url = format!("/{}", &post_id);
+                    if let PostType::Notice = next_post.post_type.unwrap() {
+                        url = format!("/notice/{}", &post_id);
+                    }
+                    result = result.replace(r#"[##_article_next_link_##]"#, url.as_str());
+                    result = result.replace(r#"[##_article_next_title_##]"#, next_post_title.as_str());
+                    result
+                })
+                .commit()   
+            ;
+
+            // s_article_prev
+            target
+                .select(SelectOptions {
+                    element_name: "s_article_prev",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let post_next_and_prev = Rc::clone(&post_next_and_prev2);
+                    if post_next_and_prev.1.is_none() {
+                        return String::new();
+                    }
+                    let prev_post = post_next_and_prev.1.clone().unwrap();
+                    let post_id = prev_post.post_id.unwrap();
+                    let prev_post_title = prev_post.title.unwrap();
+                    let mut result = matched_str_unwrap.unwrap();
+                    let mut url = format!("/{}", &post_id);
+                    if let PostType::Notice = prev_post.post_type.unwrap() {
+                        url = format!("/notice/{}", &post_id);
+                    }
+                    result = result.replace(r#"[##_article_prev_link_##]"#, url.as_str());
+                    result = result.replace(r#"[##_article_prev_title_##]"#, prev_post_title.as_str());
+                    result
+                })
+                .commit()   
+            ;
+        }
+
+        let post = self.config.get_post(Some(option.post_id));
+        if let Some(o) = post {
+            let my_post = Rc::new(o);
+            match my_post.post_type.as_ref().unwrap() {
+                PostType::Normal => {
+                    let mini_root = Bucket::new(&s_article_permalink_rep_template);
+                    common(&mini_root, &config, &my_post);
+                    root
+                        .html_str_replace(|html| {
+                            html.replace(r#"<s_article_rep></s_article_rep>"#, mini_root.get_html().as_str())
+                        })
+                    ;
+                },
+                PostType::Notice => {
+                    let mini_root = Bucket::new(&s_notice_permalink_rep_template);
+                    common(&mini_root, &config, &my_post);
+                    root
+                        .html_str_replace(|html| {
+                            html.replace(r#"<s_article_rep></s_article_rep>"#, mini_root.get_html().as_str())
+                        })
+                    ;
+                },
+                PostType::Protected => {
+                    let mini_root = Bucket::new(&s_article_protected_permalink_rep_template);
+                    common(&mini_root, &config, &my_post);
+                    root
+                        .html_str_replace(|html| {
+                            html.replace(r#"<s_article_rep></s_article_rep>"#, mini_root.get_html().as_str())
+                        })
+                    ;
+                },
+            }
+        }
+    }
 } 
 
 impl Replacer {
@@ -974,6 +1289,34 @@ impl Replacer {
         });
         &self
     }
+
+    pub fn apply_post_permalink_page(&self, option: ApplyPostPermalinkPageOptions) -> &Self {
+        let apply_post_permalink = option.apply_post_permalink;
+        self.apply_common(ApplyCommonOptions { 
+            search: String::new(), 
+            body_id: String::from("tt-body-page"),
+        });
+        self.apply_home_cover();
+        if let Some(v) = apply_post_permalink {
+            self.apply_post_permalink(v);
+        }
+        self.apply_index_list(ApplyIndexListOptions {
+            is_hide: true,
+            post_select_option: None,
+        });
+        self.apply_guest_book(ApplyGuestBookOptions { 
+            is_hide: true,
+            guestbook_select_option: None,
+        });
+        self.apply_tag_list(ApplyTagListOptions { 
+            is_hide: true,
+        });
+        self.apply_pagination(ApplyPaginationOptions { 
+            is_hide: true, 
+            pagination_info: None 
+        });
+        &self
+    }
 }
 
 struct ApplyCommonOptions {
@@ -994,6 +1337,14 @@ pub struct ApplyIndexPageOptions {
 pub struct ApplyGuestbookPageOptions {
     pub base_url: String,
     pub guestbook_select_option: GuestbookSelectOption,
+}
+
+pub struct ApplyPostPermalinkPageOptions {
+    pub apply_post_permalink: Option<ApplyPostPermalink>,
+}
+
+pub struct ApplyPostPermalink {
+    pub post_id: String,
 }
 
 pub struct ApplyIndexListOptions {

@@ -61,6 +61,7 @@ async fn search_index_route(Path(search_keyword): Path<String>, req: Request) ->
                 sub_category_name: None,
                 tag_name: None,
                 title: Some(search_keyword),
+                post_id: None,
             }),
         },
     });
