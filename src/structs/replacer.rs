@@ -899,6 +899,7 @@ impl Replacer {
 
         fn common(target: &Rc<Bucket>, config: &Rc<TorytisDevConfig>, post: &Rc<Post>) {
             let is_guest = Rc::new(config.get_is_guest());
+            let is_guest2 = Rc::clone(&is_guest);
             let is_private = Rc::new(post.is_private);
             let post_title = Rc::new(post.title.clone());
             let post_category_name = Rc::new(post.category_name.clone());
@@ -1198,6 +1199,7 @@ impl Replacer {
                     let unwarp_html = matched_str_unwrap.unwrap();
                     let comment_list2 = Rc::clone(&comment_list2);
                     let mini_root = Bucket::new(&unwarp_html);
+                    let is_guest2 = Rc::clone(&is_guest2);
 
                     // s_rp_container
                     mini_root
@@ -1274,10 +1276,67 @@ impl Replacer {
                         })
                         .commit()
                     ;
+
                     // s_rp_input_form
-                    // mini_root
-                        
-                    // ;
+                    mini_root
+                        .select(SelectOptions {
+                            element_name: "s_rp_input_form",
+                            attrs: None,
+                            is_attrs_check_string_contain: true,
+                        })   
+                        .replacer(move |_, matched_str_unwrap| {
+                            let is_guest2 = Rc::clone(&is_guest2);
+
+                            let mut result2 = matched_str_unwrap.unwrap();
+                            result2 = result2.replace(r#"[##_rp_input_comment_##]"#, "comment");
+                            result2 = result2.replace(r#"[##_rp_onclick_submit_##]"#, r#"alert('본 기능은 실제 티스토리 블로그 환경에서 시도해주세요.');"#);
+
+                            let mini_root2 = Bucket::new(&result2);
+
+                            // s_rp_guest
+                            mini_root2
+                                .select(SelectOptions {
+                                    element_name: "s_rp_guest",
+                                    attrs: None,
+                                    is_attrs_check_string_contain: true,
+                                })
+                                .replacer(move |_, matched_str_unwrap| {
+                                    let ig = is_guest2.deref();
+                                    if let Some(ii) = ig {
+                                        if ii != &true {
+                                            return String::new();
+                                        }
+                                    }
+
+                                    let mut result = matched_str_unwrap.unwrap();
+                                    result = result.replace(r#"[##_rp_input_name_##]"#, "name");
+                                    result = result.replace(r#"[##_guest_name_##]"#, "");
+                                    result = result.replace(r#"[##_rp_input_password_##]"#, "password");
+                                    result = result.replace(r#"[##_rp_admin_check_##]"#, "");
+                                    result
+                                })
+                                .commit()
+                            ;
+
+                            // s_rp_member
+                            mini_root2
+                                .select(SelectOptions {
+                                    element_name: "s_rp_member",
+                                    attrs: None,
+                                    is_attrs_check_string_contain: true,
+                                })
+                                .replacer(move |_, matched_str_unwrap| {
+                                    let mut result = matched_str_unwrap.unwrap();
+                                    result = result.replace(r#"[##_rp_input_is_secret_##]"#, "secret");
+                                    result
+                                })
+                                .commit()
+                            ;
+
+                            mini_root2.get_html()
+                        })
+                        .commit()
+                    ;
 
                     mini_root.get_html()
                 })
