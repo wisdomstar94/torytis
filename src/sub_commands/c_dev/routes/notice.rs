@@ -1,10 +1,11 @@
-use axum::{body::Body, extract::Request, http::StatusCode, response::Response, routing::get, Router};
+use axum::{body::Body, extract::{Path, Request}, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
-use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOptions, ApplyIndexPageOptions, Replacer}, torytis_dev_config::{PostSelectOption, PostType}}};
+use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOptions, ApplyIndexPageOptions, ApplyPostPermalink, ApplyPostPermalinkPageOptions, Replacer}, torytis_dev_config::{PostSelectOption, PostType}}};
 
 pub fn routes() -> Router {
     Router::new()
         .route("/", get(root_route))
+        .route("/:post_id", get(notice_permalink_route))
         // .route("/:category_name", get(category_index_route))
         // .route("/:category_name/:sub_category_name", get(category_sub_category_index_route))
         // .route("/style.css", get(style_css_route))
@@ -53,6 +54,22 @@ async fn root_route(req: Request) -> Response {
         },
     });
 
+    return Response::builder()
+      .status(StatusCode::OK)
+      .header("Content-Type", "text/html")
+      .body(Body::from(replacer.get_html()))
+      .unwrap();
+}
+
+async fn notice_permalink_route(Path(post_id): Path<String>, req: Request) -> Response {
+    let skin_html_content = get_skin_html_content();
+    let replacer = Replacer::new(&skin_html_content);
+    replacer.apply_post_permalink_page(ApplyPostPermalinkPageOptions {
+        apply_post_permalink: Some(ApplyPostPermalink {
+            post_id,
+        }),
+    });
+    
     return Response::builder()
       .status(StatusCode::OK)
       .header("Content-Type", "text/html")

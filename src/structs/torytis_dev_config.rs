@@ -413,18 +413,18 @@ impl TorytisDevConfig {
             }
 
             let mut next_post_index = 99999;
-            let mut current_index = 0;
-            let max_index = target_post_index - 1;
+            let mut current_index: u32 = 0;
+            let max_index: i32 = target_post_index - 1;
             loop {
                 if next_post_index != 99999 {
                     break;
                 }
 
-                if current_index > max_index {
+                if current_index as i32 > max_index {
                     break;
                 }
 
-                let post = posts.get(current_index);
+                let post = posts.get(current_index as usize);
                 if let Some(p) = post {
                     if p.category_name.clone().unwrap() == target_post_category_name {
                         next_post_index = current_index;
@@ -436,18 +436,18 @@ impl TorytisDevConfig {
             }
 
             let mut prev_post_index = 99999;
-            let mut current_index = target_post_index + 1;
-            let max_index = posts.len() - 1;
+            let mut current_index: u32 = target_post_index as u32 + 1;
+            let max_index: i32 = posts.len() as i32 - 1;
             loop {
                 if prev_post_index != 99999 {
                     break;
                 }
 
-                if current_index > max_index {
+                if current_index as i32 > max_index {
                     break;
                 }
 
-                let post = posts.get(current_index);
+                let post = posts.get(current_index as usize);
                 if let Some(p) = post {
                     if p.category_name.clone().unwrap() == target_post_category_name {
                         prev_post_index = current_index;
@@ -458,8 +458,8 @@ impl TorytisDevConfig {
                 current_index += 1;
             }
 
-            next_post = posts.get(next_post_index).cloned();
-            prev_post = posts.get(prev_post_index).cloned();
+            next_post = posts.get(next_post_index as usize).cloned();
+            prev_post = posts.get(prev_post_index as usize).cloned();
         }
 
         (next_post, prev_post)

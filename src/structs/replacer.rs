@@ -448,8 +448,9 @@ impl Replacer {
         let notice_index_rep_template = self.get_s_notice_index_rep_template();
         let protected_index_rep_template = self.get_s_article_protected_index_rep_template();
         // println!("skin_variable_info_map {:#?}", skin_variable_info_map);
-        
-        fn common(root: &Bucket, item: Post) {
+        let config = Rc::new(self.config.clone());
+
+        fn common(root: &Bucket, item: Post, config: &Rc<TorytisDevConfig>) {
             let post_type = &item.post_type;
             let thumbnail_img_url1 = item.thumbnail_img_url.as_ref().unwrap().clone();
             let thumbnail_img_url2 = item.thumbnail_img_url.as_ref().unwrap().clone();
@@ -468,6 +469,8 @@ impl Replacer {
             let time_minute = time_split.get(1).unwrap().to_string();
             let time_second = time_split.get(2).unwrap().to_string();
             let content_summary = &item.get_contents_summary();
+            let is_guest = config.get_is_guest();
+            let is_private = item.is_private;
 
             root
                 .html_str_replace(|html| {
@@ -535,6 +538,33 @@ impl Replacer {
                     html.replace(r#"[##_article_rep_summary_##]"#, &content_summary)
                 })
             ;
+
+            root
+                .select(SelectOptions {
+                    element_name: "s_ad_div",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    if let Some(vv) = is_guest {
+                        if vv {
+                            return String::new();
+                        }
+                    }
+
+                    let is_private = is_private.unwrap();
+                    let status_string: &str = if is_private {
+                        "비공개"
+                    } else {
+                        "공개"
+                    };
+
+                    let mut result = matched_str_unwrap.unwrap();
+                    result = result.replace(r#"[##_s_ad_s1_label_##]"#, status_string);
+                    result
+                })
+                .commit()
+            ;
         }
 
         root
@@ -558,19 +588,19 @@ impl Replacer {
                             // 일반 글
                             super::torytis_dev_config::PostType::Normal => {
                                 let root = Bucket::new(&normal_index_rep_template);
-                                common(&root, item.clone());
+                                common(&root, item.clone(), &config);
                                 list_vec.push(root.get_html());
                             },
                             // 공지사항 글
                             super::torytis_dev_config::PostType::Notice => {
                                 let root = Bucket::new(&notice_index_rep_template);
-                                common(&root, item.clone());
+                                common(&root, item.clone(), &config);
                                 list_vec.push(root.get_html());
                             },
                             // 암호로 보호된 글
                             super::torytis_dev_config::PostType::Protected => {
                                 let root = Bucket::new(&protected_index_rep_template);
-                                common(&root, item.clone());
+                                common(&root, item.clone(), &config);
                                 list_vec.push(root.get_html());
                             },
                         }
