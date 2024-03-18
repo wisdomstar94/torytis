@@ -667,6 +667,9 @@ impl Post {
                     PostContentType::Image => {
                         // strings.push(value)
                     },
+                    PostContentType::H1 => {
+                        strings.push(item.value.unwrap_or_else(|| String::new()));
+                    },
                     PostContentType::H2 => {
                         strings.push(item.value.unwrap_or_else(|| String::new()));
                     },
@@ -674,6 +677,12 @@ impl Post {
                         strings.push(item.value.unwrap_or_else(|| String::new()));
                     },
                     PostContentType::H4 => {
+                        strings.push(item.value.unwrap_or_else(|| String::new()));
+                    },
+                    PostContentType::H5 => {
+                        strings.push(item.value.unwrap_or_else(|| String::new()));
+                    },
+                    PostContentType::H6 => {
                         strings.push(item.value.unwrap_or_else(|| String::new()));
                     },
                     PostContentType::Codeblock => {
@@ -706,6 +715,12 @@ impl Post {
                     "#, item.value.clone().unwrap());
                     list_vec.push(html);
                 },
+                PostContentType::H1 => {
+                    let html = format!(r#"
+                        <h1>{}</h1>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
                 PostContentType::H2 => {
                     let html = format!(r#"
                         <h2 data-ke-size="size26">{}</h2>
@@ -721,6 +736,18 @@ impl Post {
                 PostContentType::H4 => {
                     let html = format!(r#"
                         <h4 data-ke-size="size20">{}</h4>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
+                PostContentType::H5 => {
+                    let html = format!(r#"
+                        <h5>{}</h5>
+                    "#, item.value.clone().unwrap());
+                    list_vec.push(html);
+                },
+                PostContentType::H6 => {
+                    let html = format!(r#"
+                        <h6>{}</h6>
                     "#, item.value.clone().unwrap());
                     list_vec.push(html);
                 },
@@ -784,9 +811,12 @@ impl Post {
 pub enum PostContentType {
     Paragraph,
     Image,
+    H1,
     H2,
     H3,
     H4,
+    H5,
+    H6,
     Codeblock,
 }
 

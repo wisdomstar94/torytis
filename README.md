@@ -29,6 +29,11 @@
 
 <br />
 
+## 업데이트 변경사항
+torytis 의 변경사항은 [CHANGELOG.md](./CHANGELOG.md) 파일을 확인해주세요.
+
+<br />
+
 ## torytis 패키지 버전 업데이트 후 프로젝트 마이그레이션 방법
 
 1. 기존에 설치된 torytis 를 제거합니다.
