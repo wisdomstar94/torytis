@@ -208,8 +208,8 @@ impl TorytisDevConfig {
             }
             all_comment_list.sort_by(|a, b| {
                 // Utc (&date_str, "%Y-%m-%d %H:%M:%S");
-                let a1 = NaiveDateTime::parse_from_str(a.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().timestamp_millis();
-                let b1 = NaiveDateTime::parse_from_str(b.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().timestamp_millis();
+                let a1 = NaiveDateTime::parse_from_str(a.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
+                let b1 = NaiveDateTime::parse_from_str(b.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
                 // a1.cmp(&b1)
                 b1.cmp(&a1)
             });
