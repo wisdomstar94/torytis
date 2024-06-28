@@ -88,6 +88,14 @@ pub fn run(args: CliArgs) {
         fs::rename(script_js_file_path_buf.as_path(), images_script_js_file_path_buf.as_path()).unwrap()
     }
 
+    // script.js 파일 내용 수정
+    let script_js_file_content = fs::read_to_string(script_js_file_path_buf.clone()).unwrap();
+    let mut new_script_js_file_content = String::from("");
+    new_script_js_file_content.push_str("(function(){\n");
+    new_script_js_file_content.push_str(script_js_file_content.as_str());
+    new_script_js_file_content.push_str("\n})();");
+    fs::write(script_js_file_path_buf.clone(), new_script_js_file_content).unwrap();
+
     // tailwind 빌드하기
     // let tailwind_config_ts_file_path_buf = working_dir_path_buf.join("tailwind.config.ts");
     // {
