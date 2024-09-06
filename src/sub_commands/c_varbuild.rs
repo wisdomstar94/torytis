@@ -49,7 +49,7 @@ pub fn run(_: CliArgs) {
         }
     }
 
-    let torytis_variable_d_ts_file_path_buf = working_dir_path_buf.join("torytis-variable.d.ts");
+    let torytis_variable_d_ts_file_path_buf = working_dir_path_buf.join("src").join("types").join("torytis-variable.d.ts");
     let torytis_variable_d_ts_file_path = torytis_variable_d_ts_file_path_buf.as_path();
     let pattern = r"\n\n\s+}";
     let regex = Regex::new(&pattern).unwrap();
@@ -59,7 +59,7 @@ pub fn run(_: CliArgs) {
 
     let file2 = STATIC_DIR.get_file("torytis-variable-object.ts").unwrap();
     let file_content2 = file2.contents_utf8().unwrap();
-    let torytis_variable_object_ts_file_path_buf = working_dir_path_buf.join("torytis-variable-object.ts");
+    let torytis_variable_object_ts_file_path_buf = working_dir_path_buf.join("src").join("consts").join("torytis-variable-object.ts");
     let torytis_variable_object_ts_file_path = torytis_variable_object_ts_file_path_buf.as_path();
     let result2 = file_content2.replace("//THIS_IS_REPLACE_SPOT//", var_object_key_and_value_text.as_str()).replace("\n};", "};");
     fs::write(torytis_variable_object_ts_file_path, result2).unwrap();

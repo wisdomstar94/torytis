@@ -20,7 +20,7 @@ pub fn run(args: CliArgs) {
     let root_filenames: Vec<&str> = vec!["index.xml", "preview1600.jpg", "preview256.jpg", "preview560.jpg", "skin.html", "style.css"];
 
     let working_dir_path_buf = env::current_dir().unwrap();
-    let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis-build.js");
+    let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis.build.mjs");
     let dot_torytis_index_xml_path_buf = working_dir_path_buf.join(".torytis").join("index.xml");
     let dot_torytis_index_xml_path = dot_torytis_index_xml_path_buf.as_path();
     let src_public_index_xml_path_buf = working_dir_path_buf.join("src").join("public").join("index.xml");
@@ -74,7 +74,7 @@ pub fn run(args: CliArgs) {
     }
 
     // 현재 시점 .torytis 에 존재하는 파일들
-    // index.css
+    // style.css
     // script.js
     // script.ts
     // skin.html
@@ -96,32 +96,12 @@ pub fn run(args: CliArgs) {
     new_script_js_file_content.push_str("\n})();");
     fs::write(script_js_file_path_buf.clone(), new_script_js_file_content).unwrap();
 
-    // tailwind 빌드하기
-    // let tailwind_config_ts_file_path_buf = working_dir_path_buf.join("tailwind.config.ts");
-    // {
-    //     let command = format!("npm run tsc -- --esModuleInterop {}", tailwind_config_ts_file_path_buf.to_str().unwrap());
-    //     println!("> {}", command);
-    //     let _ = run_command(command.as_str()).unwrap();
-    // }
-    let torytis_dot_index_css_file_path_buf = dot_torytis_dir_path_buf.join("index.css");
-    let torytis_dot_style_css_file_path_buf = dot_torytis_dir_path_buf.join("style.css");
-    let tailwind_build_command = format!("npm run tailwindcss -- -c ./tailwind.config.ts -i {} -o {}", torytis_dot_index_css_file_path_buf.to_str().unwrap(), torytis_dot_style_css_file_path_buf.to_str().unwrap());
-    println!("> {}", tailwind_build_command);
-    {
-        let _ = run_command(tailwind_build_command.as_str()).unwrap();
-        // println!("<- {:?}", output);
-    }
-
-    // index.css 파일 삭제
-    fs::remove_file(torytis_dot_index_css_file_path_buf.as_path()).unwrap();
-
     // skin.html 파일 내용 치환하기
     let dot_torytis_skin_html_file_path_buf = dot_torytis_dir_path_buf.join("skin.html");
     let dot_torytis_skin_html_file_path = dot_torytis_skin_html_file_path_buf.as_path();
     let skin_html_string = fs::read_to_string(dot_torytis_skin_html_file_path).unwrap();
     let skin_html_string_convert = replace_skin_html_content(&skin_html_string);
     fs::write(dot_torytis_skin_html_file_path, skin_html_string_convert).unwrap();
-    // panic!(",,,,,,,!!");
 
     // src/public 폴더 밑에 있는 파일들을 모두 .torytis/ 폴더 밑으로 복사하기
     let src_public_dir_path_buf = working_dir_path_buf.join("src").join("public");

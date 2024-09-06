@@ -16,7 +16,7 @@ enum Cli {
     New(sub_commands::c_new::CliArgs), 
     Build(sub_commands::c_build::CliArgs), 
     Varbuild(sub_commands::c_varbuild::CliArgs), 
-    Migrate(sub_commands::c_migrate::CliArgs), 
+    // Migrate(sub_commands::c_migrate::CliArgs), 
     Dev(sub_commands::c_dev::CliArgs), 
 }
 
@@ -26,7 +26,7 @@ pub async fn run() {
         Cli::New(args) => sub_commands::c_new::run(args),
         Cli::Build(args) => sub_commands::c_build::run(args),
         Cli::Varbuild(args) => sub_commands::c_varbuild::run(args),
-        Cli::Migrate(args) => sub_commands::c_migrate::run(args),
+        // Cli::Migrate(args) => sub_commands::c_migrate::run(args),
         Cli::Dev(args) => sub_commands::c_dev::run(args).await,
     }
 }

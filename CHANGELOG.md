@@ -1,3 +1,14 @@
+## 1.3.0
+
+- esbuild 를 사용하던 부분을 vite 로 교체
+- `torytis-variable-object.ts` 파일 위치를 `src/consts/` 폴더 밑으로 이동
+- `torytis-variable.d.ts`, `torytis-env.d.ts` 타입 선언 파일들의 위치를 `src/types/` 폴더 밑으로 이동
+- `torytis new` 명령어로 생성되는 템플릿 프로젝트 내의 파일 구조 일부 수정 및 package.json 에 기재된 일부 종속성 제거 및 추가와 동시에 기존 종속성 패키지들의 버전 최신화
+- torytis cargo 종속성 패키지 버전 최신화
+- torytis migrate 명령어 삭제 (당분간 지원 중지)
+  - 대체안 : torytis 레포지토리의 `static/project-template` 경로에 있는 파일 및 폴더들의 변동 사항을 참조
+- 위 변동 사항으로 인한 `README.md` 문서 내용 수정
+
 ## 1.2.2
 
 - cargo 및 npm 종속성 패키지 버전 최신화

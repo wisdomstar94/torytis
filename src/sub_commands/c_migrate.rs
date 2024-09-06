@@ -1,3 +1,7 @@
+/**
+ * migration 기능 지원 당분간 중지.
+ */
+
 use std::{env, fs::{self}, collections::HashMap};
 use crate::statics::{STATIC_DIR, VERSION};
 use regex::Regex;
