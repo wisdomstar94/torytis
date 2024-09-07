@@ -41,7 +41,7 @@ pub fn run(args: CliArgs) {
         fs::create_dir_all(dot_torytis_dir_path).unwrap();
     }
 
-    // flat 이 false 일 경우
+    // flat 이 false 일 경우, .torytis/ 폴더 밑에 images/ 폴더 생성
     let dot_torytis_images_dir_path_buf = dot_torytis_dir_path_buf.join("images/");
     let dot_torytis_images_dir_path = dot_torytis_images_dir_path_buf.as_path();
     if !flat {
@@ -83,10 +83,6 @@ pub fn run(args: CliArgs) {
     fs::remove_file(dot_torytis_script_ts_path_buf.as_path()).unwrap();
 
     let script_js_file_path_buf = dot_torytis_dir_path_buf.join("script.js");
-    let images_script_js_file_path_buf = dot_torytis_dir_path_buf.join("images").join("script.js");
-    if !flat {
-        fs::rename(script_js_file_path_buf.as_path(), images_script_js_file_path_buf.as_path()).unwrap()
-    }
 
     // script.js 파일 내용 수정
     let script_js_file_content = fs::read_to_string(script_js_file_path_buf.clone()).unwrap();
@@ -141,6 +137,11 @@ pub fn run(args: CliArgs) {
             dot_torytis_index_xml_content_new = dot_torytis_index_xml_content_new.replace("{ project_name }", name.as_str().unwrap());
         }
         fs::write(dot_torytis_index_xml_path, &dot_torytis_index_xml_content_new).unwrap();
+    }
+
+    if !flat {
+        let images_script_js_file_path_buf = dot_torytis_dir_path_buf.join("images").join("script.js");
+        fs::rename(script_js_file_path_buf.as_path(), images_script_js_file_path_buf.as_path()).unwrap()
     }
 
     // // .torytis/ 밑에 있는 파일들을 티스토리에 업로드 할 경우 변경되는 실제 구조에 맞춰 .torytis-real-struct 로 복사하기

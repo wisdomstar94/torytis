@@ -1,3 +1,7 @@
+## 1.3.1
+
+- `torytis build --flat=false` 명령어를 입력할 경우 에러가 발생하는 부분 수정.
+
 ## 1.3.0
 
 - esbuild 를 사용하던 부분을 vite 로 교체
