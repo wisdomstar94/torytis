@@ -21,6 +21,8 @@
         "typescript": "^5",
         "@wisdomstar94/torytis": "^1",
         "vite": "^5.4.3",
-        "sass-embedded": "^1"
+        "sass-embedded": "^1",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^2.5.2"
     }
 }

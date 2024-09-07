@@ -1,3 +1,7 @@
+## 1.3.2
+
+- `torytis new` 명령어로 생성되는 템플릿 프로젝트에 `src/utils/cn.ts` 유틸 함수 추가.
+
 ## 1.3.1
 
 - `torytis build --flat=false` 명령어를 입력할 경우 에러가 발생하는 부분 수정.
