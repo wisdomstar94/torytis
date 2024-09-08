@@ -1,3 +1,9 @@
+## 1.3.5
+
+- 아래 치환자 추가
+  - `tt-onmouseover` -> `onmouseover`
+  - `tt-onmouseout` -> `onmouseout`
+
 ## 1.3.4
 
 - `torytis dev` 웹 서버에서 `style.css` 파일에 작성된 `./images/` 으로 시작하는 경로도 `/virtualcdn/images/` 으로 치환되도록 수정.

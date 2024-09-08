@@ -60,6 +60,8 @@ pub fn replace_skin_html_content(html_string: &String) -> String {
     result = result.replace("</tt_html_comment>", " -->");
     result = result.replace("<meta charSet", "<meta charset");
     result = result.replace("tt-onclick", "onclick");
+    result = result.replace("tt-onmouseover", "onmouseover");
+    result = result.replace("tt-onmouseout", "onmouseout");
     result = result.replace("tt-onkeypress", "onkeypress");
     result = result.replace("tt-onkeydown", "onkeydown");
     result = result.replace("tt-value", "value");
