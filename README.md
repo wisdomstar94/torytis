@@ -95,6 +95,11 @@ npx @wisdomstar94/torytis new --name=프로젝트명
 - onerror 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
 - value 치환 : onkeypress 치환에서 설명한 패턴과 동일합니다.
 
+### (s)css 파일에서 public 파일 경로 참조
+
+1. 사용하고자 하는 파일(png, jpg, svg 등)을 `src/public` 폴더 밑에 위치시킵니다. (해당 폴더 밑에 또 다른 폴더를 두지 마세요!)
+2. 예를 들어 파일명이 `logo.svg` 일 경우 (s)css 파일에서 `background-image: url("./images/logo.svg")` 와 같이 사용하시면 됩니다.
+
 ### 스킨 작업물 미리보기
 
 ```
@@ -106,6 +111,12 @@ npm run dev
 - 만약, 치환자가 제대로 치환되지 않았거나 미리보기의 모습과 실제 티스토리 블로그에 반영했을 때의 모습이 크게 상이할 경우 "https://github.com/wisdomstar94/torytis/issues" 에 해당 내용을 자세히 기술하여 이슈로 남겨주시면 확인해보도록 하겠습니다.
 - 미리보기는 티스토리 서버에서 치환자가 치환되는 구조를 torytis 에서 유사하게 모방 작업을 한 것이기 때문에 실제 티스토리에 적용했을 때의 모습과 차이가 발생할 수 있으며 그렇기 때문에 미리보기는 100% 완벽할 수는 없습니다. 따라서 미리보기에서 보여지는 결과물뿐만 아니라, 반드시 실제로 티스토리에 반영했을 때의 모습도 확인해주셔야 합니다.
 - 코드에 수정사항이 발생했을 경우 `npm run dev` 명령어가 실행중인 터미널에서 해당 프로세스를 종료 후(ctrl + c) 다시 `npm run dev` 를 실행해주셔야 합니다. 즉, 현재 핫리로드 기능은 제공되지 않으며 추후 지원 계획입니다.
+
+### torytis 현재 버전 확인하기
+
+```
+npm run torytis -- version
+```
 
 ### 최종 결과물 빌드 방법
 
@@ -219,6 +230,14 @@ export default function App() {
   );
 }
 ```
+
+<br />
+
+## torytis 로 만들어진 티스토리 스킨들
+
+| 스킨 이름   | 제작자                 | 레포지토리 주소                                             |
+| ----------- | ---------------------- | ----------------------------------------------------------- |
+| Stroke Skin | wisdomstar94@gmail.com | https://github.com/wisdomstar94/torytis-tistory-skin-stroke |
 
 <br />
 

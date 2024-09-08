@@ -272,7 +272,7 @@ impl Replacer {
                 "#)
             })
             .html_str_replace(|html| {
-                html.replace(r#"/images/"#, r#"/virtualcdn/images/"#)
+                html.replace(r#"./images/"#, r#"/virtualcdn/images/"#).replace(r#"'/images/"#, r#"'/virtualcdn/images/"#).replace(r#""/images/"#, r#""/virtualcdn/images/"#)
             })
             .select(SelectOptions {
                 element_name: "s_sidebar",
@@ -1552,7 +1552,7 @@ impl Replacer {
         let root = Rc::clone(&self.root);
         root
             .html_str_replace(|html| {
-                html.replace(r#"/images/"#, r#"/virtualcdn/images/"#)
+                html.replace(r#"./images/"#, r#"/virtualcdn/images/"#).replace(r#"'/images/"#, r#"'/virtualcdn/images/"#).replace(r#""/images/"#, r#""/virtualcdn/images/"#)
             })
             .commit();
     }

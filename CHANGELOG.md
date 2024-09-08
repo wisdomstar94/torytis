@@ -1,3 +1,11 @@
+## 1.3.4
+
+- `torytis dev` 웹 서버에서 `style.css` 파일에 작성된 `./images/` 으로 시작하는 경로도 `/virtualcdn/images/` 으로 치환되도록 수정.
+- `torytis version` 명령어 추가. (torytis 의 현재 버전 확인 가능.)
+- `README.md` 에 (s)css 파일에서 public 파일 경로 참조하는 방법에 대한 내용 추가.
+- `README.md` 에 torytis 현재 버전 확인하는 방법에 대한 내용 추가.
+- `README.md` 에 torytis 로 만들어진 tistory 스킨에 대한 내용 추가.
+
 ## 1.3.3
 
 - `torytis dev` 웹 서버에서 `style.css` 파일에 작성된 `/images/` 으로 시작하는 경로도 `/virtualcdn/images/` 으로 치환되도록 수정.
