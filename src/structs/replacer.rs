@@ -258,6 +258,12 @@ impl Replacer {
                 html.replace(r#"[##_title_##]"#, &config.get_blog_title().unwrap())
             })
             .html_str_replace(|html| {
+                html.replace(r#"[##_blogger_##]"#, &config.get_blog_profile_name().unwrap())
+            })
+            .html_str_replace(|html| {
+                html.replace(r#"[##_image_##]"#, &config.get_blog_profile_img_url().unwrap())
+            })
+            .html_str_replace(|html| {
                 html.replace(r#"<link href="./style.css" type="text/css" rel="stylesheet" />"#, r#"
                     <link href="/tistorycdn/content.css" type="text/css" rel="stylesheet" />
                     <link href="/tistorycdn/postBtn.css" type="text/css" rel="stylesheet" />
@@ -266,7 +272,7 @@ impl Replacer {
                 "#)
             })
             .html_str_replace(|html| {
-                html.replace(r#"<script src="./images/script.js"></script>"#, r#"<script src="/virtualcdn/images/script.js"></script>"#)
+                html.replace(r#"/images/"#, r#"/virtualcdn/images/"#)
             })
             .select(SelectOptions {
                 element_name: "s_sidebar",
@@ -1542,6 +1548,15 @@ impl Replacer {
 } 
 
 impl Replacer {
+    pub fn apply_images_to_virtualcdn(&self) {
+        let root = Rc::clone(&self.root);
+        root
+            .html_str_replace(|html| {
+                html.replace(r#"/images/"#, r#"/virtualcdn/images/"#)
+            })
+            .commit();
+    }
+
     pub fn apply_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
         let post_select_option = option.apply_index_list_option.post_select_option.clone().unwrap();
         let apply_guest_book_option = ApplyGuestBookOptions {

@@ -1,3 +1,9 @@
+## 1.3.3
+
+- `torytis dev` 웹 서버에서 `style.css` 파일에 작성된 `/images/` 으로 시작하는 경로도 `/virtualcdn/images/` 으로 치환되도록 수정.
+- `torytis-dev.config.json` 파일에 블로그 프로필 이미지에 해당하는 값인 `blog_profile_img_url` 파라미터 추가.
+- `torytis new` 템플릿 프로젝트에 `Script` 컴포넌트 추가. (html 코드와 함께 script 태그 작성이 필요할 경우 사용.)
+
 ## 1.3.2
 
 - `torytis new` 명령어로 생성되는 템플릿 프로젝트에 `src/utils/cn.ts` 유틸 함수 추가.

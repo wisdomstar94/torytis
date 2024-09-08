@@ -1,5 +1,6 @@
 import "./index.scss";
 import { HelloWorld } from "@/components/hello-world/hello-world.component";
+import { Script } from "@/components/script/script.component";
 
 export default function App() {
   return (
@@ -14,6 +15,14 @@ export default function App() {
       </head>
       <body>
         <HelloWorld />
+        <Script
+          html={`
+            (function(){
+                const pathname = location.pathname;
+                console.log('pathname', pathname);
+            })();
+        `}
+        />
       </body>
     </html>
   );

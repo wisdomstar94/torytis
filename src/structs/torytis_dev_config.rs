@@ -12,6 +12,8 @@ pub struct TorytisDevConfig {
     is_guest: Option<bool>,
     blog_title: Option<String>,
     blog_description: Option<String>,
+    blog_profile_name: Option<String>,
+    blog_profile_img_url: Option<String>,
     visitor: Option<Visitor>,
     posts: Option<Vec<Post>>,
     // recent_comment_list: Option<Vec<RecentComment>>,
@@ -57,6 +59,22 @@ impl TorytisDevConfig {
 
     pub fn get_blog_description(&self) -> Option<&str> {
         if let Some(v) = &self.blog_description {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn get_blog_profile_name(&self) -> Option<&str> {
+        if let Some(v) = &self.blog_profile_name {
+            Some(v)
+        } else {
+            None
+        }
+    }
+
+    pub fn get_blog_profile_img_url(&self) -> Option<&str> {
+        if let Some(v) = &self.blog_profile_img_url {
             Some(v)
         } else {
             None

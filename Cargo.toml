@@ -2,7 +2,7 @@ workspace = { members = ["html_regex"] }
 
 [package]
 name = "torytis"
-version = "1.3.2"
+version = "1.3.3"
 edition = "2021"
 
 [dependencies]

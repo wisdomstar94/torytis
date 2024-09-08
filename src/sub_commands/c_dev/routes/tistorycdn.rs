@@ -1,5 +1,4 @@
 use axum::{body::Body, http::StatusCode, response::Response, routing::get, Router};
-
 use crate::statics::STATIC_DIR;
 
 pub fn routes() -> Router {
