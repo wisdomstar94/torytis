@@ -6,6 +6,7 @@
         "build:variable": "torytis varbuild",
         "dev": "torytis dev --port=3000",
         "tsc": "tsc",
+        "type:check": "tsc --noEmit",
         "tailwindcss": "tailwindcss",
         "torytis": "torytis"
     },

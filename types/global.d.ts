@@ -213,6 +213,8 @@ declare namespace React {
     "tt-onclick"?: string;
     "tt-onmouseover"?: string;
     "tt-onmouseout"?: string;
+    "tt-onmouseenter"?: string;
+    "tt-onmouseleave"?: string;
     "tt-onkeypress"?: string;
     "tt-onkeydown"?: string;
     "tt-onload"?: string;

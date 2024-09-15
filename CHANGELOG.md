@@ -1,3 +1,11 @@
+## 1.3.6
+
+- 아래 치환자 추가
+  - `tt-onmouseenter` -> `onmouseenter`
+  - `tt-onmouseleave` -> `onmouseleave`
+- template 프로젝트의 package.json 에 아래 스크립트 추가
+  - `npm run type:check`
+
 ## 1.3.5
 
 - 아래 치환자 추가
