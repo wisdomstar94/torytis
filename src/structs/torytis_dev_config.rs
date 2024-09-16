@@ -206,7 +206,7 @@ impl TorytisDevConfig {
         root.get_html()
     }
 
-    pub fn get_recent_comment_list(&self) -> Option<Vec<Comment>> {
+    pub fn get_all_comment_list(&self) -> Option<Vec<Comment>> {
         if let Some(v) = &self.posts {   
             let mut all_comment_list: Vec<Comment> = Vec::new();
             for post in v {
@@ -224,21 +224,26 @@ impl TorytisDevConfig {
                     }
                 }
             }
-            all_comment_list.sort_by(|a, b| {
-                // Utc (&date_str, "%Y-%m-%d %H:%M:%S");
-                let a1 = NaiveDateTime::parse_from_str(a.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
-                let b1 = NaiveDateTime::parse_from_str(b.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
-                // a1.cmp(&b1)
-                b1.cmp(&a1)
-            });
-            // println!("all_comment_list : {:#?}", all_comment_list);
-            let m = all_comment_list.iter().take(5).map(|f| -> Comment {
-                f.clone()
-            }).collect::<Vec<Comment>>();
-            Some(m)
+            Some(all_comment_list)
         } else {
             None
         }
+    }
+
+    pub fn get_recent_comment_list(&self) -> Option<Vec<Comment>> {
+        let mut all_comment_list: Vec<Comment> = self.get_all_comment_list().unwrap();
+        all_comment_list.sort_by(|a, b| {
+            // Utc (&date_str, "%Y-%m-%d %H:%M:%S");
+            let a1 = NaiveDateTime::parse_from_str(a.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
+            let b1 = NaiveDateTime::parse_from_str(b.datetime.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
+            // a1.cmp(&b1)
+            b1.cmp(&a1)
+        });
+        // println!("all_comment_list : {:#?}", all_comment_list);
+        let m = all_comment_list.iter().take(5).map(|f| -> Comment {
+            f.clone()
+        }).collect::<Vec<Comment>>();
+        Some(m)
     }
 
     pub fn get_recent_notice_list(&self) -> Option<Vec<Post>> {
@@ -661,6 +666,7 @@ impl PostType {
 pub struct Post {
     pub category_name: Option<String>,
     pub tag_list: Option<Vec<String>>,
+    pub author: Option<String>, 
     pub post_id: Option<String>, 
     pub post_type: Option<PostType>,
     pub is_private: Option<bool>,

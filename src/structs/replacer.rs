@@ -581,8 +581,10 @@ impl Replacer {
             let post_type = item.post_type.clone();
             let thumbnail_img_url1 = item.thumbnail_img_url.as_ref().unwrap().clone();
             let thumbnail_img_url2 = item.thumbnail_img_url.as_ref().unwrap().clone();
+            let comment_list = item.comment_list.as_ref().unwrap().clone();
             let category_name = item.category_name.as_ref().unwrap().clone();
             let title = item.title.as_ref().unwrap().clone();
+            let author = item.author.as_ref().unwrap().clone();
             let datetime = item.created_at.as_ref().unwrap().clone();
             let datetime_split: Vec<&str> = datetime.split(" ").collect();
             let date = datetime_split.get(0).unwrap();
@@ -617,8 +619,25 @@ impl Replacer {
                     is_attrs_check_string_contain: true,
                 })
                 .replacer(move |_, matched_str_unwrap| {
+                    if thumbnail_img_url1 == String::from("") {
+                        return String::from("");
+                    }
+
                     let mut result = matched_str_unwrap.unwrap();
                     result = result.replace(r#"[##_article_rep_thumbnail_url_##]"#, &thumbnail_img_url1.clone());
+                    result
+                })
+                .commit()
+            ;
+            root
+                .select(SelectOptions {
+                    element_name: "s_rp_count",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let mut result = matched_str_unwrap.unwrap();
+                    result = result.replace(r#"[##_article_rep_rp_cnt_##]"#, &comment_list.clone().len().to_string());
                     result
                 })
                 .commit()
@@ -642,6 +661,9 @@ impl Replacer {
                 })
                 .html_str_replace(|html| {
                     html.replace(r#"[##_article_rep_title_##]"#, &title)
+                })
+                .html_str_replace(|html| {
+                    html.replace(r#"[##_article_rep_author_##]"#, &author)
                 })
                 .html_str_replace(|html| {
                     html.replace(r#"[##_article_rep_date_year_##]"#, &date_year)

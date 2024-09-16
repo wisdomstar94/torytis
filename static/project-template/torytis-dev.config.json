@@ -106,6 +106,7 @@
                 "angular",
                 "node.js"
             ],
+            "author": "홍길동",
             "post_id": "1",
             "post_type": "Notice",
             "is_private": true,
@@ -150,6 +151,7 @@
                 "tag2",
                 "tag3"
             ],
+            "author": "홍길동",
             "post_id": "3",
             "post_type": "Normal",
             "is_private": false,
@@ -209,6 +211,7 @@
         },
         {
             "category_name": "카테고리3",
+            "author": "홍길동",
             "post_id": "5",
             "post_type": "Protected",
             "is_private": false,

@@ -1,3 +1,12 @@
+## 1.3.7
+
+- `npm run dev` 에 대한 변경사항
+  - `<s_rp_count>` 치환자 처리 추가
+  - `[##_article_rep_rp_cnt_##]` 치환자 처리 추가
+  - `[##_article_rep_author_##]` 치환자 처리 추가
+  - `s_article_rep_thumbnail` 치환자 처리시 `thumbnail_img_url` 값이 빈 공백일 경우에는 빈 문자로 치환되도록 수정
+  - `torytis-dev.config.json` 의 `Posts` 의 아이템 요소에 작성자에 해당하는 `author` 항목 추가
+
 ## 1.3.6
 
 - 아래 치환자 추가
