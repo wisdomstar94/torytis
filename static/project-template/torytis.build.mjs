@@ -18,10 +18,12 @@ const disposeIndexComponent = async () => {
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
+        console.error(error);
         resolve(error);
         return;
       }
       if (stderr) {
+        console.error(stderr);
         resolve(stderr);
         return;
       }
@@ -49,10 +51,12 @@ const disposeIndexScript = async () => {
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
+        console.error(error);
         resolve(error);
         return;
       }
       if (stderr) {
+        console.error(stderr);
         resolve(stderr);
         return;
       }

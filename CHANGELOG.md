@@ -1,3 +1,10 @@
+## 1.3.8
+
+- `npm run build` 또는 `npm run dev` 시 node.js 단에서 발생한 에러도 터미널에서 표시되도록 수정. (torytis.build.mjs 파일 변경사항 확인 및 반영 필요.)
+- `s_notice_rep_thumbnail` 치환자 처리 추가
+- `s_rp2_rep` 치환자 처리 추가
+- `[##_notice_rep_**_##]` 공지사항 관련 치환자 처리 추가
+
 ## 1.3.7
 
 - `npm run dev` 에 대한 변경사항
