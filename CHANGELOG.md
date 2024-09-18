@@ -1,3 +1,7 @@
+## 1.3.9
+
+- `s_list`, `s_list_rep`, `s_list_empty`, `s_page_rep` 태그에 대한 타입 추가
+
 ## 1.3.8
 
 - `npm run build` 또는 `npm run dev` 시 node.js 단에서 발생한 에러도 터미널에서 표시되도록 수정. (torytis.build.mjs 파일 변경사항 확인 및 반영 필요.)
