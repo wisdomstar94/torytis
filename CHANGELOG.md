@@ -1,3 +1,7 @@
+## 1.3.10
+
+- `style.css` 에 preload 가 적용되도록 수정
+
 ## 1.3.9
 
 - `s_list`, `s_list_rep`, `s_list_empty`, `s_page_rep` 태그에 대한 타입 추가

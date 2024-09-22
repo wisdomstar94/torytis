@@ -53,6 +53,7 @@ pub fn run_command(cmd_string: &str) -> Result<std::process::Output, std::io::Er
 
 pub fn replace_skin_html_content(html_string: &String) -> String {
     let mut result = String::from(html_string);
+    result = result.replacen("</head>", "<link href=\"./style.css\" as=\"style\" rel=\"preload\" /></head>", 1);
     result = result.replacen("</head>", "<link href=\"./style.css\" type=\"text/css\" rel=\"stylesheet\" /></head>", 1);
     result = result.replacen("</head>", "<script src=\"./images/script.js\"></script></head>", 1);
     result = result.replacen("<html", "<!DOCTYPE html><html", 1);
