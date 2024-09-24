@@ -235,9 +235,12 @@ export default function App() {
 
 ## torytis 로 만들어진 티스토리 스킨들
 
-| 스킨 이름   | 제작자                 | 레포지토리 주소                                             |
-| ----------- | ---------------------- | ----------------------------------------------------------- |
-| Stroke Skin | wisdomstar94@gmail.com | https://github.com/wisdomstar94/torytis-tistory-skin-stroke |
+실제로 torytis 로 만들어진 티스토리 스킨의 레포지토리를 소개합니다.
+
+| 스킨 이름       | 제작자                 | 레포지토리 주소                                             |
+| --------------- | ---------------------- | ----------------------------------------------------------- |
+| Stroke Skin     | wisdomstar94@gmail.com | https://github.com/wisdomstar94/torytis-tistory-skin-stroke |
+| Discord UI Skin | wisdomstar94@gmail.com | https://github.com/wisdomstar94/tistory-discord-ui-skin     |
 
 <br />
 
