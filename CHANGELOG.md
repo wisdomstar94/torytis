@@ -1,3 +1,9 @@
+## 1.3.11
+
+- `s_rctps_rep`, `s_rctps_rep_thumbnail` 태그에 대한 전역 타입 선언 추가
+- `npm run dev` 의 html 치환자 처리시 `s_rctps_rep`, `s_rctps_rep_thumbnail` 에 대한 처리 추가
+- `vite` 가 scss legacy api 를 사용하지 않도록 설정 값 수정 (마이그레이션 시 `static/project-template` 경로를 참고하세요.)
+
 ## 1.3.10
 
 - `style.css` 에 preload 가 적용되도록 수정

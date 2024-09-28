@@ -37,6 +37,11 @@ const defineConfig: UserConfigFnPromise = async (params) => {
       modules: {
         localsConvention: "dashes",
       },
+      preprocessorOptions: {
+        scss: {
+          api: "modern-compiler",
+        },
+      },
     },
   };
 };

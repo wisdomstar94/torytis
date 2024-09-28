@@ -57,6 +57,9 @@ declare namespace JSX {
     s_list_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_list_empty: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 
+    s_rctps_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    s_rctps_rep_thumbnail: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+
     s_page_rep: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
 
     tt_html_comment: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;

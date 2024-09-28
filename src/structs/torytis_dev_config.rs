@@ -246,6 +246,22 @@ impl TorytisDevConfig {
         Some(m)
     }
 
+    pub fn get_recent_post_list(&self) -> Option<Vec<Post>> {
+        let mut all_list: Vec<Post> = self.posts.as_ref().unwrap().clone();
+        all_list.sort_by(|a, b| {
+            // Utc (&date_str, "%Y-%m-%d %H:%M:%S");
+            let a1 = NaiveDateTime::parse_from_str(a.created_at.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
+            let b1 = NaiveDateTime::parse_from_str(b.created_at.clone().unwrap().as_str(), "%Y-%m-%d %H:%M:%S").unwrap().and_utc().timestamp_millis();
+            // a1.cmp(&b1)
+            b1.cmp(&a1)
+        });
+        // println!("all_comment_list : {:#?}", all_comment_list);
+        let m = all_list.iter().take(5).map(|f| -> Post {
+            f.clone()
+        }).collect::<Vec<Post>>();
+        Some(m)
+    }
+
     pub fn get_recent_notice_list(&self) -> Option<Vec<Post>> {
         let mut result:Option<Vec<Post>> = None;
         let list = self.get_posts(Some(PostSelectOption { 

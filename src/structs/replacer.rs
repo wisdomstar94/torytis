@@ -237,6 +237,7 @@ impl Replacer {
         let count_today = Rc::new(config.get_visitor().unwrap().count_today.unwrap().to_string());
         let count_yesterday = Rc::new(config.get_visitor().unwrap().count_yesterday.unwrap().to_string());
         let recent_comment_list = Rc::new(config.get_recent_comment_list().clone().unwrap());
+        let recent_post_list = Rc::new(config.get_recent_post_list().clone().unwrap());
         let recent_notice_list = Rc::new(config.get_recent_notice_list().clone().unwrap());
 
         let options_search = options.search;
@@ -262,6 +263,9 @@ impl Replacer {
             })
             .html_str_replace(|html| {
                 html.replace(r#"[##_image_##]"#, &config.get_blog_profile_img_url().unwrap())
+            })
+            .html_str_replace(|html| {
+                html.replace(r#"[##_desc_##]"#, &config.get_blog_description().unwrap())
             })
             .html_str_replace(|html| {
                 html.replace(r#"<link href="./style.css" type="text/css" rel="stylesheet" />"#, r#"
@@ -315,6 +319,7 @@ impl Replacer {
                 ;
 
                 let total_posts = Rc::clone(&total_posts);
+
                 // 최근 댓글
                 s_sidebar_element_unwrap
                     .select(SelectOptions {
@@ -349,6 +354,80 @@ impl Replacer {
                                 .html_str_replace(|s| {
                                     s.replace(r#"[##_rctrp_rep_desc_##]"#, &desc)
                                 })
+                            ;
+                            li_vec.push(bucket.get_html());
+                        }
+                        li_vec.join("")
+                    })
+                    .commit()
+                ;
+
+                // 최근 게시글
+                let recent_post_list_copy = recent_post_list.clone();
+                s_sidebar_element_unwrap
+                    .select(SelectOptions {
+                        element_name: "s_rctps_rep",
+                        attrs: None,
+                        is_attrs_check_string_contain: true,
+                    })
+                    .replacer(move |_, matched_str_unwrap| {
+                        let k = &recent_post_list_copy;
+                        let list = Rc::clone(k);
+                        let html_template: String = matched_str_unwrap.unwrap();
+                        let mut li_vec: Vec<String> = Vec::new();
+                        
+                        for item in list.deref() {
+                            let bucket = Bucket::new(&html_template);
+                            let link = format!("/{}", item.post_id.as_ref().unwrap()).to_owned();
+                            let title = item.title.as_ref().unwrap().to_owned();
+                            let rp_cnt = item.comment_list.as_ref().unwrap().len().to_string();
+                            let author = item.author.as_ref().unwrap().to_owned();
+                            let created_at = item.created_at.as_ref().unwrap().to_owned();
+                            let category_name = item.category_name.as_ref().unwrap().to_owned();
+                            let category_link = format!("/category/{}", category_name).to_owned();
+                            let thumbnail_img_url = item.thumbnail_img_url.as_ref().unwrap().to_owned();
+                            bucket
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctps_rep_link_##]"#, &link)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctps_rep_title_##]"#, &title)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctps_rep_rp_cnt_##]"#, &rp_cnt)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctps_rep_author_##]"#, &author)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctps_rep_category_##]"#, &category_name)
+                                })
+                                .html_str_replace(|s| {
+                                    s.replace(r#"[##_rctps_rep_category_link_##]"#, &category_link)
+                                })
+                                .html_str_replace(|s| {
+                                    let time = NaiveDateTime::parse_from_str(&created_at, "%Y-%m-%d %H:%M:%S").unwrap().format("%Y.%m.%d %H:%M").to_string();
+                                    s.replace(r#"[##_rctps_rep_date_##]"#, &time)
+                                })
+                                .html_str_replace(|s| {
+                                    let time = NaiveDateTime::parse_from_str(&created_at, "%Y-%m-%d %H:%M:%S").unwrap().format("%Y.%m.%d").to_string();
+                                    s.replace(r#"[##_rctps_rep_simple_date_##]"#, &time)
+                                })
+                                .select(SelectOptions {
+                                    element_name: "s_rctps_rep_thumbnail",
+                                    attrs: None,
+                                    is_attrs_check_string_contain: true,
+                                })
+                                .replacer(move |_, matched_str_unwrap| {
+                                    if thumbnail_img_url == String::from("") {
+                                        return String::from("");
+                                    }
+
+                                    let mut result = matched_str_unwrap.unwrap();
+                                    result = result.replace(r#"[##_rctps_rep_thumbnail_##]"#, &thumbnail_img_url.clone());
+                                    result
+                                })
+                                .commit()
                             ;
                             li_vec.push(bucket.get_html());
                         }
