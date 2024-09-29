@@ -769,7 +769,14 @@ impl Replacer {
                 .html_str_replace(|html| {
                     html.replace(r#"[##_article_rep_summary_##]"#, &content_summary)
                 })
-
+                .html_str_replace(|html| {
+                    let time = NaiveDateTime::parse_from_str(&datetime, "%Y-%m-%d %H:%M:%S").unwrap().format("%Y.%m.%d %H:%M").to_string();
+                    html.replace(r#"[##_article_rep_date_##]"#, &time)
+                })
+                .html_str_replace(|html| {
+                    let time = NaiveDateTime::parse_from_str(&datetime, "%Y-%m-%d %H:%M:%S").unwrap().format("%Y.%m.%d").to_string();
+                    html.replace(r#"[##_article_rep_simple_date_##]"#, &time)
+                })
                 .html_str_replace(|html| {
                     html.replace(r#"[##_notice_rep_title_##]"#, &title)
                 })

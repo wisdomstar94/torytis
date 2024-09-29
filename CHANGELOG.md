@@ -1,3 +1,8 @@
+# 1.3.12
+
+- `[##_article_rep_date_##]`, `[##_article_rep_simple_date_##]` 치환자 처리 추가
+- 시작 템플릿의 `src/utils/common.ts` 파일에 공용 유틸 함수 추가.
+
 ## 1.3.11
 
 - `s_rctps_rep`, `s_rctps_rep_thumbnail` 태그에 대한 전역 타입 선언 추가
