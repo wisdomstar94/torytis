@@ -1300,6 +1300,14 @@ impl Replacer {
 
             target
                 .html_str_replace(|html| {
+                    let time = NaiveDateTime::parse_from_str(&created_at, "%Y-%m-%d %H:%M:%S").unwrap().format("%Y.%m.%d %H:%M").to_string();
+                    html.replace(r#"[##_article_rep_date_##]"#, &time)
+                })
+                .html_str_replace(|html| {
+                    let time = NaiveDateTime::parse_from_str(&created_at, "%Y-%m-%d %H:%M:%S").unwrap().format("%Y.%m.%d").to_string();
+                    html.replace(r#"[##_article_rep_simple_date_##]"#, &time)
+                })
+                .html_str_replace(|html| {
                     html.replace(r#"[##_article_rep_date_year_##]"#, &date_year.as_str())
                 })
                 .html_str_replace(|html| {

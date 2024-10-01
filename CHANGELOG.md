@@ -1,4 +1,8 @@
-# 1.3.12
+## 1.3.13
+
+- post permalink 에 대해서도 `[##_article_rep_date_##]`, `[##_article_rep_simple_date_##]` 치환자 처리 추가
+
+## 1.3.12
 
 - `[##_article_rep_date_##]`, `[##_article_rep_simple_date_##]` 치환자 처리 추가
 - 시작 템플릿의 `src/utils/common.ts` 파일에 공용 유틸 함수 추가.
