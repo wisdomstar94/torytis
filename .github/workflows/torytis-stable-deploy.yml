@@ -72,8 +72,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get upgrade -y
 
-          echo "which openssl"
-          which openssl
+          export OPENSSL_DIR=/usr/bin/openssl
 
           rustup target add aarch64-unknown-linux-gnu
           rustup target add x86_64-unknown-linux-gnu
