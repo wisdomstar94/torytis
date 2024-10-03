@@ -76,8 +76,8 @@ jobs:
           cargo install cross --git https://github.com/cross-rs/cross
           rustup target add aarch64-unknown-linux-gnu
           rustup target add x86_64-unknown-linux-gnu
-          yarn torytis build --target aarch64-unknown-linux-gnu
-          yarn torytis build --target x86_64-unknown-linux-gnu
+          cross build --release --target aarch64-unknown-linux-gnu
+          cross build --release --target x86_64-unknown-linux-gnu
 
           mkdir -p builds/${{ env.CLI_NAME }}-aarch64-linux-gnu
           cp target/aarch64-unknown-linux-gnu/release/${{ env.CLI_NAME }} builds/${{ env.CLI_NAME }}-aarch64-linux-gnu/${{ env.CLI_NAME }}
