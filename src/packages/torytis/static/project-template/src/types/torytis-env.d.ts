@@ -1,1 +1,0 @@
-/// <reference types="@wisdomstar94/torytis" />

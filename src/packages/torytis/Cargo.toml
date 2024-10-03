@@ -1,6 +1,6 @@
 [package]
 name = "torytis"
-version = "1.4.0-alpha.1"
+version = "1.4.0-alpha.2"
 edition = "2021"
 
 [dependencies]
@@ -19,4 +19,8 @@ tower-http = { version = "0.5.2", features = ["fs"] }
 version-compare = "0.2.0"
 xmltree = "0.11.0"
 html_regex = { path = "../html_regex"}
+consts = { path = "../consts" }
+downloader = { path = "../downloader" }
+flater = { path = "../flater" }
+file_manager = { path = "../file_manager" }
 serde_qs = "0.13.0"

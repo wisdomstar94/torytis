@@ -1,5 +1,10 @@
 use std::{env, path::Path, fs};
-use crate::{run_command, statics::{PROJECT_TEMPLATE_NAME, STATIC_DIR}};
+use consts::{get_template_download_url, TEMPLATE_NAME, TEMPLATE_VERSION};
+use downloader::structs::{file_name_options::FileNameOptions, http_file_downloader::HttpFileDownloader};
+use file_manager::structs::file_content_controller::FileContentController;
+use flater::functions::unpack::unpack_tar_gz;
+
+use crate::run_command;
 
 #[derive(clap::Args)]
 #[command(
@@ -12,7 +17,7 @@ pub struct CliArgs {
     name: Option<String>,
 }
 
-pub fn run(args: CliArgs) {
+pub async fn run(args: CliArgs) {
     if let None = args.name {
         panic!("--name 인자를 입력해주세요.");
     }
@@ -23,49 +28,42 @@ pub fn run(args: CliArgs) {
     let working_dir = working_dir_path_buf.to_str().unwrap();
     let project_dir_path_buf = Path::new(working_dir).join(project_name.as_str());
 
-    // step 0) project dir 존재 유무 체크
+    // step 1) project dir 존재 유무 체크
     if let Ok(_) = fs::metadata(project_dir_path_buf.as_path()) {
         let msg = format!("{} 폴더가 이미 존재하여 프로젝트를 생성할 수 없습니다.", project_name);
         panic!("{}", msg.as_str());
     }
 
-    // step 1) project dir 생성
+    // step 2) project dir 생성
     fs::create_dir_all(project_dir_path_buf.as_path()).unwrap();
 
-    // step 2) 파일 생성
-    let glob = format!("{}/**/*", PROJECT_TEMPLATE_NAME);
-    for entry in STATIC_DIR.find(&glob).unwrap() {
-        if let Some(file) = entry.as_file(){
-            let path = entry.path();
-            let path_str = path.to_str().unwrap();
-            let convert_path_str = path_str.replace(PROJECT_TEMPLATE_NAME, &project_name);
-            let convert_path = Path::new(convert_path_str.as_str());
-            let file_name = path.file_name().unwrap();
-            println!("create file : {:?}", convert_path);
-            // println!("file_name : {:?}", file_name);
-            // let file = STATIC_DIR.get_file(path).unwrap();
-            let file_content_original = file.contents_utf8().unwrap();
-            let mut file_content_convert: Option<String> = None;
-            if file_name == "package.json" {
-                file_content_convert = Some(file_content_original.replace("project__name", &project_name));
-            }
+    // step 3) template 다운로드
+    println!("downloading start template [{}{}]", TEMPLATE_NAME, TEMPLATE_VERSION);
 
-            // println!("file_content is {:?}", file_content);
-            if let Some(content) = file_content_convert {
-                fs::write(convert_path, content).unwrap();
-            } else {
-                fs::write(convert_path, String::from(file_content_original)).unwrap();
-            }
-        } else if let Some(dir) = entry.as_dir()  {
-            let path = dir.path();
-            let path_str = path.to_str().unwrap();
-            let convert_path_str = path_str.replace(PROJECT_TEMPLATE_NAME, &project_name);
-            let convert_path = Path::new(convert_path_str.as_str());
-            fs::create_dir_all(convert_path).unwrap();
-        }
-    }
+    let template_download_url = get_template_download_url();
+    let template_tar_gz_file_path = HttpFileDownloader::default().download(
+        project_dir_path_buf.as_path(), 
+        template_download_url.as_str(),
+        FileNameOptions::UseRemoteFileName(String::from("no_named"))
+    ).await.unwrap();
 
-    // step 3) npm install 진행
+    println!("downloaded! start template [{} {}]", TEMPLATE_NAME, TEMPLATE_VERSION);
+
+    // step 4) 압축 해제
+    unpack_tar_gz(&template_tar_gz_file_path, &project_dir_path_buf).unwrap();
+
+    // step 5) 압축 파일 삭제
+    fs::remove_file(&template_tar_gz_file_path).unwrap();
+
+    // step 6) package.json 파일 내용 수정
+    let package_json_file_path = project_dir_path_buf.join("package.json");
+    FileContentController::new(package_json_file_path)
+        .change(|file_content| {
+            file_content.replacen("@wisdomstar94/torytis-start-template", &project_name, 1)
+        })
+        .commit();
+
+    // step 7) npm install 진행
     let project_dir_path_str = project_dir_path_buf.to_str().unwrap();
     println!("created project dir : {:#?}", project_dir_path_str);
 
