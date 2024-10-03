@@ -151,7 +151,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
       - run: |
-          npm publish --access=public
+          npm publish --access=public --tag=next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_PUBLISH_KEY_NPM }}
     needs: build
