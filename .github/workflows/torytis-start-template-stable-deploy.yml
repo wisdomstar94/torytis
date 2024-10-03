@@ -25,6 +25,7 @@ jobs:
       - name: asset upload
         uses: svenstaro/upload-release-action@v2
         with:
+          repo_name: wisdomstar94/torytis
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: torytis-start-template.tar.gz
           asset_name: torytis-start-template.tar.gz
