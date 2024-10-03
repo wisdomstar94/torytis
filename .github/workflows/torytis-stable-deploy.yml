@@ -1,10 +1,10 @@
-name: 'release deploy'
+name: "torytis-stable-deploy"
 
 # This will trigger the action on each push to the `release` branch.
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "torytis-v[0-9]+.[0-9]+.[0-9]+"
 
 env:
   CLI_NAME: torytis
@@ -35,13 +35,13 @@ jobs:
         run: |
           rustup target add aarch64-apple-darwin
           rustup target add x86_64-apple-darwin
-          cargo build --release --target aarch64-apple-darwin
-          cargo build --release --target x86_64-apple-darwin
+          yarn torytis build --release --target aarch64-apple-darwin
+          yarn torytis build --release --target x86_64-apple-darwin
 
           mkdir -p builds/${{ env.CLI_NAME }}-aarch64-apple-darwin
           cp target/aarch64-apple-darwin/release/${{ env.CLI_NAME }} builds/${{ env.CLI_NAME }}-aarch64-apple-darwin/${{ env.CLI_NAME }}
           tar -C builds -czvf ${{ env.CLI_NAME }}-aarch64-apple-darwin.tar.gz ${{ env.CLI_NAME }}-aarch64-apple-darwin
-          
+
           mkdir -p builds/${{ env.CLI_NAME }}-x86_64-apple-darwin
           cp target/x86_64-apple-darwin/release/${{ env.CLI_NAME }} builds/${{ env.CLI_NAME }}-x86_64-apple-darwin/${{ env.CLI_NAME }}
           tar -C builds -czvf ${{ env.CLI_NAME }}-x86_64-apple-darwin.tar.gz ${{ env.CLI_NAME }}-x86_64-apple-darwin
@@ -76,13 +76,13 @@ jobs:
           cargo install cross --git https://github.com/cross-rs/cross
           rustup target add aarch64-unknown-linux-gnu
           rustup target add x86_64-unknown-linux-gnu
-          cross build --release --target aarch64-unknown-linux-gnu
-          cross build --release --target x86_64-unknown-linux-gnu
+          yarn torytis build --release --target aarch64-unknown-linux-gnu
+          yarn torytis build --release --target x86_64-unknown-linux-gnu
 
           mkdir -p builds/${{ env.CLI_NAME }}-aarch64-linux-gnu
           cp target/aarch64-unknown-linux-gnu/release/${{ env.CLI_NAME }} builds/${{ env.CLI_NAME }}-aarch64-linux-gnu/${{ env.CLI_NAME }}
           tar -C builds -czvf ${{ env.CLI_NAME }}-aarch64-linux-gnu.tar.gz ${{ env.CLI_NAME }}-aarch64-linux-gnu
-          
+
           mkdir -p builds/${{ env.CLI_NAME }}-x86_64-linux-gnu
           cp target/x86_64-unknown-linux-gnu/release/${{ env.CLI_NAME }} builds/${{ env.CLI_NAME }}-x86_64-linux-gnu/${{ env.CLI_NAME }}
           tar -C builds -czvf ${{ env.CLI_NAME }}-x86_64-linux-gnu.tar.gz ${{ env.CLI_NAME }}-x86_64-linux-gnu
@@ -110,13 +110,13 @@ jobs:
         run: |
           rustup target add aarch64-pc-windows-msvc
           rustup target add x86_64-pc-windows-msvc
-          cargo build --release --target aarch64-pc-windows-msvc
-          cargo build --release --target x86_64-pc-windows-msvc
+          yarn torytis build --release --target aarch64-pc-windows-msvc
+          yarn torytis build --release --target x86_64-pc-windows-msvc
 
           mkdir -p builds/${{ env.CLI_NAME }}-aarch64-pc-windows-msvc
           cp target/aarch64-pc-windows-msvc/release/${{ env.CLI_NAME }}.exe builds/${{ env.CLI_NAME }}-aarch64-pc-windows-msvc/${{ env.CLI_NAME }}.exe
           tar -C builds -czvf ${{ env.CLI_NAME }}-aarch64-pc-windows-msvc.tar.gz ${{ env.CLI_NAME }}-aarch64-pc-windows-msvc
-          
+
           mkdir -p builds/${{ env.CLI_NAME }}-x86_64-pc-windows-msvc
           cp target/x86_64-pc-windows-msvc/release/${{ env.CLI_NAME }}.exe builds/${{ env.CLI_NAME }}-x86_64-pc-windows-msvc/${{ env.CLI_NAME }}.exe
           tar -C builds -czvf ${{ env.CLI_NAME }}-x86_64-pc-windows-msvc.tar.gz ${{ env.CLI_NAME }}-x86_64-pc-windows-msvc
@@ -148,7 +148,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 18
+          node-version: 22
           registry-url: https://registry.npmjs.org/
       - run: |
           npm publish --access=public

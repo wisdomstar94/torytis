@@ -1,0 +1,42 @@
+{
+    "name": "@wisdomstar94/torytis",
+    "version": "1.4.0-alpha.1",
+    "description": "티스토리 블로그 스킨 개발 프레임워크",
+    "main": "index.js",
+    "scripts": {
+        "build": "cargo build --release",
+        "postinstall": "node ./npm/install.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wisdomstar94/torytis"
+    },
+    "bin": "./npm/run.js",
+    "keywords": [
+        "torytis",
+        "skin",
+        "blog",
+        "framework",
+        "cli",
+        "tistory",
+        "티스토리",
+        "블로그",
+        "프레임워크"
+    ],
+    "author": "wisdomstar94@gmail.com",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/wisdomstar94/torytis/issues"
+    },
+    "files": [
+        "npm/**/*",
+        "index.ts",
+        "types/**/*"
+    ],
+    "dependencies": {
+        "binary-install": "^1.1.0"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.3"
+    }
+}

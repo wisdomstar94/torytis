@@ -1,0 +1,30 @@
+{
+    "name": "@wisdomstar94/torytis-start-template",
+    "version": "0.0.1",
+    "scripts": {
+        "build": "torytis build",
+        "build:variable": "torytis varbuild",
+        "dev": "torytis dev --port=3000",
+        "tsc": "tsc",
+        "type:check": "tsc --noEmit",
+        "tailwindcss": "tailwindcss",
+        "torytis": "torytis"
+    },
+    "devDependencies": {
+        "@types/node": "^22",
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "@wisdomstar94/torytis": "^1",
+        "autoprefixer": "^10.4.20",
+        "clsx": "^2.1.1",
+        "postcss": "^8.4.47",
+        "postcss-modules": "^6",
+        "react": "^18",
+        "react-dom": "^18",
+        "sass-embedded": "^1",
+        "tailwind-merge": "^2.5.2",
+        "tailwindcss": "^3",
+        "typescript": "^5",
+        "vite": "^5.4.3"
+    }
+}
