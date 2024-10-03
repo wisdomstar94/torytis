@@ -68,7 +68,7 @@ jobs:
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common openssl libssl-dev pkg-config build-essential checkinstall zlib1g-dev
+          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common openssl libssl-dev pkg-config
           sudo apt-get update -y
           sudo apt-get upgrade -y
 
