@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "torytis": "yarn workspace @wisdomstar94/torytis",
-    "torytis-start-template": "yarn workspace @wisdomstar94/torytis-start-template"
+    "torytis-start-template": "yarn workspace @wisdomstar94/torytis-start-template",
+    "torytis-start-template:tar": "tar -czvf ./torytis-start-template.tar.gz -C ./src/packages/torytis-start-template ."
   },
   "workspaces": [
     "src/packages/*"
