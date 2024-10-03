@@ -24,4 +24,3 @@ downloader = { path = "../downloader" }
 flater = { path = "../flater" }
 file_manager = { path = "../file_manager" }
 serde_qs = "0.13.0"
-openssl = { version = "0.10", features = ["vendored"] }
