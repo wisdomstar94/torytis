@@ -72,10 +72,16 @@ jobs:
           sudo apt-get update -y
           sudo apt-get upgrade -y
 
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+          sudo apt-get update -y
+          sudo systemctl start docker
+          cargo install cross --git https://github.com/cross-rs/cross
+
           rustup target add aarch64-unknown-linux-gnu
           rustup target add x86_64-unknown-linux-gnu
-          yarn torytis build --target aarch64-unknown-linux-gnu
-          yarn torytis build --target x86_64-unknown-linux-gnu
+          yarn torytis cross:build --target aarch64-unknown-linux-gnu
+          yarn torytis cross:build --target x86_64-unknown-linux-gnu
 
           mkdir -p builds/${{ env.CLI_NAME }}-aarch64-linux-gnu
           cp target/aarch64-unknown-linux-gnu/release/${{ env.CLI_NAME }} builds/${{ env.CLI_NAME }}-aarch64-linux-gnu/${{ env.CLI_NAME }}
