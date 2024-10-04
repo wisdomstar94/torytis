@@ -72,8 +72,6 @@ jobs:
           sudo apt-get update -y
           sudo apt-get upgrade -y
 
-          export OPENSSL_DIR=/usr/bin/openssl
-
           rustup target add aarch64-unknown-linux-gnu
           rustup target add x86_64-unknown-linux-gnu
           yarn torytis build --target aarch64-unknown-linux-gnu
