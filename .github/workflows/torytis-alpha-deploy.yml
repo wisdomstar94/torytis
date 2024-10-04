@@ -72,8 +72,11 @@ jobs:
           sudo apt-get update -y
           sudo apt-get upgrade -y
 
-          rustup target add aarch64-unknown-linux-gnu
-          rustup target add x86_64-unknown-linux-gnu
+          sudo curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh
+          sudo source $HOME/.cargo/env
+
+          sudo rustup target add aarch64-unknown-linux-gnu
+          sudo rustup target add x86_64-unknown-linux-gnu
           sudo yarn torytis build --target aarch64-unknown-linux-gnu
           sudo yarn torytis build --target x86_64-unknown-linux-gnu
 
