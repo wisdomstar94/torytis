@@ -1,6 +1,6 @@
 {
     "name": "@wisdomstar94/torytis",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "티스토리 블로그 스킨 개발 프레임워크",
     "main": "index.js",
     "scripts": {

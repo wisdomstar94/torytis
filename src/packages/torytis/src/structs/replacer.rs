@@ -276,6 +276,9 @@ impl Replacer {
                 "#)
             })
             .html_str_replace(|html| {
+                html.replace(r#"./style.css"#, r#"/virtualcdn/style.css"#)
+            })
+            .html_str_replace(|html| {
                 html.replace(r#"./images/"#, r#"/virtualcdn/images/"#).replace(r#"'/images/"#, r#"'/virtualcdn/images/"#).replace(r#""/images/"#, r#""/virtualcdn/images/"#)
             })
             .select(SelectOptions {
