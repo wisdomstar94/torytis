@@ -67,6 +67,8 @@ jobs:
       - name: cargo build (ubuntu only)
         if: matrix.platform == 'ubuntu-24.04'
         run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
           export OPENSSL_DIR=/usr/lib/ssl
 
           rustup target add aarch64-unknown-linux-gnu
