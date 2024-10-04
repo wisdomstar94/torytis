@@ -1,6 +1,8 @@
-/target
+target
 test-project
 .DS_Store
 node_modules
 bin
 .npmrc
+torytis-start-template.tar.gz
+torytis-start-template/

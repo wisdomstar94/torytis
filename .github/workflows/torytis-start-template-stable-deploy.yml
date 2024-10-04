@@ -1,0 +1,31 @@
+name: "torytis-start-template-stable-deploy"
+
+# This will trigger the action on each push to the `release` branch.
+on:
+  push:
+    tags:
+      - "torytis-start-template-v[0-9]+.[0-9]+.[0-9]+"
+
+env:
+  CLI_NAME: torytis-start-template
+
+jobs:
+  publish-release-registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - run: yarn torytis-start-template:tar
+      - name: asset upload
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: torytis-start-template.tar.gz
+          asset_name: torytis-start-template.tar.gz
+          tag: ${{ github.ref }}

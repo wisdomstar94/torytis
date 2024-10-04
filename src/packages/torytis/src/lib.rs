@@ -24,7 +24,7 @@ enum Cli {
 pub async fn run() {
     let parse_cli = Cli::parse();
     match parse_cli {
-        Cli::New(args) => sub_commands::c_new::run(args),
+        Cli::New(args) => sub_commands::c_new::run(args).await,
         Cli::Build(args) => sub_commands::c_build::run(args),
         Cli::Varbuild(args) => sub_commands::c_varbuild::run(args),
         // Cli::Migrate(args) => sub_commands::c_migrate::run(args),
