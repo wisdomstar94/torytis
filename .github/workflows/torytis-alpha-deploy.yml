@@ -67,7 +67,7 @@ jobs:
       - name: cargo build (ubuntu only)
         if: matrix.platform == 'ubuntu-24.04'
         run: |
-          sudo apt-get install -y libssl-dev pkg-config
+          export OPENSSL_DIR=/usr/lib/ssl
 
           rustup target add aarch64-unknown-linux-gnu
           rustup target add x86_64-unknown-linux-gnu
