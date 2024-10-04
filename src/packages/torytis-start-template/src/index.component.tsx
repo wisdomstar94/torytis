@@ -1,6 +1,7 @@
 import "./index.scss";
 import { HelloWorld } from "@/components/hello-world/hello-world.component";
 import { Script } from "@/components/script/script.component";
+import { Style } from "./components/style/style.component";
 
 export default function App() {
   return (
@@ -22,6 +23,13 @@ export default function App() {
                 console.log('pathname', pathname);
             })();
         `}
+        />
+        <Style
+          html={`
+            body {
+              background-color: #eee;
+            }
+          `}
         />
       </body>
     </html>

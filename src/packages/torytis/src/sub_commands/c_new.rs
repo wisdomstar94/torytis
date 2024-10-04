@@ -55,7 +55,13 @@ pub async fn run(args: CliArgs) {
     // step 5) 압축 파일 삭제
     fs::remove_file(&template_tar_gz_file_path).unwrap();
 
-    // step 6) package.json 파일 내용 수정
+    // step 6) README.md, CHANGELOG.md 파일 삭제
+    let readme_file_path = project_dir_path_buf.join("README.md");
+    let changelog_file_path = project_dir_path_buf.join("CHANGELOG.md");
+    fs::remove_file(&readme_file_path).unwrap();
+    fs::remove_file(&changelog_file_path).unwrap();
+
+    // step 7) package.json 파일 내용 수정
     let package_json_file_path = project_dir_path_buf.join("package.json");
     FileContentController::new(package_json_file_path)
         .change(|file_content| {
@@ -63,7 +69,7 @@ pub async fn run(args: CliArgs) {
         })
         .commit();
 
-    // step 7) npm install 진행
+    // step 8) npm install 진행
     let project_dir_path_str = project_dir_path_buf.to_str().unwrap();
     println!("created project dir : {:#?}", project_dir_path_str);
 
