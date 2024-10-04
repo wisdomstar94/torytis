@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/torytis-start-template",
-  "version": "0.0.2-alpha.2",
+  "version": "0.0.2",
   "scripts": {
     "build": "torytis build",
     "build:variable": "torytis varbuild",
@@ -14,7 +14,7 @@
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "@wisdomstar94/torytis": "^1.4.1-alpha.1",
+    "@wisdomstar94/torytis": "^1.4.1",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "postcss": "^8.4.47",
