@@ -158,7 +158,7 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org/
       - run: |
-          npm publish --access=public
+          yarn torytis npm:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_PUBLISH_KEY_NPM }}
     needs: build
