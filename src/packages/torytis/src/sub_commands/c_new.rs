@@ -38,7 +38,7 @@ pub async fn run(args: CliArgs) {
     fs::create_dir_all(project_dir_path_buf.as_path()).unwrap();
 
     // step 3) template 다운로드
-    println!("downloading start template [{}{}]", TEMPLATE_NAME, TEMPLATE_VERSION);
+    println!("downloading start template [{} {}]", TEMPLATE_NAME, TEMPLATE_VERSION);
 
     let template_download_url = get_template_download_url();
     let template_tar_gz_file_path = HttpFileDownloader::default().download(
