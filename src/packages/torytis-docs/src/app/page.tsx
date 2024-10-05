@@ -1,5 +1,5 @@
-import { BASE_PATH } from "@/consts/common";
 import { cn } from "@/utils/common";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -14,7 +14,7 @@ export default function Page() {
 
           {/* buttons */}
           <div className="inline-flex gap-6 relative">
-            <a
+            <Link
               href="https://github.com/wisdomstar94/torytis"
               className={cn(
                 "inline-flex px-6 py-3 text-base rounded-full relative border cursor-pointer",
@@ -24,9 +24,9 @@ export default function Page() {
               )}
             >
               Github
-            </a>
-            <a
-              href={`${BASE_PATH}/intro`}
+            </Link>
+            <Link
+              href={`/intro`}
               className={cn(
                 "inline-flex px-6 py-3 text-base rounded-full relative border cursor-pointer",
                 "border-purple-500 bg-purple-500 text-white",
@@ -35,7 +35,7 @@ export default function Page() {
               )}
             >
               Get started
-            </a>
+            </Link>
           </div>
         </div>
       </div>

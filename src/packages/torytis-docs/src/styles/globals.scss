@@ -16,4 +16,10 @@
   html {
     font-family: "Paperlogy", sans-serif;
   }
+
+  :root {
+    --sidebar-width: 280px;
+    --topbar-height: 48px;
+    --full-subtraction-sidebar-width: calc(100% - var(--sidebar-width));
+  }
 }
