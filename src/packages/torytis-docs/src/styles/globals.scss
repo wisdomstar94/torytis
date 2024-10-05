@@ -1,0 +1,19 @@
+@use "src/styles/variables" as v;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@each $url, $font-weight in v.$paperlogy-font-items {
+  @font-face {
+    font-family: "Paperlogy";
+    src: url($url) format("woff2");
+    font-weight: $font-weight;
+  }
+}
+
+@layer base {
+  html {
+    font-family: "Paperlogy", sans-serif;
+  }
+}
