@@ -928,6 +928,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     eslint: "npm:^8"
     eslint-config-next: "npm:14.2.14"
+    github-markdown-css: "npm:^5.7.0"
     lucide-react: "npm:^0.447.0"
     next: "npm:14.2.14"
     postcss: "npm:^8"
@@ -2654,6 +2655,13 @@ __metadata:
   dependencies:
     resolve-pkg-maps: "npm:^1.0.0"
   checksum: 10c0/536ee85d202f604f4b5fb6be81bcd6e6d9a96846811e83e9acc6de4a04fb49506edea0e1b8cf1d5ee7af33e469916ec2809d4c5445ab8ae015a7a51fbd1572f9
+  languageName: node
+  linkType: hard
+
+"github-markdown-css@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "github-markdown-css@npm:5.7.0"
+  checksum: 10c0/93e6050081dc52a4905830cbd520635ea7795ea7b7da2946b43140e10137ffd57c6bf25cce5b7f7fb9a37d15fe8b8fc25781a9e5e59178aefbc6026e40799ec5
   languageName: node
   linkType: hard
 

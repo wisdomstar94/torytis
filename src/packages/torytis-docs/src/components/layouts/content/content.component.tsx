@@ -7,6 +7,7 @@ export function Content(props: IContent.Props) {
   return (
     <main
       className={cn(
+        "markdown-body",
         "transition-all duration-300",
         // "pl-sidebar-width sidebar-collapsed:pl-0",
         "pt-topbar-height",
