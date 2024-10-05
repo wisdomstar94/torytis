@@ -22,4 +22,8 @@
     --topbar-height: 48px;
     --full-subtraction-sidebar-width: calc(100% - var(--sidebar-width));
   }
+
+  .markdown-body figure:has(code) {
+    margin: 0;
+  }
 }
