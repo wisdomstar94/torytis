@@ -1,0 +1,88 @@
+# torytis 치환자 소개
+
+티스토리 스킨에서 요구하는 치환자를 torytis 환경에 맞춰 별도 치환자로 제공하고 있습니다.
+
+## 주석문
+
+티스토리 스킨에서는 다음과 같이 주석문을 요구하는 경우가 있습니다.
+
+```html
+<div id="sidebar">
+  <s_sidebar>
+    <!-- 오른쪽 사이드바 -->
+    <s_sidebar_element>
+      <!-- 카테고리 -->
+      ...
+    </s_sidebar_element>
+  </s_sidebar>
+</div>
+```
+
+하지만 torytis 에서 react component 에 저대로 주석문을 작성하면 다음과 같은 ts 에러가 발생하게 됩니다.
+
+<img src="https://github.com/user-attachments/assets/f84afa5e-75b5-4803-a9d8-eb9796c5e5d9" style={{ maxWidth: "500px" }} />
+<br />
+
+그래서 torytis 에서는 아래와 같이 작성하면 됩니다.
+
+```tsx
+export function MySidebar() {
+  return (
+    <div id="sidebar">
+      <s_sidebar>
+        <tt_html_comment>오른쪽 사이드바</tt_html_comment>
+        <s_sidebar_element>
+          <tt_html_comment>카테고리</tt_html_comment>
+          ...
+        </s_sidebar_element>
+      </s_sidebar>
+    </div>
+  );
+}
+```
+
+위와 같이 작성하면 추후 빌드할 때 torytis 가 `<tt_html_comment>...</tt_html_comment>` 부분을 `<!-- ... -->` 으로 모두 치환합니다.
+
+## 속성(attributes)
+
+티스토리 스킨에서는 다음과 같이 element 의 attribute 부분에 치환자를 요구하는 경우가 있습니다.
+
+```html
+<a [##_prev_page_##] class="[##_no_more_prev_##]">◀ PREV </a>
+```
+
+하지만 torytis 에서 react component 에 저대로 치환자를 작성하면 다음과 같은 ts 에러가 발생하게 됩니다.
+
+<img src="https://github.com/user-attachments/assets/7c936ede-558a-4053-b0f5-82cb30a03e7d" style={{ maxWidth: "500px" }} />
+<br />
+
+그래서 torytis 에서는 아래와 같이 작성하면 됩니다.
+
+```tsx
+export function MyPagination() {
+  return (
+    <a tt-onlyattr="[##_prev_page_##]" className="...">
+      이전으로
+    </a>
+  );
+}
+```
+
+위와 같이 작성하면 추후 빌드할 때 torytis 가 `tt-onlyattr="..."` 부분을 `...` 으로 모두 치환합니다.
+
+## 기타 element 속성
+
+요소에 `onclick`, `onkeydown`, `value` 등의 속성을 정의해줘야 하는 경우가 있을 수 있습니다. 하지만 react 에서는 위 속성이 존재하지 않습니다.
+
+그래서 torytis 에서는 아래와 같은 속성을 제공합니다.
+
+- `tt-onkeypress`: 빌드시 torytis 에서 `onkeypress` 으로 치환합니다.
+- `tt-onclick`: 빌드시 torytis 에서 `onclick` 으로 치환합니다.
+- `tt-onkeydown`: 빌드시 torytis 에서 `onkeydown` 으로 치환합니다.
+- `tt-onload`: 빌드시 torytis 에서 `onload` 으로 치환합니다.
+- `tt-onerror`: 빌드시 torytis 에서 `onerror` 으로 치환합니다.
+- `tt-value`: 빌드시 torytis 에서 `value` 으로 치환합니다.
+
+아래 이미지는 사용 예시 입니다.
+
+<img src="https://github.com/user-attachments/assets/7b5de7ed-1bce-4a04-b341-63d57dc16625" style={{ maxWidth: "500px" }} />
