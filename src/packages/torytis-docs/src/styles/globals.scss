@@ -23,7 +23,18 @@
     --full-subtraction-sidebar-width: calc(100% - var(--sidebar-width));
   }
 
-  .markdown-body figure:has(code) {
-    margin: 0;
+  #body .markdown-body {
+    figure:has(code) {
+      margin: 0;
+    }
+
+    ul {
+      list-style-type: circle;
+    }
+
+    ul,
+    ol {
+      @apply pl-5;
+    }
   }
 }
