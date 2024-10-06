@@ -21,6 +21,7 @@
     "react-dom": "^18",
     "rehype": "^13.0.2",
     "rehype-pretty-code": "^0.14.0",
+    "remark-gfm": "^4.0.0",
     "shiki": "^1.21.0"
   },
   "devDependencies": {

@@ -49,4 +49,10 @@ export const SIDEBAR_MENU_ITEMS = [
     label: "torytis 개발 결과물 미리보기",
     activeRegExpItems: [`/preview.*`],
   },
+  {
+    key: "/real-case" as const,
+    href: "/real-case",
+    label: "torytis 실제 사용 사례",
+    activeRegExpItems: [`/real-case.*`],
+  },
 ] satisfies ISidebar.MenuItem[];
