@@ -38,6 +38,12 @@ export const SIDEBAR_MENU_ITEMS = [
     activeRegExpItems: [`/skin-option-variable-build.*`],
   },
   {
+    key: "/build" as const,
+    href: "/build",
+    label: "torytis 빌드",
+    activeRegExpItems: [`/build.*`],
+  },
+  {
     key: "/preview" as const,
     href: "/preview",
     label: "torytis 개발 결과물 미리보기",

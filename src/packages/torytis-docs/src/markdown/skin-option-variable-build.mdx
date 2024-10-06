@@ -26,20 +26,6 @@ export function MyStatus() {
 ## 스킨 옵션 변수에 대한 요소명
 
 스킨 옵션 변수를 지정하게 되면 해당 변수가 존재할 때 그리고 존재하지 않을 때에 해당하는 요소를 사용할 수 있는데 `npm run build:variable` 명령어를 입력하게 되면 해당 요소에 대한 타입이 `src/types/torytis-variable.d.ts` 파일에 생성됩니다.
+즉, 스킨 옵션 변수에 해당하는 if 관련 요소들을 작성할 때 자동완성 목록이 지원됩니다. 아래는 그 예시입니다.
 
-```tsx
-import { Var } from "@/consts/torytis-variable-object";
-
-export function MiniRoom() {
-  return (
-    <div className="w-full block aspect-video bg-color-3/5 relative">
-      <s_if_var_mini_room_img_url>
-        <img src={Var["[##_var_mini_room_img_url_##]"]} className="w-full h-full object-cover object-center" />
-      </s_if_var_mini_room_img_url>
-      <s_not_var_mini_room_img_url>
-        <div className="w-full h-full mini-room-default-img" />
-      </s_not_var_mini_room_img_url>
-    </div>
-  );
-}
-```
+<img src="https://github.com/user-attachments/assets/0e6df319-14e7-4009-baed-27c13ad74427" style={{ maxWidth: "500px" }} />
