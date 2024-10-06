@@ -1,0 +1,55 @@
+# torytis 특징
+
+torytis 는 다음과 같은 특징이 있습니다.
+
+## React 를 이용하여 정적 html 코드들을 분리
+
+티스토리 스킨은 모든 페이지에 필요한 요소들이 `skin.html` 이라는 파일에 모두 존재해야 합니다. 그렇기 때문에 별다른 프레임워크 없이 개발할 경우 `skin.html` 의 내용이 비대해지고 파일 내용이 길어지므로 유지보수가 어려워질 수 있습니다.
+
+그래서 torytis 는 html 코드들을 관심사별로 분리하는 기능을 제공하고자 `React` 를 활용하였습니다. 평소에 `React` 를 사용하듯이 컴포넌트화 하고 다른 컴포넌트를 import 하여 사용하면 됩니다.
+
+하지만 torytis 에서 사용되는 `React` 는 단지 정적 html 코드들을 개발 환경에서 여러 컴포넌트로 분리하고 배포할 때는 이를 다시 하나로 묶는 용도로만 사용되기 때문에 `useState`, `useEffect` 와 같은 훅들을 사용할 수 없고 마찬가지로 react 에서 요소마다 지정한 이벤트 핸들러인 `onClick`, `onChange` 등의 props 도 사용할 수 없습니다. 다르게 말하자면 torytis 에서의 React 컴포넌트는 서버 컴포넌트처럼 사용해야 한다는 말로도 표현할 수 있겠습니다.
+
+torytis 프레임워크로 티스토리 스킨을 개발할 때는 이러한 특징을 염두에 두고 개발해야 합니다.
+
+빌드시, 하나의 `skin.html` 파일로 생성될 때 entry point 는 `src/index.component.tsx` 파일 입니다.
+
+## javascript 관심사 분리 및 typescript 적용
+
+torytis 는 별다른 셋팅 과정 없이 바로 `typescript` 를 사용할 수 있는 환경을 제공하고자 하였고, 개발 환경에서 `*.script.tsx` 파일들을 분리하고 이를 다시 하나로 묶을 수 있는 기능을 제공하고자 하였습니다.
+
+관심사별로 분리하는 방법은 간단합니다. src 폴더 밑에 자유로운 형태로 `*.script.tsx` 파일들을 작성하시면 됩니다. 컴포넌트와 같은 위치에 `*.script.tsx` 을 둘수도 있고 아니면 `src/scripts/` 폴더 밑에 둘수도 있습니다. 이건 자유롭게 하시면 됩니다. 다시 말해 `src/` 폴더 밑에 존재하는 모든 `*.script.tsx` 파일에 있는 내용들이 빌드될 때 하나의 `script.js` 으로 묶여집니다.
+
+## css 관심사 분리 및 scss 적용
+
+torytis 는 별다른 셋팅 과정 없이 바로 `scss` 를 사용할 수 있는 환경을 제공하고자 하였고, 개발 환경에서 `*.scss` 파일들을 분리하고 이를 다시 하나로 묶을 수 있는 기능을 제공하고자 하였습니다.
+
+관심사별로 분리하는 방법은 간단합니다. src 폴더 밑에 자유로운 형태로 `*.scss` 파일들을 작성하신 후에 아래 예시 코드처럼 해당 `scss` 가 필요한 컴포넌트에서 import 하시면 됩니다.
+
+```tsx
+import "./my-item.scss";
+
+export function MyItem() {
+  return <div className="item"></div>;
+}
+```
+
+## 빌드시 vite 사용
+
+흩어진 react 컴포넌트들과 scss 들을 하나의 `skin.html`, `style.css` 으로 묶고, 흩어진 typescript(\*.script.tsx) 파일들을 하나로 묶은 `script.ts` 파일을 `script.js` 으로 변환하는데 모두 `vite` 가 사용되었습니다.
+
+`skin.html`, `style.css` 을 빌드하는데 사용된 vite 설정 파일은 `torytis.index.vite.config.ts` 이며 `script.ts` 파일을 `script.js` 으로 빌드하는데 사용된 vite 설정 파일은 `torytis.script.vite.config.ts` 입니다. 모두 여러분들의 프로젝트내에 존재하는 파일들이니 필요에 따라 커스텀 하여 사용하실 수도 있습니다.
+
+## tailwindcss 사용 환경 제공
+
+torytis 를 사용하면 간편하게 바로 tailwindcss 를 사용할 수 있도록 하였습니다. 요즘 제가 많이 사용하는 것이 tailwindcss 인 이유도 있고, create-next-app cli 도 프로젝트 생성시 tailwindcss 옵션을 제공해주고 있는 만큼 많이 사용되는 것 같아 기본으로 제공하였습니다. tailwlndcss 를 사용하고 싶지 않으신 분들은 torytis 프로젝트에서 `src/index.scss` 에 있는 아래 내용들을 주석처리 해주시면 됩니다.
+
+```
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## scss 사용 환경 제공
+
+torytis 를 사용하면 바로 scss 를 사용할 수 있습니다. scss 를 사용하고 싶지 않으신 분들은 css 를 사용하셔도 무방합니다.

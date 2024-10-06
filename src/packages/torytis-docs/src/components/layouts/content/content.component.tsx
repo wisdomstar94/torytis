@@ -17,7 +17,7 @@ export function Content(props: IContent.Props) {
         //
       )}
     >
-      <div className="w-full box-border p-5 relative">{children}</div>
+      <div className="w-full box-border p-5 relative max-w-5xl break-keep">{children}</div>
     </main>
   );
 }
