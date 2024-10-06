@@ -1,0 +1,39 @@
+{
+  "name": "@wisdomstar94/torytis-docs",
+  "version": "0.0.2",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mdx-js/loader": "^3.0.1",
+    "@mdx-js/react": "^3.0.1",
+    "@next/mdx": "^14.2.14",
+    "@types/mdx": "^2.0.13",
+    "clsx": "^2.1.1",
+    "github-markdown-css": "^5.7.0",
+    "lucide-react": "^0.447.0",
+    "next": "14.2.14",
+    "react": "^18",
+    "react-dom": "^18",
+    "rehype": "^13.0.2",
+    "rehype-pretty-code": "^0.14.0",
+    "remark-gfm": "^4.0.0",
+    "shiki": "^1.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.14",
+    "postcss": "^8",
+    "sass": "^1.79.4",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5",
+    "webpack": "^5.95.0"
+  }
+}

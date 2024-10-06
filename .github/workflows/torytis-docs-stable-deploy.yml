@@ -1,0 +1,38 @@
+name: "torytis-docs-stable-deploy"
+
+# This will trigger the action on each push to the `release` branch.
+on:
+  push:
+    tags:
+      - "torytis-docs-v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - run: yarn install
+      - run: yarn torytis-docs build
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./src/packages/torytis-docs/out"
+
+  github-page-deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Docs
+        uses: actions/deploy-pages@v4

@@ -4,7 +4,8 @@
   "scripts": {
     "torytis": "yarn workspace @wisdomstar94/torytis",
     "torytis-start-template": "yarn workspace @wisdomstar94/torytis-start-template",
-    "torytis-start-template:tar": "tar -czvf ./torytis-start-template.tar.gz -C ./src/packages/torytis-start-template ."
+    "torytis-start-template:tar": "tar -czvf ./torytis-start-template.tar.gz -C ./src/packages/torytis-start-template .",
+    "torytis-docs": "yarn workspace @wisdomstar94/torytis-docs"
   },
   "workspaces": [
     "src/packages/*"
