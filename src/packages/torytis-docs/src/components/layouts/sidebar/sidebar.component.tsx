@@ -71,13 +71,20 @@ export function Sidebar<T extends string>(props: ISidebar.Props<T>) {
         <ul className="w-full flex flex-wrap gap-1 relative">
           {menuItems.map((item) => {
             return (
-              <li key={item.key} className="w-full flex gap-2 relative text-slate-500">
-                <Link
-                  className={cn("w-full px-4 py-1 text-sm", activeKeys.has(item.key) && "my-active", "my-active:text-slate-900")}
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
+              <li key={item.key} className="w-full flex gap-2 relative text-slate-400 box-border">
+                <div className="w-full flex box-border px-2 relative">
+                  <Link
+                    className={cn(
+                      "w-full px-4 py-2 text-sm rounded-md",
+                      activeKeys.has(item.key) && "my-active",
+                      "my-active:text-slate-900",
+                      "hover:bg-slate-200"
+                    )}
+                    href={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                </div>
               </li>
             );
           })}

@@ -1,5 +1,5 @@
 import { MainLayout } from "@/components/layouts/main-layout/main-layout.component";
-import { SIDEBAR_MENU_ITEMS } from "@/consts/sidebar-menu-list/sidebar-menu-items.const";
+import { SIDEBAR_MENU_ITEMS } from "@/consts/sidebar-menu-items/sidebar-menu-items.const";
 import Intro from "@/markdown/intro.mdx";
 
 export default function Page() {
