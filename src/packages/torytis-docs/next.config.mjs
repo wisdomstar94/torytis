@@ -17,6 +17,7 @@ const nextConfig = {
   experimental: {
     mdxRs: false,
   },
+  exportTrailingSlash: true,
 };
 
 const withMDX = createMDX({
