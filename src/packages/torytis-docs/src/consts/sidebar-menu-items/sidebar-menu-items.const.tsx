@@ -26,6 +26,18 @@ export const SIDEBAR_MENU_ITEMS = [
     activeRegExpItems: [`/replacer.*`],
   },
   {
+    key: "/skin-info" as const,
+    href: "/skin-info",
+    label: "torytis 스킨 정보 편집",
+    activeRegExpItems: [`/skin-info.*`],
+  },
+  {
+    key: "/skin-option-variable-build" as const,
+    href: "/skin-option-variable-build",
+    label: "torytis 스킨 옵션 변수 빌드",
+    activeRegExpItems: [`/skin-option-variable-build.*`],
+  },
+  {
     key: "/preview" as const,
     href: "/preview",
     label: "torytis 개발 결과물 미리보기",
