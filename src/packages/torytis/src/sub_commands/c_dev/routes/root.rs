@@ -48,7 +48,7 @@ async fn root_route(req: Request) -> Response {
         body_id: String::from("tt-body-index"),
         is_show_home_cover,
         apply_index_list_option: ApplyIndexListOptions {
-            is_hide: is_show_home_cover,
+            is_no_render: is_show_home_cover,
             post_select_option: Some(PostSelectOption {
                 page: Some(page),
                 size: Some(size),
