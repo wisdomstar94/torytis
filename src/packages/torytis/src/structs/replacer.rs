@@ -296,6 +296,30 @@ impl Replacer {
             })
             .commit()
         ;
+
+        // 검색
+        root
+            .select(SelectOptions {
+                element_name: "s_search",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(move |_, unwrap_matched_str| {
+                unwrap_matched_str.unwrap()
+                    .replace(r#"[##_search_name_##]"#, "search")
+                    .replace(r#"[##_search_text_##]"#, &options_search)
+                    .replace(r#"[##_search_onclick_submit_##]"#, r#"
+                    try {
+                        window.location.href = '/search' + '/' + encodeURI(document.getElementsByName('search')[0].value);
+                        document.getElementsByName('search')[0].value = '';
+                        return false;
+                    } catch (e) {
+                        
+                    } 
+                "#)
+            })
+            .commit()
+        ;
             
         root
             .select(SelectOptions {
@@ -448,27 +472,6 @@ impl Replacer {
                     .commit()
                 ;
 
-                // 검색
-                s_sidebar_element_unwrap
-                    .html_str_replace(|s| {
-                        s.replace(r#"[##_search_name_##]"#, "search")
-                    })
-                    .html_str_replace(|s| {
-                        s.replace(r#"[##_search_text_##]"#, &options_search)
-                    })
-                    .html_str_replace(|s| {
-                        s.replace(r#"[##_search_onclick_submit_##]"#, r#"
-                            try {
-                                window.location.href = '/search' + '/' + encodeURI(document.getElementsByName('search')[0].value);
-                                document.getElementsByName('search')[0].value = '';
-                                return false;
-                            } catch (e) {
-                                
-                            } 
-                        "#)
-                    })
-                ;
-
                 // 최근 공지사항
                 s_sidebar_element_unwrap
                     .select(SelectOptions {
@@ -516,7 +519,7 @@ impl Replacer {
     }
 
     fn apply_home_cover(&self, option: ApplyHomeCoverOptions) {
-        let is_hide = option.is_hide;
+        let is_no_render = option.is_no_render;
 
         let root = Rc::clone(&self.root);
         // let xml_cover_items = Rc::new(self.config.get_xml_cover_items());
@@ -531,7 +534,7 @@ impl Replacer {
                 is_attrs_check_string_contain: true
             })
             .replacer(move |_, matched_str_unwrap| {
-                if is_hide {
+                if is_no_render {
                     return String::new();
                 }
 
@@ -654,7 +657,7 @@ impl Replacer {
     }
 
     fn apply_index_list(&self, option: ApplyIndexListOptions) {
-        let is_hide = option.is_hide;
+        let is_no_render = option.is_no_render;
         let root = Rc::clone(&self.root);
         // let mut post_select_option: Option<PostSelectOption> = None;
         // if let Some(v) = option.post_select_option {
@@ -858,7 +861,7 @@ impl Replacer {
                 // println!("s_article_rep.replacer called!!");
                 // let a = matched_str_unwrap.unwrap();
                 // a
-                if is_hide {
+                if is_no_render {
                     return String::new();
                 }
 
@@ -895,7 +898,7 @@ impl Replacer {
     }
 
     fn apply_guest_book(&self, option: ApplyGuestBookOptions) {
-        let is_hide = option.is_hide;
+        let is_no_render = option.is_no_render;
         let root = Rc::clone(&self.root);
         let guestbook_list = Rc::new(self.config.get_guestbooks(option.guestbook_select_option));
         // let guestbook_select_option = Rc::new(option.guestbook_select_option);
@@ -908,7 +911,7 @@ impl Replacer {
                 is_attrs_check_string_contain: true,
             })
             .replacer(move |_, matched_str_unwrap| {
-                if is_hide {
+                if is_no_render {
                     return String::new();
                 }
 
@@ -1070,9 +1073,15 @@ impl Replacer {
     }
 
     fn apply_tag_list(&self, option: ApplyTagListOptions) {
-        let is_hide = option.is_hide;
+        let is_no_render = option.is_no_render;
         let root = Rc::clone(&self.root);
         let tag_unique_list: Vec<String> = self.config.get_tag_unique_list();
+
+        root
+            .html_str_replace(|html| {
+                html.replace(r#"[##_page_title_##]"#, "태그 목록")
+            })
+        ;
 
         root    
             .select(SelectOptions {
@@ -1081,7 +1090,7 @@ impl Replacer {
                 is_attrs_check_string_contain: true,
             })
             .replacer(move |_, matched_str_unwarp| {
-                if is_hide {
+                if is_no_render {
                     return String::new();
                 }
                 matched_str_unwarp.unwrap()
@@ -1109,7 +1118,7 @@ impl Replacer {
     }
 
     fn apply_pagination(&self, option: ApplyPaginationOptions) {
-        let is_hide = option.is_hide;
+        let is_no_render = option.is_no_render;
         let root = Rc::clone(&self.root);
         let pagination_info = Rc::new(option.pagination_info);
         let pagination_info1 = Rc::clone(&pagination_info);
@@ -1122,7 +1131,7 @@ impl Replacer {
                 is_attrs_check_string_contain: true,
             })
             .replacer(move |_, matched_str_unwrap| {
-                if is_hide {
+                if is_no_render {
                     return String::new();
                 }
 
@@ -1198,7 +1207,9 @@ impl Replacer {
         ;
     }
 
-    fn apply_post_permalink(&self, option: ApplyPostPermalink) {
+    fn apply_post_permalink(&self, option: &ApplyPostPermalink) {
+        let option_rc = Rc::new(option);
+
         let root = Rc::clone(&self.root);
         let config = Rc::new(self.config.clone());
         // let is_guest = Rc::new(self.config.get_is_guest());
@@ -1695,7 +1706,8 @@ impl Replacer {
             ;
         }
 
-        let post = self.config.get_post(Some(option.post_id));
+        let a = Rc::clone(&option_rc).post_id.clone();
+        let post = self.config.get_post(Some(a));
         if let Some(o) = post {
             let my_post = Rc::new(o);
             match my_post.post_type.as_ref().unwrap() {
@@ -1748,12 +1760,20 @@ impl Replacer {
 
     pub fn apply_index_page(&self, option: ApplyIndexPageOptions) -> &Self {
         let post_select_option = option.apply_index_list_option.post_select_option.clone().unwrap();
+
+        let config2 = Rc::new(&self.config);
+
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, config2.get_blog_title().unwrap())
+        });
+
         let apply_guest_book_option = ApplyGuestBookOptions {
-            is_hide: true,
+            is_no_render: true,
             guestbook_select_option: None,
         };
         let apply_tag_list_option = ApplyTagListOptions {
-            is_hide: true,
+            target_tag: None,
+            is_no_render: true,
         };
 
         self.apply_common(ApplyCommonOptions { 
@@ -1761,7 +1781,7 @@ impl Replacer {
             body_id: option.body_id,
         });
         self.apply_home_cover(ApplyHomeCoverOptions {
-            is_hide: !option.is_show_home_cover,
+            is_no_render: !option.is_show_home_cover,
         });
         self.apply_index_list(option.apply_index_list_option);
         self.apply_guest_book(apply_guest_book_option);
@@ -1771,7 +1791,7 @@ impl Replacer {
         post_select_option_clone.set_size(None);
         post_select_option_clone.set_page(None);
         self.apply_pagination(ApplyPaginationOptions {
-            is_hide: option.is_show_home_cover,
+            is_no_render: option.is_show_home_cover,
             pagination_info: Some(PaginationInfo {
                 base_url: option.base_url,
                 total_count: self.config.get_posts(Some(post_select_option_clone)).unwrap_or_else(|| vec![]).len(),
@@ -1782,58 +1802,198 @@ impl Replacer {
         &self
     }
 
+    pub fn apply_category_index_page(&self, option: ApplyCategoryIndexPageOptions) -> &Self {
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, "'분류 전체보기' 카테고리의 글 목록")
+        });
+
+        self.apply_index_page(ApplyIndexPageOptions {
+            search_keyword: String::from(""),
+            base_url: format!(r#"/category"#),
+            body_id: String::from("tt-body-category"),
+            is_show_home_cover: false,
+            apply_index_list_option: ApplyIndexListOptions {
+                is_no_render: false,
+                post_select_option: Some(PostSelectOption {
+                    page: Some(option.page),
+                    size: Some(option.size),
+                    post_type: None,
+                    category_name: None,
+                    sub_category_name: None,
+                    tag_name: None,
+                    title: None,
+                    post_id: None,
+                }),
+            },
+        })
+    }
+
+    pub fn apply_category_category_index_page(&self, option: ApplyCategoryCategoryIndexPageOptions) -> &Self {
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, format!(r#"'{}' 카테고리의 글 목록"#, option.category_name).as_str())
+        });
+
+        self.apply_index_page(ApplyIndexPageOptions {
+            search_keyword: String::from(""),
+            base_url: format!(r#"/category/{}"#, option.category_name),
+            body_id: String::from("tt-body-category"),
+            is_show_home_cover: false,
+            apply_index_list_option: ApplyIndexListOptions {
+                is_no_render: false,
+                post_select_option: Some(PostSelectOption {
+                    page: Some(option.page),
+                    size: Some(option.size),
+                    post_type: None,
+                    category_name: Some(option.category_name.clone()),
+                    sub_category_name: None,
+                    tag_name: None,
+                    title: None,
+                    post_id: None,
+                }),
+            },
+        })
+    }
+
+    pub fn apply_category_sub_category_index_page(&self, option: ApplyCategorySubCategoryIndexPageOptions) -> &Self {
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, format!(r#"'{}/{}' 카테고리의 글 목록"#, option.category_name, option.sub_category_name).as_str())
+        });
+
+        self.apply_index_page(ApplyIndexPageOptions {
+            search_keyword: String::from(""),
+            base_url: format!(r#"/category/{}/{}"#, option.category_name, option.sub_category_name),
+            body_id: String::from("tt-body-category"),
+            is_show_home_cover: false,
+            apply_index_list_option: ApplyIndexListOptions {
+                is_no_render: false,
+                post_select_option: Some(PostSelectOption {
+                    page: Some(option.page),
+                    size: Some(option.size),
+                    post_type: None,
+                    category_name: Some(option.category_name.clone()),
+                    sub_category_name: Some(option.sub_category_name.clone()),
+                    tag_name: None,
+                    title: None,
+                    post_id: None,
+                }),
+            },
+        })
+    }
+
+    pub fn apply_notice_index_page(&self, option: ApplyNoticeIndexPageOptions) -> &Self {
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, "공지사항")
+        });
+
+        self.apply_index_page(ApplyIndexPageOptions {
+            search_keyword: String::from(""),
+            base_url: format!(r#"/notice"#),
+            body_id: String::from("tt-body-index"),
+            is_show_home_cover: false,
+            apply_index_list_option: ApplyIndexListOptions {
+                is_no_render: false,
+                post_select_option: Some(PostSelectOption {
+                    page: Some(option.page),
+                    size: Some(option.size),
+                    post_type: Some(PostType::Notice),
+                    category_name: None,
+                    sub_category_name: None,
+                    tag_name: None,
+                    title: None,
+                    post_id: None,
+                }),
+            },
+        })
+    }
+
     pub fn apply_tag_index_page(&self) -> &Self {
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, "태그 목록")
+        });
+
         self.apply_common(ApplyCommonOptions { 
             search: String::new(), 
             body_id: String::from("tt-body-tag"),
         });
         self.apply_home_cover(ApplyHomeCoverOptions {
-            is_hide: true,
+            is_no_render: true,
         });
         self.apply_index_list(ApplyIndexListOptions {
-            is_hide: true,
+            is_no_render: true,
             post_select_option: None,
         });
         self.apply_guest_book(ApplyGuestBookOptions { 
-            is_hide: true,
+            is_no_render: true,
             guestbook_select_option: None,
         });
         self.apply_tag_list(ApplyTagListOptions { 
-            is_hide: false,
+            target_tag: None,
+            is_no_render: false,
         });
         self.apply_pagination(ApplyPaginationOptions { 
-            is_hide: true, 
+            is_no_render: true, 
             pagination_info: None 
         });
         &self
     }
 
+    pub fn apply_tag_post_index_page(&self, option: ApplyTagPostIndexPageOptions) -> &Self {
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, format!(r#"'{}' 태그의 글 목록"#, option.tag_name).as_str())
+        });
+
+        self.apply_index_page(ApplyIndexPageOptions {
+            search_keyword: String::from(""),
+            base_url: format!(r#"/tag/{}"#, option.tag_name),
+            body_id: String::from("tt-body-tag"),
+            is_show_home_cover: false,
+            apply_index_list_option: ApplyIndexListOptions {
+                is_no_render: false,
+                post_select_option: Some(PostSelectOption {
+                    page: Some(option.page),
+                    size: Some(option.size),
+                    post_type: None,
+                    category_name: None,
+                    sub_category_name: None,
+                    tag_name: Some(option.tag_name),
+                    title: None,
+                    post_id: None,
+                }),
+            },
+        })
+    }
+
     pub fn apply_guestbook_page(&self, option: ApplyGuestbookPageOptions) -> &Self {
         let guestbook_select_option: GuestbookSelectOption = option.guestbook_select_option;
+
+        self.root.html_str_replace(|html| {
+            html.replace(r#"[##_page_title_##]"#, "방명록")
+        });
 
         self.apply_common(ApplyCommonOptions { 
             search: String::new(), 
             body_id: String::from("tt-body-guestbook"),
         });
         self.apply_home_cover(ApplyHomeCoverOptions {
-            is_hide: true,
+            is_no_render: true,
         });
         self.apply_index_list(ApplyIndexListOptions {
-            is_hide: true,
+            is_no_render: true,
             post_select_option: None,
         });
         self.apply_guest_book(ApplyGuestBookOptions { 
-            is_hide: false, 
+            is_no_render: false, 
             guestbook_select_option: Some(guestbook_select_option.clone()),
         });
         self.apply_tag_list(ApplyTagListOptions { 
-            is_hide: true,
+            target_tag: None,
+            is_no_render: true,
         });
         let mut guestbook_select_option_clone = guestbook_select_option.clone();
         guestbook_select_option_clone.set_size(None);
         guestbook_select_option_clone.set_page(None);
         self.apply_pagination(ApplyPaginationOptions {
-            is_hide: false,
+            is_no_render: false,
             pagination_info: Some(PaginationInfo {
                 base_url: option.base_url,
                 total_count: self.config.get_guestbooks(Some(guestbook_select_option_clone)).len(),
@@ -1845,30 +2005,47 @@ impl Replacer {
     }
 
     pub fn apply_post_permalink_page(&self, option: ApplyPostPermalinkPageOptions) -> &Self {
-        let apply_post_permalink = option.apply_post_permalink;
+        let apply_post_permalink_rc = Rc::new(option.apply_post_permalink);
+        let apply_post_permalink_rc2 = Rc::clone(&apply_post_permalink_rc);
+        let apply_post_permalink_rc3 = Rc::clone(&apply_post_permalink_rc);
+        
+        if let Some(v) = apply_post_permalink_rc2.as_ref() {
+            self.root.html_str_replace(|html| {
+                let post = Rc::new(self.config.get_post(Some(String::from(&v.post_id))));
+                if let Some(p) = post.as_ref() {
+                    let title = &p.title.as_ref().unwrap();
+                    html.replace(r#"[##_page_title_##]"#, title.as_str())    
+                } else {
+                    html.to_string()
+                }
+            });
+        }
+        
         self.apply_common(ApplyCommonOptions { 
             search: String::new(), 
             body_id: String::from("tt-body-page"),
         });
         self.apply_home_cover(ApplyHomeCoverOptions {
-            is_hide: true
+            is_no_render: true
         });
-        if let Some(v) = apply_post_permalink {
+
+        if let Some(v) = apply_post_permalink_rc3.as_ref() {
             self.apply_post_permalink(v);
         }
         self.apply_index_list(ApplyIndexListOptions {
-            is_hide: true,
+            is_no_render: true,
             post_select_option: None,
         });
         self.apply_guest_book(ApplyGuestBookOptions { 
-            is_hide: true,
+            is_no_render: true,
             guestbook_select_option: None,
         });
         self.apply_tag_list(ApplyTagListOptions { 
-            is_hide: true,
+            target_tag: None,
+            is_no_render: true,
         });
         self.apply_pagination(ApplyPaginationOptions { 
-            is_hide: true, 
+            is_no_render: true, 
             pagination_info: None 
         });
         &self
@@ -1881,7 +2058,7 @@ struct ApplyCommonOptions {
 }
 
 pub struct ApplyHomeCoverOptions {
-    is_hide: bool,
+    is_no_render: bool,
 }
 
 pub struct ApplyIndexPageOptions {
@@ -1893,6 +2070,35 @@ pub struct ApplyIndexPageOptions {
     // pub apply_guest_book_option: ApplyGuestBookOptions,
     // pub apply_tag_list_option: ApplyTagListOptions,
     // pub apply_pagination: ApplyPaginationOptions,
+}
+
+pub struct ApplyCategoryIndexPageOptions {
+    pub page: u32,
+    pub size: u32,
+}
+
+pub struct ApplyCategoryCategoryIndexPageOptions {
+    pub category_name: String,
+    pub page: u32,
+    pub size: u32,
+}
+
+pub struct ApplyCategorySubCategoryIndexPageOptions {
+    pub category_name: String,
+    pub sub_category_name: String,
+    pub page: u32,
+    pub size: u32,
+}
+
+pub struct ApplyNoticeIndexPageOptions {
+    pub page: u32,
+    pub size: u32,
+}
+
+pub struct ApplyTagPostIndexPageOptions {
+    pub tag_name: String,
+    pub page: u32,
+    pub size: u32,
 }
 
 pub struct ApplyGuestbookPageOptions {
@@ -1909,21 +2115,22 @@ pub struct ApplyPostPermalink {
 }
 
 pub struct ApplyIndexListOptions {
-    pub is_hide: bool,
+    pub is_no_render: bool,
     pub post_select_option: Option<PostSelectOption>,
 }
 
 pub struct ApplyGuestBookOptions {
-    pub is_hide: bool,
+    pub is_no_render: bool,
     pub guestbook_select_option: Option<GuestbookSelectOption>,
 }
 
 pub struct ApplyTagListOptions {
-    pub is_hide: bool,
+    pub is_no_render: bool,
+    pub target_tag: Option<String>,
 }
 
 pub struct ApplyPaginationOptions {
-    pub is_hide: bool,
+    pub is_no_render: bool,
     pub pagination_info: Option<PaginationInfo>,
 }
 

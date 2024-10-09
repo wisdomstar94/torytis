@@ -1,6 +1,6 @@
 use axum::{body::Body, extract::{Path, Request}, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
-use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOptions, ApplyIndexPageOptions, ApplyPostPermalink, ApplyPostPermalinkPageOptions, Replacer}, torytis_dev_config::{PostSelectOption, PostType}}};
+use crate::{common::get_skin_html_content, structs::replacer::{ApplyNoticeIndexPageOptions, ApplyPostPermalink, ApplyPostPermalinkPageOptions, Replacer}};
 
 pub fn routes() -> Router {
     Router::new()
@@ -35,24 +35,10 @@ async fn root_route(req: Request) -> Response {
 
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
-    replacer.apply_index_page(ApplyIndexPageOptions {
-        search_keyword: String::from(""),
-        base_url: format!(r#"/notice"#),
-        body_id: String::from("tt-body-index"),
-        is_show_home_cover: false,
-        apply_index_list_option: ApplyIndexListOptions {
-            is_hide: false,
-            post_select_option: Some(PostSelectOption {
-                page: Some(page),
-                size: Some(size),
-                post_type: Some(PostType::Notice),
-                category_name: None,
-                sub_category_name: None,
-                tag_name: None,
-                title: None,
-                post_id: None,
-            }),
-        },
+
+    replacer.apply_notice_index_page(ApplyNoticeIndexPageOptions {
+        page,
+        size,
     });
 
     return Response::builder()

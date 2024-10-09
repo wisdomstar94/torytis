@@ -1,6 +1,6 @@
 use axum::{body::Body, extract::{Path, Request}, http::StatusCode, response::Response, routing::get, Router};
 use serde::{Serialize, Deserialize};
-use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOptions, ApplyIndexPageOptions, Replacer}, torytis_dev_config::PostSelectOption}};
+use crate::{common::get_skin_html_content, structs::replacer::{ApplyCategoryCategoryIndexPageOptions, ApplyCategoryIndexPageOptions, ApplyCategorySubCategoryIndexPageOptions, Replacer}};
 
 pub fn routes() -> Router {
     Router::new()
@@ -34,24 +34,9 @@ async fn root_route(req: Request) -> Response {
 
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
-    replacer.apply_index_page(ApplyIndexPageOptions {
-        search_keyword: String::from(""),
-        base_url: format!(r#"/category"#),
-        body_id: String::from("tt-body-category"),
-        is_show_home_cover: false,
-        apply_index_list_option: ApplyIndexListOptions {
-            is_hide: false,
-            post_select_option: Some(PostSelectOption {
-                page: Some(page),
-                size: Some(size),
-                post_type: None,
-                category_name: None,
-                sub_category_name: None,
-                tag_name: None,
-                title: None,
-                post_id: None,
-            }),
-        },
+    replacer.apply_category_index_page(ApplyCategoryIndexPageOptions {
+        page,
+        size,
     });
 
     return Response::builder()
@@ -80,24 +65,10 @@ async fn category_index_route(Path(category_name): Path<String>, req: Request) -
 
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
-    replacer.apply_index_page(ApplyIndexPageOptions {
-        search_keyword: String::from(""),
-        base_url: format!(r#"/category/{}"#, category_name),
-        body_id: String::from("tt-body-category"),
-        is_show_home_cover: false,
-        apply_index_list_option: ApplyIndexListOptions {
-            is_hide: false,
-            post_select_option: Some(PostSelectOption {
-                page: Some(page),
-                size: Some(size),
-                post_type: None,
-                category_name: Some(category_name.clone()),
-                sub_category_name: None,
-                tag_name: None,
-                title: None,
-                post_id: None,
-            }),
-        },
+    replacer.apply_category_category_index_page(ApplyCategoryCategoryIndexPageOptions {
+        category_name,
+        page,
+        size,
     });
 
     return Response::builder()
@@ -126,24 +97,11 @@ async fn category_sub_category_index_route(Path((category_name, sub_category_nam
 
     let skin_html_content = get_skin_html_content();
     let replacer = Replacer::new(&skin_html_content);
-    replacer.apply_index_page(ApplyIndexPageOptions {
-        search_keyword: String::from(""),
-        base_url: format!(r#"/category/{}/{}"#, category_name, sub_category_name),
-        body_id: String::from("tt-body-category"),
-        is_show_home_cover: false,
-        apply_index_list_option: ApplyIndexListOptions {
-            is_hide: false,
-            post_select_option: Some(PostSelectOption {
-                page: Some(page),
-                size: Some(size),
-                post_type: None,
-                category_name: Some(category_name.clone()),
-                sub_category_name: Some(sub_category_name.clone()),
-                tag_name: None,
-                title: None,
-                post_id: None,
-            }),
-        },
+    replacer.apply_category_sub_category_index_page(ApplyCategorySubCategoryIndexPageOptions {
+        category_name,
+        sub_category_name,
+        page,
+        size,
     });
 
     return Response::builder()

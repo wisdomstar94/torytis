@@ -53,7 +53,7 @@ async fn search_index_route(Path(search_keyword): Path<String>, req: Request) ->
         body_id: String::from("tt-body-search"),
         is_show_home_cover: false,
         apply_index_list_option: ApplyIndexListOptions {
-            is_hide: false,
+            is_no_render: false,
             post_select_option: Some(PostSelectOption {
                 page: Some(page),
                 size: Some(size),
