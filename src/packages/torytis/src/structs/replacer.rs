@@ -1,6 +1,6 @@
 use std::{ops::Deref, rc::Rc};
 use chrono::NaiveDateTime;
-use html_regex::{html_string_root_element_unwrap, select_from_html_string_one, Bucket, Bucket2, SelectOptions};
+use html_regex::{html_string_root_element_unwrap, select_from_html_string, select_from_html_string_one, Bucket, Bucket2, SelectOptions};
 
 use crate::{common::{date_format, get_pagination_calculate}, structs::torytis_dev_config::{Post, PostType, TorytisDevConfig}};
 
@@ -287,8 +287,16 @@ impl Replacer {
                 is_attrs_check_string_contain: true,
             })
             .replacer(|_, unwrap_matched_str| {
-                unwrap_matched_str.unwrap()
+                let s_sidebar_inner_matched_str = unwrap_matched_str.unwrap();
+
+                let htmls = select_from_html_string(&s_sidebar_inner_matched_str, &SelectOptions { element_name: "s_sidebar_element", attrs: None, is_attrs_check_string_contain: false });
+                
+                htmls.join("")
             })
+            .commit()
+        ;
+            
+        root
             .select(SelectOptions {
                 element_name: "s_sidebar_element",
                 attrs: None,
