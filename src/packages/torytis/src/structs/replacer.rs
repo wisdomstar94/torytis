@@ -272,6 +272,7 @@ impl Replacer {
                     <link href="/tistorycdn/content.css" type="text/css" rel="stylesheet" />
                     <link href="/tistorycdn/postBtn.css" type="text/css" rel="stylesheet" />
                     <link href="/tistorycdn/another_category.css" type="text/css" rel="stylesheet" />
+                    <link href="/tistorycdn/comment.css" type="text/css" rel="stylesheet" />
                     <link href="/virtualcdn/style.css" type="text/css" rel="stylesheet" />
                 "#)
             })
@@ -1060,8 +1061,9 @@ impl Replacer {
                     })
                     .commit()
                 ;
-
-                mini_root.get_html()
+                
+                let resut_result = format!(r#"<div id="entry0Comment">{}</div>"#, mini_root.get_html());
+                resut_result
             })
             .commit()
         ;
@@ -1211,6 +1213,7 @@ impl Replacer {
             let is_guest = Rc::new(config.get_is_guest());
             let is_guest2 = Rc::clone(&is_guest);
             let is_private = Rc::new(post.is_private);
+            let post_id  = Rc::new(post.post_id.clone().unwrap().to_string());
             let post_title = Rc::new(post.title.clone());
             let post_type = post.post_type.clone();
             let post_category_name = Rc::new(post.category_name.clone());
@@ -1234,6 +1237,10 @@ impl Replacer {
             let post_next_and_prev2 = Rc::clone(&post_next_and_prev);
             let comment_list = Rc::new(post.comment_list.clone());
             let comment_list2 = Rc::clone(&comment_list);
+            // let blog_title = Rc::new(config.get_blog_title());
+            // let blog_description = Rc::new(config.get_blog_description());
+            let config2 = Rc::clone(config);
+
             // s_ad_div
             target
                 .select(SelectOptions {
@@ -1667,7 +1674,22 @@ impl Replacer {
                         .commit()
                     ;
 
-                    mini_root.get_html()
+                    let namecard_html = format!(r#"
+                        <div data-tistory-react-app="Namecard">
+                            <div class="tt_box_namecard">
+                                <div class="tt_cont">
+                                    <a href="/" class="tt_tit_cont">{}</a>
+                                    <a href="/" class="tt_desc">{}</a>
+                                </div>
+                                <a href="/" class="tt_wrap_thumb">
+                                    <span class="tt_thumb_g" style="background-image: url('{}');">
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    "#, config2.get_blog_title().unwrap(), config2.get_blog_description().unwrap(), config2.get_blog_profile_img_url().unwrap());
+                    let resut_result = format!(r#"{}<div id="entry{}Comment">{}</div>"#, namecard_html, post_id, mini_root.get_html());
+                    resut_result
                 })
                 .commit()
             ;

@@ -12,6 +12,7 @@ pub fn routes() -> Router {
         .route("/content.css", get(content_css_route))
         .route("/postBtn.css", get(post_btn_css_route))
         .route("/another_category.css", get(another_category_css_route))
+        .route("/comment.css", get(comment_css_route))
         
 
 }
@@ -44,4 +45,14 @@ async fn another_category_css_route() -> Response {
       .header("Content-Type", "text/css")
       .body(Body::from(content))
       .unwrap();
+}
+
+async fn comment_css_route() -> Response {
+  let file = STATIC_DIR.get_file("tistory-cdn/comment.css").unwrap();
+  let content = file.contents();
+  return Response::builder()
+    .status(StatusCode::OK)
+    .header("Content-Type", "text/css")
+    .body(Body::from(content))
+    .unwrap();
 }

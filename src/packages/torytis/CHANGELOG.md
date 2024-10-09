@@ -1,3 +1,8 @@
+## v1.4.3
+
+- `npm run dev` 에서 `s_guest`, `s_rp` 치환 시 실제 티스토리 치환 결과대로 작동하도록 수정.
+- `npm run dev` 에서 `comment.css` 스타일이 로드 되도록 수정. (Namecard 부분)
+
 ## v1.4.2
 
 - `npm run dev` 에서 `s_sidebar` 치환 시 실제 티스토리 치환 결과대로 작동하도록 수정.
