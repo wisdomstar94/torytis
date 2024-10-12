@@ -1,5 +1,7 @@
 use std::{env, fs};
 
+use super::script_bundle::script_bundle;
+
 pub fn build_preprocess(flat: &bool) {
   let working_dir_path_buf = env::current_dir().unwrap();
   // let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis.build.mjs");
@@ -32,8 +34,6 @@ pub fn build_preprocess(flat: &bool) {
     } 
   }
 
-  // .torytis/script.ts 생성 (watch 초기화용)
-  let dot_torytis_dir_path_buf = working_dir_path_buf.join(".torytis/");
-  let dot_torytis_script_ts_path_buf = dot_torytis_dir_path_buf.join("script.ts");
-  fs::write(dot_torytis_script_ts_path_buf.as_path(), "").unwrap();
+  // .torytis/script.ts 생성 
+  script_bundle();
 }

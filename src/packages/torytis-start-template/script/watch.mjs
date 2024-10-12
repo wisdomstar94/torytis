@@ -32,41 +32,67 @@ async function socketServer(
 
   io.on("connection", async (socket) => {});
 
+  const mounted = {
+    index: false,
+    script: false,
+  };
+
+  const isAllMounted = () => {
+    return mounted.index && mounted.script;
+  };
+
+  // html, css 처리
   await build({
     configFile: join(DIRNAME, "..", "torytis.index.vite.config.ts"),
     build: {
       watch: {
         include: join(DIRNAME, "..", "src/**/*"),
+        exclude: join(DIRNAME, "..", "src/**/*.script.tsx"),
       },
     },
     plugins: [
       {
         name: "on-change",
         buildStart: async () => {
-          console.log("@buildStart");
           await commandExec(`npm run torytis -- movepublictodottorytis`);
         },
         closeBundle: async () => {
           await indexmjsToSkinhtml();
-          await commandExec(`npm run torytis -- scriptbundle`);
+          mounted.index = true;
+          const allMounted = isAllMounted();
+          if (allMounted) {
+            io.emit("full-reload");
+          } else {
+            await commandExec(`npm run torytis -- scriptbundle`);
+          }
         },
       },
     ],
   });
 
+  // script 처리
   await build({
     configFile: join(DIRNAME, "..", "torytis.script.vite.config.ts"),
     build: {
       watch: {
-        include: join(DIRNAME, "..", ".torytis", "script.ts"),
+        include: join(DIRNAME, "..", "src/**/*.script.tsx"),
       },
     },
     plugins: [
       {
         name: "on-change",
+        buildStart: async () => {
+          if (isAllMounted()) {
+            await commandExec(`npm run torytis -- scriptbundle`);
+          }
+        },
         closeBundle: async () => {
           await commandExec(`npm run torytis -- scriptpostprocess`);
-          io.emit("full-reload");
+          mounted.script = true;
+          const allMounted = isAllMounted();
+          if (allMounted) {
+            io.emit("full-reload");
+          }
         },
       },
     ],
@@ -102,6 +128,4 @@ async function commandExec(cmd) {
 }
 
 await socketServer(server);
-server.listen(SOCKET_PORT, () => {
-  console.log(`# dev socket server listening fron ${SOCKET_PORT} port...`);
-});
+server.listen(SOCKET_PORT);
