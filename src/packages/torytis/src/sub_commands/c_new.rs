@@ -1,10 +1,9 @@
 use std::{env, path::Path, fs};
+use commander::functions::run_command::run_command;
 use consts::{get_template_download_url, TEMPLATE_NAME, TEMPLATE_VERSION};
 use downloader::structs::{file_name_options::FileNameOptions, http_file_downloader::HttpFileDownloader};
 use file_manager::structs::file_content_controller::FileContentController;
 use flater::functions::unpack::unpack_tar_gz;
-
-use crate::run_command;
 
 #[derive(clap::Args)]
 #[command(

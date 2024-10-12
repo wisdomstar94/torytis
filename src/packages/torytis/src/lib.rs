@@ -1,11 +1,9 @@
-use std::process::Stdio;
-
 use clap::Parser;
-use regex::Regex;
 pub mod sub_commands;
 pub mod statics;
 pub mod common;
 pub mod structs;
+pub mod functions;
 
 #[derive(Parser)] // requires `derive` feature
 #[command(name = "torytis")]
@@ -19,6 +17,11 @@ enum Cli {
     // Migrate(sub_commands::c_migrate::CliArgs), 
     Dev(sub_commands::c_dev::CliArgs), 
     Version(sub_commands::c_version::CliArgs),
+    Scriptbundle(sub_commands::c_scriptbundle::CliArgs),
+    Scriptpostprocess(sub_commands::c_scriptpostprocess::CliArgs),
+    Skinhtmlreplace(sub_commands::c_skinhtmlreplace::CliArgs),
+    Buildpreprocess(sub_commands::c_buildpreprocess::CliArgs),
+    Movepublictodottorytis(sub_commands::c_movepublictodottorytis::CliArgs),
 }
 
 pub async fn run() {
@@ -29,51 +32,12 @@ pub async fn run() {
         Cli::Varbuild(args) => sub_commands::c_varbuild::run(args),
         // Cli::Migrate(args) => sub_commands::c_migrate::run(args),
         Cli::Dev(args) => sub_commands::c_dev::run(args).await,
-        Cli::Version(_) => sub_commands::c_version::run()
+        Cli::Version(_) => sub_commands::c_version::run(),
+        Cli::Scriptbundle(args) => sub_commands::c_scriptbundle::run(args),
+        Cli::Scriptpostprocess(args) => sub_commands::c_scriptpostprocess::run(args),
+        Cli::Skinhtmlreplace(args) => sub_commands::c_skinhtmlreplace::run(args),
+        Cli::Buildpreprocess(args) => sub_commands::c_buildpreprocess::run(args),
+        Cli::Movepublictodottorytis(args) => sub_commands::c_movepublictodottorytis::run(args),
     }
 }
 
-pub fn run_command(cmd_string: &str) -> Result<std::process::Output, std::io::Error> {
-    let output = if cfg!(target_os = "windows") {
-      std::process::Command::new("cmd")
-        .args(["/C", cmd_string])
-        .stdout(Stdio::inherit()) 
-        .stderr(Stdio::inherit())
-        .output()
-    } else {
-      std::process::Command::new("sh")
-        .arg("-c")
-        .arg(cmd_string)
-        .stdout(Stdio::inherit()) 
-        .stderr(Stdio::inherit())
-        .output()
-    };
-    output
-}
-
-pub fn replace_skin_html_content(html_string: &String) -> String {
-    let mut result = String::from(html_string);
-    result = result.replacen("</head>", "<link href=\"./style.css\" as=\"style\" rel=\"preload\" /></head>", 1);
-    result = result.replacen("</head>", "<link href=\"./style.css\" type=\"text/css\" rel=\"stylesheet\" /></head>", 1);
-    result = result.replacen("</head>", "<script src=\"./images/script.js\"></script></head>", 1);
-    result = result.replacen("<html", "<!DOCTYPE html><html", 1);
-    result = result.replace("<tt_html_comment>", "<!-- ");
-    result = result.replace("</tt_html_comment>", " -->");
-    result = result.replace("<meta charSet", "<meta charset");
-    result = result.replace("tt-onclick", "onclick");
-    result = result.replace("tt-onmouseover", "onmouseover");
-    result = result.replace("tt-onmouseout", "onmouseout");
-    result = result.replace("tt-onmouseenter", "onmouseenter");
-    result = result.replace("tt-onmouseleave", "onmouseleave");
-    result = result.replace("tt-onkeypress", "onkeypress");
-    result = result.replace("tt-onkeydown", "onkeydown");
-    result = result.replace("tt-value", "value");
-    result = result.replace("tt-onload", "onload");
-    result = result.replace("tt-onerror", "onerror");
-
-    let pattern = r#"tt-onlyattr=\"(.*?)\""#;
-    let re = Regex::new(pattern).unwrap();
-    let output_string = re.replace_all(&result.as_str(), r#"$1"#);
-    result = output_string.to_string();
-    result
-}

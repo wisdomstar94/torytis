@@ -1,6 +1,6 @@
 [package]
 name = "torytis"
-version = "1.4.4"
+version = "1.5.0"
 edition = "2021"
 
 [dependencies]
@@ -23,5 +23,6 @@ consts = { path = "../consts" }
 downloader = { path = "../downloader" }
 flater = { path = "../flater" }
 file_manager = { path = "../file_manager" }
+commander = { path = "../commander" }
 serde_qs = "0.13.0"
 openssl = { version = "0.10", features = ["vendored"] }
