@@ -1,3 +1,7 @@
+## v0.0.6
+
+- windows os 에서 vite resolve alias 경로 문제 발생하던 현상 수정.
+
 ## v0.0.5
 
 - `vite.**.config.ts` 파일들을 `config/` 폴더 밑으로 이동.
