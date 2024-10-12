@@ -1,17 +1,15 @@
-/**
- * 이 파일을 삭제하거나 조작하실 경우 빌드가 정상적으로 되지 않을 수 있습니다.
- */
-
 import { exec } from "child_process";
 import { join } from "path";
 import jsx_runtime from "react/jsx-runtime";
 import { renderToString } from "react-dom/server";
 import fs from "fs";
-const dirname = import.meta.dirname;
+
+const DIRNAME = import.meta.dirname;
+const PACKAGE_ROOT = join(DIRNAME, "..");
 
 const disposeIndexComponent = async () => {
   await new Promise(function (resolve, reject) {
-    const command = `npx vite build --config ${join(dirname, "torytis.index.vite.config.ts")}`;
+    const command = `npm run vite -- --config ${join(PACKAGE_ROOT, "config", "torytis.index.vite.config.ts")} build`;
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -25,12 +23,13 @@ const disposeIndexComponent = async () => {
         return;
       }
 
+      console.log("@stdout", stdout);
       resolve(stdout);
     });
   });
 
-  const indexJsxPath = join(dirname, ".torytis", "index.mjs");
-  const skinHtmlPath = join(dirname, ".torytis", "skin.html");
+  const indexJsxPath = join(PACKAGE_ROOT, ".torytis", "index.mjs");
+  const skinHtmlPath = join(PACKAGE_ROOT, ".torytis", "skin.html");
 
   const indexJsx = await import(indexJsxPath);
   const App = indexJsx.default;
@@ -41,7 +40,7 @@ const disposeIndexComponent = async () => {
 
 const disposeIndexScript = async () => {
   await new Promise(function (resolve, reject) {
-    const command = `npx vite build --config ${join(dirname, "torytis.script.vite.config.ts")}`;
+    const command = `npm run vite -- --config ${join(PACKAGE_ROOT, "config", "torytis.script.vite.config.ts")} build`;
 
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -55,6 +54,7 @@ const disposeIndexScript = async () => {
         return;
       }
 
+      console.log("@stdout", stdout);
       resolve(stdout);
     });
   });

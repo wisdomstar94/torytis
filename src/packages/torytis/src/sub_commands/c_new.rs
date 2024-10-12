@@ -5,6 +5,8 @@ use downloader::structs::{file_name_options::FileNameOptions, http_file_download
 use file_manager::structs::file_content_controller::FileContentController;
 use flater::functions::unpack::unpack_tar_gz;
 
+use crate::common::get_working_dir_path_buf;
+
 #[derive(clap::Args)]
 #[command(
   about="새로운 torytis 프로젝트를 생성합니다.", 
@@ -23,7 +25,7 @@ pub async fn run(args: CliArgs) {
 
     let project_name = args.name.unwrap();
 
-    let working_dir_path_buf = env::current_dir().unwrap();
+    let working_dir_path_buf = get_working_dir_path_buf();
     let working_dir = working_dir_path_buf.to_str().unwrap();
     let project_dir_path_buf = Path::new(working_dir).join(project_name.as_str());
 

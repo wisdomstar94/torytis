@@ -10,8 +10,9 @@ import { Server } from "socket.io";
 import http from "http";
 
 const DIRNAME = import.meta.dirname;
-const INDEX_MJS_PATH = join(DIRNAME, "..", ".torytis", "index.mjs");
-const SKIN_HTML_PATH = join(DIRNAME, "..", ".torytis", "skin.html");
+const PACKAGE_ROOT = join(DIRNAME, "..");
+const INDEX_MJS_PATH = join(PACKAGE_ROOT, ".torytis", "index.mjs");
+const SKIN_HTML_PATH = join(PACKAGE_ROOT, ".torytis", "skin.html");
 const SOCKET_PORT = 3008;
 
 const app = express();
@@ -43,11 +44,11 @@ async function socketServer(
 
   // html, css 처리
   await build({
-    configFile: join(DIRNAME, "..", "torytis.index.vite.config.ts"),
+    configFile: join(PACKAGE_ROOT, "config", "torytis.index.vite.config.ts"),
     build: {
       watch: {
-        include: join(DIRNAME, "..", "src/**/*"),
-        exclude: join(DIRNAME, "..", "src/**/*.script.tsx"),
+        include: join(PACKAGE_ROOT, "src/**/*"),
+        exclude: join(PACKAGE_ROOT, "src/**/*.script.tsx"),
       },
     },
     plugins: [
@@ -72,10 +73,10 @@ async function socketServer(
 
   // script 처리
   await build({
-    configFile: join(DIRNAME, "..", "torytis.script.vite.config.ts"),
+    configFile: join(PACKAGE_ROOT, "config", "torytis.script.vite.config.ts"),
     build: {
       watch: {
-        include: join(DIRNAME, "..", "src/**/*.script.tsx"),
+        include: join(PACKAGE_ROOT, "src/**/*.script.tsx"),
       },
     },
     plugins: [

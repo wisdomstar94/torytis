@@ -1,3 +1,8 @@
+## v0.0.5
+
+- `vite.**.config.ts` 파일들을 `config/` 폴더 밑으로 이동.
+- `torytis.build.mjs` 파일을 `script/build.mjs` 으로 이동.
+
 ## v0.0.4
 
 - `package.json` 에서 `torytis` 종속성 버전을 `1.5.0` 으로 수정.
