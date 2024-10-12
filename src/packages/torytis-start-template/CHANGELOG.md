@@ -1,3 +1,7 @@
+## v0.0.4
+
+- `package.json` 에서 `torytis` 종속성 버전을 `1.5.0` 으로 수정.
+
 ## v0.0.3
 
 - `npm run dev` 에서 소스코드 변경사항을 자동으로 반영하기 위해 `script/watch.mjs` 추가.
