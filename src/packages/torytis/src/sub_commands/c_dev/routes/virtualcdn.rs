@@ -1,7 +1,7 @@
 use std::fs;
 
 use axum::{body::Body, http::StatusCode, response::Response, routing::get, Router};
-use crate::{common::{get_torytis_dir_path_buf, get_working_dir_path_buf}, structs::replacer::Replacer};
+use crate::{common::{get_torytis_dir_path_buf, get_working_dir_path_buf}, statics::STATIC_DIR, structs::replacer::Replacer};
 use tower_http::services::ServeDir;
 
 pub fn routes() -> Router {
@@ -11,6 +11,7 @@ pub fn routes() -> Router {
     Router::new()
         // .route("/script.js", get(root_route))
         .route("/style.css", get(style_css_route))
+        .route("/socket-dispose.js", get(socket_dispose_route))
         .nest_service("/", serve_dir)
 }
 
@@ -26,5 +27,15 @@ async fn style_css_route() -> Response {
       .status(StatusCode::OK)
       .header("Content-Type", "text/css")
       .body(Body::from(replacer.get_html()))
+      .unwrap();
+}
+
+async fn socket_dispose_route() -> Response {
+    let file = STATIC_DIR.get_file("socket-dispose.js").unwrap();
+    let content = file.contents();
+    return Response::builder()
+      .status(StatusCode::OK)
+      .header("Content-Type", "application/javascript")
+      .body(Body::from(content))
       .unwrap();
 }
