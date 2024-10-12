@@ -1,6 +1,6 @@
 {
     "name": "@wisdomstar94/torytis",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "description": "티스토리 블로그 스킨 개발 프레임워크",
     "main": "index.js",
     "scripts": {
@@ -41,5 +41,8 @@
     },
     "devDependencies": {
         "@types/react": "^18.3.3"
+    },
+    "engines": {
+        "node": ">=20.10.0"
     }
 }
