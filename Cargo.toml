@@ -4,6 +4,7 @@ resolver = "2"
 members = [
   "./src/packages/html_regex",
   "./src/packages/torytis",
+  "./src/packages/commander",
   "./src/packages/consts",
   "./src/packages/downloader",
   "./src/packages/flater",

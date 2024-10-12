@@ -1,3 +1,12 @@
+## v1.5.0
+
+- `npm run dev` 에 핫리로드를 적용하였습니다. dev 서버를 실행한 상태에서 소스코드 변경시 자동으로 빌드되며 브라우저에서 새로고침 됩니다. 이를 위해 torytis 에서 아래와 같은 커맨드들이 추가되었습니다.
+  - `buildpreprocess`: 빌드하기 전에 처리해야 하는 작업을 실행
+  - `movepublictodottorytis`: `src/public/` 폴더 밑에 있는 파일들을 `.torytis/` 폴더 밑으로 복사
+  - `scriptbundle`: `src/**/*.script.tsx` 에 해당하는 파일들을 `.torytis/script.ts` 파일 하나로 묶음
+  - `scriptpostprocess`: `.torytis/script.js` 파일에 후처리 진행
+  - `skinhtmlreplace`: `.torytis/skin.html` 파일 내용에 치환 적용
+
 ## v1.4.4
 
 - `npm run dev` 변경 사항

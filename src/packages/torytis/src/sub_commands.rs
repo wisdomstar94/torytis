@@ -4,3 +4,8 @@ pub mod c_varbuild;
 pub mod c_migrate;
 pub mod c_dev;
 pub mod c_version;
+pub mod c_scriptbundle;
+pub mod c_scriptpostprocess;
+pub mod c_skinhtmlreplace;
+pub mod c_buildpreprocess;
+pub mod c_movepublictodottorytis;
