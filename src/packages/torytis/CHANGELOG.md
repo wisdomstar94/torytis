@@ -1,3 +1,9 @@
+## v1.5.3
+
+- `dev server` 구동시 필요한 작업에 대한 api 구현. `watch.mjs` 에서 `fetch` 를 이용해 호출하는 구조.
+- `socket` 연결 port 를 `3020` 으로 수정.
+- `torytis new` 명령어에서 내려받는 `torytis-start-template` 의 버전을 `v0.0.7` 으로 변경.
+
 ## v1.5.2
 
 - `torytis` 를 이용하기 위해선 node.js 버전이 `20.10.0` 이상이어야 함을 명시.

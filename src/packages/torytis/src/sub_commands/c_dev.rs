@@ -28,6 +28,7 @@ pub async fn run(args: CliArgs) {
         .nest("/guestbook", routes::guestbook::routes()) 
         .nest("/virtualcdn", routes::virtualcdn::routes())
         .nest("/tistorycdn", routes::tistorycdn::routes())
+        .nest("/processer", routes::processer::routes())
         .nest("/", routes::root::routes())
         // .nest("/test", test::routes())
         // .route_layer(middleware::from_fn(middlewares::header_auth_check::middleware))
