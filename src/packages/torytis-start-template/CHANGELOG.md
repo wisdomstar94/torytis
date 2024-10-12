@@ -1,3 +1,9 @@
+## v0.0.7
+
+- `npm run dev` 스크립트에서 `watch.mjs` 는 `dev server` 가 구동된 이후에 실행되도록 수정.
+- `torytis` 의 종속성 최소 버전을 `1.5.3` 으로 수정.
+- `socket` listen port 를 `3020` 으로 수정.
+
 ## v0.0.6
 
 - windows os 에서 vite resolve alias 경로 문제 발생하던 현상 수정.

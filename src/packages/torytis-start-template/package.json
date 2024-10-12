@@ -1,10 +1,10 @@
 {
   "name": "@wisdomstar94/torytis-start-template",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "scripts": {
     "build": "torytis build",
     "build:variable": "torytis varbuild",
-    "dev": "concurrently \"torytis dev\" \"node ./script/watch.mjs\"",
+    "dev": "concurrently \"torytis dev\" \"wait-on http://127.0.0.1:3000 && node ./script/watch.mjs\"",
     "tsc": "tsc",
     "type:check": "tsc --noEmit",
     "tailwindcss": "tailwindcss",
@@ -16,7 +16,7 @@
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "@wisdomstar94/torytis": "^1.5.2",
+    "@wisdomstar94/torytis": "^1.5.3",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "concurrently": "^9.0.1",
@@ -30,6 +30,7 @@
     "tailwind-merge": "^2.5.3",
     "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2",
-    "vite": "^5.4.8"
+    "vite": "^5.4.8",
+    "wait-on": "^8.0.1"
   }
 }

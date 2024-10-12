@@ -4,7 +4,6 @@ import { jsx } from "react/jsx-runtime";
 import { renderToString } from "react-dom/server";
 import fs from "fs";
 import os from "os";
-import { exec } from "child_process";
 
 import express from "express";
 import { Server } from "socket.io";
@@ -14,7 +13,9 @@ const DIRNAME = import.meta.dirname;
 const PACKAGE_ROOT = join(DIRNAME, "..");
 const INDEX_MJS_PATH = join(PACKAGE_ROOT, ".torytis", "index.mjs");
 const SKIN_HTML_PATH = join(PACKAGE_ROOT, ".torytis", "skin.html");
-const SOCKET_PORT = 3008;
+const SOCKET_PORT = 3020;
+const DEV_SERVER_PORT = 3000;
+const DEV_SERVER_BASE_URL = `http://localhost:${DEV_SERVER_PORT}`;
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +24,7 @@ async function socketServer(
   /** @type {import('http').Server} */
   server
 ) {
-  await commandExec(`npm run torytis -- buildpreprocess`);
+  await fetch(`${DEV_SERVER_BASE_URL}/processer/buildpreprocess`);
 
   const io = new Server(server, {
     cors: {
@@ -56,7 +57,7 @@ async function socketServer(
       {
         name: "on-change",
         buildStart: async () => {
-          await commandExec(`npm run torytis -- movepublictodottorytis`);
+          await fetch(`${DEV_SERVER_BASE_URL}/processer/movepublictodottorytis`);
         },
         closeBundle: async () => {
           await indexmjsToSkinhtml();
@@ -65,7 +66,7 @@ async function socketServer(
           if (allMounted) {
             io.emit("full-reload");
           } else {
-            await commandExec(`npm run torytis -- scriptbundle`);
+            await fetch(`${DEV_SERVER_BASE_URL}/processer/scriptbundle`);
           }
         },
       },
@@ -85,11 +86,11 @@ async function socketServer(
         name: "on-change",
         buildStart: async () => {
           if (isAllMounted()) {
-            await commandExec(`npm run torytis -- scriptbundle`);
+            await fetch(`${DEV_SERVER_BASE_URL}/processer/scriptbundle`);
           }
         },
         closeBundle: async () => {
-          await commandExec(`npm run torytis -- scriptpostprocess`);
+          await fetch(`${DEV_SERVER_BASE_URL}/processer/scriptpostprocess`);
           mounted.script = true;
           const allMounted = isAllMounted();
           if (allMounted) {
@@ -113,43 +114,7 @@ async function indexmjsToSkinhtml() {
   const html = renderToString(jsx(App, {}, Date.now().toString()));
   fs.writeFileSync(SKIN_HTML_PATH, html);
   fs.rmSync(INDEX_MJS_PATH);
-  await commandExec(`npm run torytis -- skinhtmlreplace`);
-}
-
-async function commandExec(cmd) {
-  const shell = isWindow() ? "cmd.exe" : "bash";
-
-  return new Promise(function (resolve, reject) {
-    exec(cmd, { shell }, (error, stdout, stderr) => {
-      if (error) {
-        console.error("\n[error]\n", error);
-        resolve(error);
-        return;
-      }
-      if (stderr) {
-        console.error("\n[stderr]\n", stderr);
-        resolve(stderr);
-        return;
-      }
-
-      resolve(stdout);
-    });
-    // try {
-    //   const target = spawn(shell);
-    //   target.stdin.write(cmd);
-    //   target.stdin.end();
-    //   target.on("message", function (message) {
-    //     console.log("@message", message);
-    //   });
-    //   target.on("close", function (code) {
-    //     // console.log('end');
-    //     resolve(code);
-    //   });
-    // } catch (e) {
-    //   console.error(`\n[ error ]\n`, e);
-    //   resolve(e);
-    // }
-  });
+  await fetch(`${DEV_SERVER_BASE_URL}/processer/skinhtmlreplace`);
 }
 
 await socketServer(server);

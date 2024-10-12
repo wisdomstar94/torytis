@@ -3,7 +3,7 @@ window.addEventListener("load", () => {
   const firstConnectTime = Date.now();
   let latestConnectTime = Date.now();
 
-  const SOCKET_PORT = 3008;
+  const SOCKET_PORT = 3020;
   const socketUrl = `localhost:${SOCKET_PORT}`;
   const socket = io(`ws://${socketUrl.replace("http://", "").replace("https://", "").replace("ws://", "")}`);
 
