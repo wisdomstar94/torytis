@@ -1,3 +1,9 @@
+## v1.5.2
+
+- `torytis` 를 이용하기 위해선 node.js 버전이 `20.10.0` 이상이어야 함을 명시.
+- `torytis new` 명령어에서 내려받는 `torytis-start-template` 의 버전을 `v0.0.6` 으로 변경.
+- `torytis dev` 명령어에서 node 로 `watch.mjs` 을 실행하는 부분을 제거하고 이는 torytis 프로젝트에서 `concurrently` 를 활용해 실행하는 것으로 변경.
+
 ## v1.5.1
 
 - 특정 파일 및 폴더의 경로를 선언 및 불러오는 부분 정리.

@@ -3,6 +3,9 @@ import type { UserConfigFnPromise } from "vite";
 
 const DIRNAME = import.meta.dirname;
 const PACKAGE_ROOT = join(DIRNAME, "..");
+const OUT_DIR = join(PACKAGE_ROOT, ".torytis");
+const SRC_DIR = join(PACKAGE_ROOT, "src/");
+const SRC_DIR_CONVERT = SRC_DIR.replace(/\\/g, "/");
 
 const defineConfig: UserConfigFnPromise = async (params) => {
   return {
@@ -10,7 +13,7 @@ const defineConfig: UserConfigFnPromise = async (params) => {
     publicDir: false,
     resolve: {
       alias: {
-        "@/": join(PACKAGE_ROOT, "src/"),
+        "@/": SRC_DIR_CONVERT,
       },
     },
     build: {

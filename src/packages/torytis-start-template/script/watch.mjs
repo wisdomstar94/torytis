@@ -3,6 +3,7 @@ import { build } from "vite";
 import { jsx } from "react/jsx-runtime";
 import { renderToString } from "react-dom/server";
 import fs from "fs";
+import os from "os";
 import { exec } from "child_process";
 
 import express from "express";
@@ -100,8 +101,14 @@ async function socketServer(
   });
 }
 
+function isWindow() {
+  const osType = os.type();
+  return osType.toLowerCase().includes("window");
+}
+
 async function indexmjsToSkinhtml() {
-  const indexJsx = await import(INDEX_MJS_PATH + `?_=${Date.now()}`);
+  const prefix = isWindow() ? "file://" : "";
+  const indexJsx = await import(prefix + INDEX_MJS_PATH + `?_=${Date.now()}`);
   const App = indexJsx.default;
   const html = renderToString(jsx(App, {}, Date.now().toString()));
   fs.writeFileSync(SKIN_HTML_PATH, html);
@@ -110,8 +117,10 @@ async function indexmjsToSkinhtml() {
 }
 
 async function commandExec(cmd) {
+  const shell = isWindow() ? "cmd.exe" : "bash";
+
   return new Promise(function (resolve, reject) {
-    exec(cmd, (error, stdout, stderr) => {
+    exec(cmd, { shell }, (error, stdout, stderr) => {
       if (error) {
         console.error("\n[error]\n", error);
         resolve(error);
@@ -125,6 +134,21 @@ async function commandExec(cmd) {
 
       resolve(stdout);
     });
+    // try {
+    //   const target = spawn(shell);
+    //   target.stdin.write(cmd);
+    //   target.stdin.end();
+    //   target.on("message", function (message) {
+    //     console.log("@message", message);
+    //   });
+    //   target.on("close", function (code) {
+    //     // console.log('end');
+    //     resolve(code);
+    //   });
+    // } catch (e) {
+    //   console.error(`\n[ error ]\n`, e);
+    //   resolve(e);
+    // }
   });
 }
 
