@@ -1297,7 +1297,7 @@ __metadata:
     "@types/node": "npm:^22.7.4"
     "@types/react": "npm:^18.3.11"
     "@types/react-dom": "npm:^18.3.0"
-    "@wisdomstar94/torytis": "npm:^1.4.1"
+    "@wisdomstar94/torytis": "npm:^1.5.0"
     autoprefixer: "npm:^10.4.20"
     clsx: "npm:^2.1.1"
     express: "npm:^4.21.1"
@@ -1314,18 +1314,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@wisdomstar94/torytis@npm:^1.4.1":
-  version: 1.4.4
-  resolution: "@wisdomstar94/torytis@npm:1.4.4"
-  dependencies:
-    binary-install: "npm:^1.1.0"
-  bin:
-    torytis: npm/run.js
-  checksum: 10c0/67038caba2333639dc615f9c154372897a465c33d6fd2fb130c04deba71d5892267dcaffa7a16c35fb14ee8b14459e4f2a7bd714400d2a56bf22f80b900636e8
-  languageName: node
-  linkType: hard
-
-"@wisdomstar94/torytis@workspace:src/packages/torytis":
+"@wisdomstar94/torytis@npm:^1.5.0, @wisdomstar94/torytis@workspace:src/packages/torytis":
   version: 0.0.0-use.local
   resolution: "@wisdomstar94/torytis@workspace:src/packages/torytis"
   dependencies:
