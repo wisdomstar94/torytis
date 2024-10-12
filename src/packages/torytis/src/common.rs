@@ -9,8 +9,28 @@ pub fn get_working_dir_path_buf() -> PathBuf {
     env::current_dir().unwrap()
 }
 
+pub fn get_package_json_path_buf() -> PathBuf {
+    get_working_dir_path_buf().join("package.json")
+}
+
 pub fn get_torytis_dir_path_buf() -> PathBuf {
     get_working_dir_path_buf().join(".torytis")
+}
+
+pub fn get_torytis_script_ts_path_buf() -> PathBuf {
+    get_torytis_dir_path_buf().join("script.ts")
+}
+
+pub fn get_torytis_script_js_path_buf() -> PathBuf {
+    get_torytis_dir_path_buf().join("script.js")
+}
+
+pub fn get_torytis_images_script_js_path_buf() -> PathBuf {
+    get_torytis_images_dir_path_buf().join("script.js")
+}
+
+pub fn get_torytis_images_dir_path_buf() -> PathBuf {
+    get_torytis_dir_path_buf().join("images")
 }
 
 pub fn get_torytis_dir_skin_html_path_buf() -> PathBuf {
@@ -18,15 +38,55 @@ pub fn get_torytis_dir_skin_html_path_buf() -> PathBuf {
 }
 
 pub fn get_torytis_dev_config_json_path_buf() -> PathBuf {
-    get_working_dir_path_buf().join("torytis-dev.config.json")
+    get_config_dir_path_buf().join("torytis-dev.config.json")
+}
+
+pub fn get_src_dir_path_buf() -> PathBuf {
+    get_working_dir_path_buf().join("src")
 }
 
 pub fn get_index_xml_path_buf() -> PathBuf {
-    get_working_dir_path_buf().join("src").join("public").join("index.xml")
+    get_src_dir_path_buf().join("public").join("index.xml")
+}
+
+pub fn get_src_public_dir_path_buf() -> PathBuf {
+    get_src_dir_path_buf().join("public")
+}
+
+pub fn get_src_types_dir_path_buf() -> PathBuf {
+    get_src_dir_path_buf().join("types")
+}
+
+pub fn get_torytis_variable_d_ts_path_buf() -> PathBuf {
+    get_src_types_dir_path_buf().join("torytis-variable.d.ts")
+}
+
+pub fn get_src_consts_dir_path_buf() -> PathBuf {
+    get_src_dir_path_buf().join("consts")
+}
+
+pub fn get_torytis_variable_object_ts_path_buf() -> PathBuf {
+    get_src_consts_dir_path_buf().join("torytis-variable-object.ts")
 }
 
 pub fn get_temp_html_path_buf() -> PathBuf {
     get_working_dir_path_buf().join("bin").join("skin.html")
+}
+
+pub fn get_script_dir_path_buf() -> PathBuf {
+    get_working_dir_path_buf().join("script")
+}
+
+pub fn get_script_watch_path_buf() -> PathBuf {
+    get_script_dir_path_buf().join("watch.mjs")
+}
+
+pub fn get_script_build_path_buf() -> PathBuf {
+    get_script_dir_path_buf().join("build.mjs")
+}
+
+pub fn get_config_dir_path_buf() -> PathBuf {
+    get_working_dir_path_buf().join("config")
 }
 
 pub fn get_skin_html_content() -> String {

@@ -1,7 +1,8 @@
 import { join } from "path";
 import type { UserConfigFnPromise } from "vite";
 
-const PACKAGE_ROOT = import.meta.dirname;
+const DIRNAME = import.meta.dirname;
+const PACKAGE_ROOT = join(DIRNAME, "..");
 
 const defineConfig: UserConfigFnPromise = async (params) => {
   return {
@@ -13,22 +14,22 @@ const defineConfig: UserConfigFnPromise = async (params) => {
       },
     },
     build: {
-      ssr: false,
+      ssr: true,
       sourcemap: false,
       target: `modules`,
       outDir: ".torytis",
       assetsDir: ".",
-      minify: false,
+      minify: true,
       emptyOutDir: false,
       reportCompressedSize: false,
       lib: {
-        entry: ".torytis/script.ts",
+        entry: "src/index.component.tsx",
       },
       rollupOptions: {
-        input: ".torytis/script.ts",
+        input: "src/index.component.tsx",
         output: [
-          // { format: "es", entryFileNames: `script.js` },
-          { format: "cjs", entryFileNames: `script.js` },
+          { format: "es", entryFileNames: `index.mjs` },
+          // { format: "cjs", entryFileNames: `[name].cjs` },
         ],
       },
     },

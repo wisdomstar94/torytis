@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/torytis-start-template",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "build": "torytis build",
     "build:variable": "torytis varbuild",
@@ -8,14 +8,15 @@
     "tsc": "tsc",
     "type:check": "tsc --noEmit",
     "tailwindcss": "tailwindcss",
-    "torytis": "torytis"
+    "torytis": "torytis",
+    "vite": "vite"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
-    "@wisdomstar94/torytis": "^1.5.0",
+    "@wisdomstar94/torytis": "^1.5.1",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "express": "^4.21.1",

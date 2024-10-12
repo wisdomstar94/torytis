@@ -1,8 +1,8 @@
-use std::{env, fs::{self}, collections::HashMap};
+use std::{fs::{self}, collections::HashMap};
 use commander::functions::run_command::run_command;
 use serde_json::Value;
 
-use crate::functions::{build_preprocess::build_preprocess, move_public_to_dot_torytis::move_public_to_dot_torytis, script_bundle::script_bundle, script_postprocess::script_postprocess, skin_html_replace::skin_html_replace};
+use crate::{common::{get_package_json_path_buf, get_script_build_path_buf, get_torytis_dir_path_buf}, functions::{build_preprocess::build_preprocess, move_public_to_dot_torytis::move_public_to_dot_torytis, script_postprocess::script_postprocess, skin_html_replace::skin_html_replace}};
 
 #[derive(clap::Args)]
 #[command(
@@ -18,15 +18,11 @@ pub struct CliArgs {
 pub fn run(args: CliArgs) {
     let flat = args.flat.unwrap_or_else(|| true);
 
-    let working_dir_path_buf = env::current_dir().unwrap();
-    let torytis_build_js_file_path_buf = working_dir_path_buf.join("torytis.build.mjs");
-    let dot_torytis_index_xml_path_buf = working_dir_path_buf.join(".torytis").join("index.xml");
+    let torytis_build_js_file_path_buf = get_script_build_path_buf();
+    let dot_torytis_index_xml_path_buf = get_torytis_dir_path_buf().join("index.xml");
     let dot_torytis_index_xml_path = dot_torytis_index_xml_path_buf.as_path();
 
     build_preprocess(&flat);
-    
-    // src/**/*.script.tsx 파일들을 읽어서 .torytis/script.ts 파일 만들기
-    script_bundle();
 
     // js 를 필요로 하는 로직 실행
     {
@@ -55,7 +51,7 @@ pub fn run(args: CliArgs) {
     let dot_torytis_index_xml_content = fs::read_to_string(dot_torytis_index_xml_path).unwrap();
     let mut dot_torytis_index_xml_content_new = dot_torytis_index_xml_content.clone();
 
-    let package_json_path_buf = working_dir_path_buf.join("package.json");
+    let package_json_path_buf = get_package_json_path_buf();
     let package_json_path = package_json_path_buf.as_path();
     let package_json_string = fs::read_to_string(package_json_path).unwrap();
     let package_json = serde_json::from_str::<HashMap<String, Value>>(&package_json_string);
