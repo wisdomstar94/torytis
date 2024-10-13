@@ -2,7 +2,7 @@
 
 torytis 는 다음과 같은 특징이 있습니다.
 
-## React 를 이용하여 정적 html 코드들을 분리
+## React 를 이용하여 정적 html 코드 분리
 
 티스토리 스킨은 모든 페이지에 필요한 요소들이 `skin.html` 이라는 파일에 모두 존재해야 합니다. 그렇기 때문에 별다른 프레임워크 없이 개발할 경우 `skin.html` 의 내용이 비대해지고 파일 내용이 길어지므로 유지보수가 어려워질 수 있습니다.
 
@@ -14,13 +14,13 @@ torytis 프레임워크로 티스토리 스킨을 개발할 때는 이러한 특
 
 빌드시, 하나의 `skin.html` 파일로 생성될 때 entry point 는 `src/index.component.tsx` 파일 입니다.
 
-## javascript 관심사 분리 및 typescript 적용
+## typescript 사용 환경 제공 및 코드 분리
 
 torytis 는 별다른 셋팅 과정 없이 바로 `typescript` 를 사용할 수 있는 환경을 제공하고자 하였고, 개발 환경에서 `*.script.tsx` 파일들을 분리하고 이를 다시 하나로 묶을 수 있는 기능을 제공하고자 하였습니다.
 
 관심사별로 분리하는 방법은 간단합니다. src 폴더 밑에 자유로운 형태로 `*.script.tsx` 파일들을 작성하시면 됩니다. 컴포넌트와 같은 위치에 `*.script.tsx` 을 둘수도 있고 아니면 `src/scripts/` 폴더 밑에 둘수도 있습니다. 이건 자유롭게 하시면 됩니다. 다시 말해 `src/` 폴더 밑에 존재하는 모든 `*.script.tsx` 파일에 있는 내용들이 빌드될 때 하나의 `script.js` 으로 묶여집니다.
 
-## css 관심사 분리 및 scss 적용
+## scss 사용 환경 제공 및 코드 분리
 
 torytis 는 별다른 셋팅 과정 없이 바로 `scss` 를 사용할 수 있는 환경을 제공하고자 하였고, 개발 환경에서 `*.scss` 파일들을 분리하고 이를 다시 하나로 묶을 수 있는 기능을 제공하고자 하였습니다.
 
@@ -34,15 +34,15 @@ export function MyItem() {
 }
 ```
 
-## 빌드시 vite 사용
+## vite 사용
 
-흩어진 react 컴포넌트들과 scss 들을 하나의 `skin.html`, `style.css` 으로 묶고, 흩어진 typescript(\*.script.tsx) 파일들을 하나로 묶은 `script.ts` 파일을 `script.js` 으로 변환하는데 모두 `vite` 가 사용되었습니다.
+흩어진 react 컴포넌트들과 scss 들을 하나의 `skin.html`, `style.css` 으로 묶고, 흩어진 typescript(\*.script.tsx) 파일들을 하나로 묶은 `script.ts` 파일을 `script.js` 으로 변환하는데 모두 `vite` 를 사용하였습니다. 또한 개발 결과를 미리볼 수 있는 기능인 `npm run dev` 에서 핫리로드 적용을 위해 여기에도 `vite` 를 사용하였습니다.
 
-`skin.html`, `style.css` 을 빌드하는데 사용된 vite 설정 파일은 `torytis.index.vite.config.ts` 이며 `script.ts` 파일을 `script.js` 으로 빌드하는데 사용된 vite 설정 파일은 `torytis.script.vite.config.ts` 입니다. 모두 여러분들의 프로젝트내에 존재하는 파일들이니 필요에 따라 커스텀 하여 사용하실 수도 있습니다.
+`skin.html`, `style.css` 을 빌드하는데 사용된 vite 설정 파일은 `config/torytis.index.vite.config.ts` 이며 `script.ts` 파일을 `script.js` 으로 빌드하는데 사용된 vite 설정 파일은 `config/torytis.script.vite.config.ts` 입니다. 모두 여러분들의 프로젝트내에 존재하는 파일들이니 필요에 따라 커스텀 하여 사용하실 수도 있습니다.
 
 ## 개발 서버 제공
 
-torytis 에서는 아래 명령어를 통해 로컬에서 바로 스킨의 결과물을 확인해 볼 수 있는 기능을 제공합니다.
+torytis 에서는 아래 명령어를 통해 로컬에서 바로 스킨의 결과물을 확인해 볼 수 있는 기능을 제공합니다. 여기서도 `vite` 가 사용되었습니다.
 
 ```bash
 npm run dev

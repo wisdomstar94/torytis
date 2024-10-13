@@ -50,6 +50,12 @@ export const SIDEBAR_MENU_ITEMS = [
     activeRegExpItems: [`/preview.*`],
   },
   {
+    key: "/migration" as const,
+    href: "/migration",
+    label: "torytis 버전 업데이트 가이드",
+    activeRegExpItems: [`/migration.*`],
+  },
+  {
     key: "/real-case" as const,
     href: "/real-case",
     label: "torytis 실제 사용 사례",
