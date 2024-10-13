@@ -283,6 +283,14 @@ impl Replacer {
                 html.replace(r#"./images/"#, r#"/virtualcdn/images/"#).replace(r#"'/images/"#, r#"'/virtualcdn/images/"#).replace(r#""/images/"#, r#""/virtualcdn/images/"#)
             })
             .select(SelectOptions {
+                element_name: "s_t3",
+                attrs: None,
+                is_attrs_check_string_contain: true,
+            })
+            .replacer(|_, unwrap_matched_str| {
+                unwrap_matched_str.unwrap()
+            })
+            .select(SelectOptions {
                 element_name: "s_sidebar",
                 attrs: None,
                 is_attrs_check_string_contain: true,

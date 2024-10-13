@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/torytis-start-template",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "scripts": {
     "build": "torytis build",
     "build:variable": "torytis varbuild",
@@ -9,27 +9,29 @@
     "type:check": "tsc --noEmit",
     "tailwindcss": "tailwindcss",
     "torytis": "torytis",
-    "vite": "vite"
+    "vite": "vite",
+    "package:update": "ncu -u"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/node": "^22.7.4",
+    "@types/node": "^22.7.5",
     "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.0",
-    "@wisdomstar94/torytis": "^1.5.3",
+    "@types/react-dom": "^18.3.1",
+    "@wisdomstar94/torytis": "^1.5.4",
     "autoprefixer": "^10.4.20",
     "clsx": "^2.1.1",
     "concurrently": "^9.0.1",
     "express": "^4.21.1",
+    "npm-check-updates": "^17.1.3",
     "postcss": "^8.4.47",
     "postcss-modules": "^6.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "sass-embedded": "^1.79.4 ",
+    "sass-embedded": "^1.79.5",
     "socket.io": "^4.8.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss": "^3.4.13",
-    "typescript": "^5.6.2",
+    "typescript": "^5.6.3",
     "vite": "^5.4.8",
     "wait-on": "^8.0.1"
   }

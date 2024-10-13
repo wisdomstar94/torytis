@@ -1,3 +1,8 @@
+## v1.5.4
+
+- `npm run dev` (dev server) 에서 `s_t3` 치환자 처리 추가.
+- `torytis new` 명령어에서 내려받는 `torytis-start-template` 의 버전을 `v0.0.8` 으로 변경.
+
 ## v1.5.3
 
 - `dev server` 구동시 필요한 작업에 대한 api 구현. `watch.mjs` 에서 `fetch` 를 이용해 호출하는 구조.
