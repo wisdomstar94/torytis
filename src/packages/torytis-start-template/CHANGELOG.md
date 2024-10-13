@@ -1,3 +1,9 @@
+## v0.0.8
+
+- `package.json` 의 종속성 패키지들의 버전 최신화
+- `package.json` 에 `npm-check-updates` 패키지 종속성 추가
+- `package.json` 에 종속성 패키지의 버전을 최신화할 수 있는 스크립트인 `package:update` 추가.
+
 ## v0.0.7
 
 - `npm run dev` 스크립트에서 `watch.mjs` 는 `dev server` 가 구동된 이후에 실행되도록 수정.
