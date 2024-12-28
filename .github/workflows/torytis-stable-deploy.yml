@@ -25,10 +25,14 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
+
+      - run: corepack enable
+      - run: corepack prepare yarn@stable --activate
+      - run: yarn install
 
       - name: cargo build (macos only)
         if: matrix.platform == 'macos-latest'
@@ -151,8 +155,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org/
+      - run: corepack enable
+      - run: corepack prepare yarn@stable --activate
       - run: |
           yarn torytis npm:publish
         env:
