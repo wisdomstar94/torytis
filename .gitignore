@@ -5,3 +5,4 @@ node_modules
 bin
 .npmrc
 torytis-start-template.tar.gz
+.yarn
