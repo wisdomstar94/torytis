@@ -702,6 +702,7 @@ impl Replacer {
             let content_summary = &item.get_contents_summary();
             let is_guest = config.get_is_guest();
             let is_private = item.is_private;
+            let tags = item.tag_list.clone().unwrap_or_else(|| Vec::new());
 
             root
                 .html_str_replace(|html| {
@@ -757,6 +758,26 @@ impl Replacer {
 
                     let mut result = matched_str_unwrap.unwrap();
                     result = result.replace(r#"[##_article_rep_thumbnail_url_##]"#, &thumbnail_img_url2.clone());
+                    result
+                })
+                .commit()
+            ;   
+            root
+                .select(SelectOptions {
+                    element_name: "s_tag_label",
+                    attrs: None,
+                    is_attrs_check_string_contain: true,
+                })
+                .replacer(move |_, matched_str_unwrap| {
+                    let mut result = matched_str_unwrap.unwrap();
+
+                    let mut string_vec: Vec<String> = Vec::new();
+
+                    for tag in &tags {
+                        string_vec.push(format!(r#"<a href="/tag/{}">{}</a>"#, tag, tag));
+                    }
+
+                    result = result.replace(r#"[##_tag_label_rep_##]"#, &string_vec.join(""));
                     result
                 })
                 .commit()

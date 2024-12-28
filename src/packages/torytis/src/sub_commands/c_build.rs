@@ -17,12 +17,15 @@ pub struct CliArgs {
 
 pub fn run(args: CliArgs) {
     let flat = args.flat.unwrap_or_else(|| true);
+    build(&flat);
+}
 
+pub fn build(flat: &bool) {
     let torytis_build_js_file_path_buf = get_script_build_path_buf();
     let dot_torytis_index_xml_path_buf = get_torytis_dir_path_buf().join("index.xml");
     let dot_torytis_index_xml_path = dot_torytis_index_xml_path_buf.as_path();
 
-    build_preprocess(&flat);
+    build_preprocess(flat);
 
     // js 를 필요로 하는 로직 실행
     {
