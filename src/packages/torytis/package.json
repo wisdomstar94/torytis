@@ -8,7 +8,7 @@
         "build:dev": "cargo build",
         "cross:build": "cross build --release",
         "npm:publish": "npm publish --access=public",
-        "postinstall": "node ./npm/install.js"
+        "postinstall": "node ./npm/install.js || true"
     },
     "repository": {
         "type": "git",
