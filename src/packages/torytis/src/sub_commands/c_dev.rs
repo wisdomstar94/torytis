@@ -1,4 +1,6 @@
 use axum::Router;
+
+use crate::sub_commands::c_build::build;
 // use commander::functions::run_command::run_command;
 // use crate::common::get_script_watch_path_buf;
 mod routes;
@@ -14,6 +16,8 @@ pub struct CliArgs {
 }
 
 pub async fn run(args: CliArgs) {
+    build(&false);
+
     let port = if let Some(p) = args.port {
         p
     } else {

@@ -1,3 +1,8 @@
+## v1.5.5
+
+- https://github.com/wisdomstar94/torytis/issues/21 해결.
+- https://github.com/wisdomstar94/torytis/issues/22 해결.
+
 ## v1.5.4
 
 - `npm run dev` (dev server) 에서 `s_t3` 치환자 처리 추가.
