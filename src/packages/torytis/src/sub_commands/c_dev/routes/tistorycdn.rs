@@ -9,10 +9,10 @@ pub fn routes() -> Router {
     Router::new()
         // .route("/script.js", get(root_route))
         // .nest_service("/", serve_dir)
-        .route("/content.css", get(content_css_route))
-        .route("/postBtn.css", get(post_btn_css_route))
-        .route("/another_category.css", get(another_category_css_route))
-        .route("/comment.css", get(comment_css_route))
+        .route("/tistorycdn/content.css", get(content_css_route))
+        .route("/tistorycdn/postBtn.css", get(post_btn_css_route))
+        .route("/tistorycdn/another_category.css", get(another_category_css_route))
+        .route("/tistorycdn/comment.css", get(comment_css_route))
         
 
 }

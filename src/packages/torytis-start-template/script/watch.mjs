@@ -46,7 +46,7 @@ async function socketServer(
 
   // html, css 처리
   await build({
-    configFile: join(PACKAGE_ROOT, "config", "torytis.index.vite.config.ts"),
+    configFile: join(PACKAGE_ROOT, "config", "torytis.index.vite.config.mts"),
     build: {
       watch: {
         include: join(PACKAGE_ROOT, "src/**/*"),
@@ -75,7 +75,7 @@ async function socketServer(
 
   // script 처리
   await build({
-    configFile: join(PACKAGE_ROOT, "config", "torytis.script.vite.config.ts"),
+    configFile: join(PACKAGE_ROOT, "config", "torytis.script.vite.config.mts"),
     build: {
       watch: {
         include: join(PACKAGE_ROOT, "src/**/*.script.tsx"),

@@ -1,4 +1,5 @@
 import { join } from "path";
+import tailwindcss from "@tailwindcss/vite";
 import type { UserConfigFnPromise } from "vite";
 
 const DIRNAME = import.meta.dirname;
@@ -27,6 +28,7 @@ const defineConfig: UserConfigFnPromise = async (params) => {
       reportCompressedSize: false,
       lib: {
         entry: "src/index.component.tsx",
+        cssFileName: "style",
       },
       rollupOptions: {
         input: "src/index.component.tsx",
@@ -36,7 +38,7 @@ const defineConfig: UserConfigFnPromise = async (params) => {
         ],
       },
     },
-    plugins: [],
+    plugins: [tailwindcss()],
     css: {
       modules: {
         localsConvention: "dashes",

@@ -1,21 +1,21 @@
 [package]
 name = "torytis"
-version = "1.5.5"
+version = "1.5.6"
 edition = "2021"
 
 [dependencies]
-axum = "0.7.5"
-chrono = "0.4.38"
-clap = { version = "4.5.17", features = ["derive"] }
-encoding_rs = "0.8.34"
-glob = "0.3.1"
-html5ever = "0.28.0"
+axum = "0.8.1"
+chrono = "0.4.40"
+clap = { version = "4.5.32", features = ["derive"] }
+encoding_rs = "0.8.35"
+glob = "0.3.2"
+html5ever = "0.30.0"
 include_dir = { version = "0.7.4", features = ["glob"] }
-regex = "1.10.6"
-serde = { version = "1.0.209", features = ["derive"] }
-serde_json = "1.0.128"
-tokio = { version = "1.40.0", features = ["rt-multi-thread"] }
-tower-http = { version = "0.5.2", features = ["fs"] }
+regex = "1.11.1"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+tokio = { version = "1.44.1", features = ["rt-multi-thread"] }
+tower-http = { version = "0.6.2", features = ["fs"] }
 version-compare = "0.2.0"
 xmltree = "0.11.0"
 html_regex = { path = "../html_regex"}
@@ -24,5 +24,5 @@ downloader = { path = "../downloader" }
 flater = { path = "../flater" }
 file_manager = { path = "../file_manager" }
 commander = { path = "../commander" }
-serde_qs = "0.13.0"
+serde_qs = "0.14.0"
 openssl = { version = "0.10", features = ["vendored"] }

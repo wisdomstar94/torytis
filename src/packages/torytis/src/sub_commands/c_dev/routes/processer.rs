@@ -4,11 +4,11 @@ use crate::functions::{build_preprocess::build_preprocess, move_public_to_dot_to
 pub fn routes() -> Router {
     Router::new()
         // .route("/script.js", get(root_route))
-        .route("/buildpreprocess", get(buildpreprocess_route))
-        .route("/movepublictodottorytis", get(movepublictodottorytis_route))
-        .route("/scriptbundle", get(scriptbundle_route))
-        .route("/scriptpostprocess", get(scriptpostprocess_route))
-        .route("/skinhtmlreplace", get(skinhtmlreplace_route))
+        .route("/processer/buildpreprocess", get(buildpreprocess_route))
+        .route("/processer/movepublictodottorytis", get(movepublictodottorytis_route))
+        .route("/processer/scriptbundle", get(scriptbundle_route))
+        .route("/processer/scriptpostprocess", get(scriptpostprocess_route))
+        .route("/processer/skinhtmlreplace", get(skinhtmlreplace_route))
         
 }
 

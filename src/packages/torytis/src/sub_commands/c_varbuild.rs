@@ -37,8 +37,8 @@ pub fn run(_: CliArgs) {
                     // name 가져오기
                     if let Some(name_element) = variable_element.get_child("name") {
                         if let Some(text) = name_element.get_text() {
-                            declaration_text.push_str(format!("\t\t's_if_var_{}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n", text).as_str());
-                            declaration_text.push_str(format!("\t\t's_not_var_{}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n", text).as_str());
+                            declaration_text.push_str(format!("'s_if_var_{}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n\t\t", text).as_str());
+                            declaration_text.push_str(format!("'s_not_var_{}': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;\n\t\t", text).as_str());
 
                             var_object_key_and_value_text.push_str(format!("\t\"[##_var_{}_##]\": \"[##_var_{}_##]\",\n", text, text).as_str());
                         }

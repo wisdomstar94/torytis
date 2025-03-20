@@ -10,9 +10,9 @@ pub fn routes() -> Router {
 
     Router::new()
         // .route("/script.js", get(root_route))
-        .route("/style.css", get(style_css_route))
-        .route("/socket-dispose.js", get(socket_dispose_route))
-        .nest_service("/", serve_dir)
+        .route("/virtualcdn/style.css", get(style_css_route))
+        .route("/virtualcdn/socket-dispose.js", get(socket_dispose_route))
+        .nest_service("/virtualcdn", serve_dir)
 }
 
 async fn style_css_route() -> Response {

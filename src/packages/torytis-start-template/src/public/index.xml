@@ -79,8 +79,7 @@
         variables 내용 수정 후에 터미널에 "npm run build:variable" 명령어를 입력하시면, 
         torytis-variable.d.ts 파일이 생성되며 variable 태그 자동완성이 지원됩니다. 
     -->
-    <!-- example -->
-    <!-- 
+    <!-- example -->  
     <variablegroup name="구글애드센스">
       <variable>
         <name>google_adsense_script_url</name>
@@ -107,7 +106,6 @@
         ]]></option>
       </variable>
     </variablegroup> 
-    -->
   </variables>
   <cover>
     <!-- example -->

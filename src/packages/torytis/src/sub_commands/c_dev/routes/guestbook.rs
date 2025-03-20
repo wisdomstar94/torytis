@@ -4,7 +4,7 @@ use crate::{common::get_skin_html_content, structs::{replacer::{ApplyGuestbookPa
 
 pub fn routes() -> Router {
     Router::new()
-        .route("/", get(root_route))
+        .route("/guestbook", get(root_route))
         // .route("/:category_name", get(category_index_route))
         // .route("/:category_name/:sub_category_name", get(category_sub_category_index_route))
         // .route("/style.css", get(style_css_route))

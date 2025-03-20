@@ -4,8 +4,8 @@ use crate::{common::get_skin_html_content, structs::replacer::{ApplyNoticeIndexP
 
 pub fn routes() -> Router {
     Router::new()
-        .route("/", get(root_route))
-        .route("/:post_id", get(notice_permalink_route))
+        .route("/notice", get(root_route))
+        .route("/notice/{post_id}", get(notice_permalink_route))
         // .route("/:category_name", get(category_index_route))
         // .route("/:category_name/:sub_category_name", get(category_sub_category_index_route))
         // .route("/style.css", get(style_css_route))

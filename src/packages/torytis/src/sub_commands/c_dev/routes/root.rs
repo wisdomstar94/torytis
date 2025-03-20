@@ -4,7 +4,7 @@ use crate::{common::get_skin_html_content, structs::{replacer::{ApplyIndexListOp
 
 pub fn routes() -> Router {
     Router::new()
-        .route("/:post_id", get(post_permalink_route))
+        .route("/{post_id}", get(post_permalink_route))
         .route("/", get(root_route))
         // .route("/style.css", get(style_css_route))
 }

@@ -63,10 +63,14 @@ pub async fn run(args: CliArgs) {
     fs::remove_file(&changelog_file_path).unwrap();
 
     // step 7) package.json 파일 내용 수정
+    let version = env!("CARGO_PKG_VERSION");
     let package_json_file_path = project_dir_path_buf.join("package.json");
     FileContentController::new(package_json_file_path)
         .change(|file_content| {
             file_content.replacen("@wisdomstar94/torytis-start-template", &project_name, 1)
+        })
+        .change(|file_content| {
+            file_content.replacen(r#""@wisdomstar94/torytis": "workspace:^""#, &format!(r#""@wisdomstar94/torytis": "^{}""#, &version), 1)
         })
         .commit();
 

@@ -9,7 +9,9 @@ const DIRNAME = import.meta.dirname;
 const PACKAGE_ROOT = join(DIRNAME, "..");
 
 const disposeIndexComponent = async () => {
-  await commandExec(`npm run vite -- --config "${join(PACKAGE_ROOT, "config", "torytis.index.vite.config.ts").replace(/\\/g, "/")}" build`);
+  await commandExec(
+    `npm run vite -- --config "${join(PACKAGE_ROOT, "config", "torytis.index.vite.config.mts").replace(/\\/g, "/")}" build`
+  );
 
   const indexJsxPath = join(PACKAGE_ROOT, ".torytis", "index.mjs");
   const skinHtmlPath = join(PACKAGE_ROOT, ".torytis", "skin.html");
@@ -24,7 +26,7 @@ const disposeIndexComponent = async () => {
 
 const disposeIndexScript = async () => {
   return await commandExec(
-    `npm run vite -- --config ${join(PACKAGE_ROOT, "config", "torytis.script.vite.config.ts").replace(/\\/g, "/")} build`
+    `npm run vite -- --config ${join(PACKAGE_ROOT, "config", "torytis.script.vite.config.mts").replace(/\\/g, "/")} build`
   );
 };
 

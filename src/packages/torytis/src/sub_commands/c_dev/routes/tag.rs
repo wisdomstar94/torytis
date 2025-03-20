@@ -4,8 +4,8 @@ use crate::{common::get_skin_html_content, structs::replacer::{ApplyTagPostIndex
 
 pub fn routes() -> Router {
     Router::new()
-        .route("/", get(root_route))
-        .route("/:tag_name", get(tag_post_index_route))
+        .route("/tag", get(root_route))
+        .route("/tag/{tag_name}", get(tag_post_index_route))
         // .route("/:category_name", get(category_index_route))
         // .route("/:category_name/:sub_category_name", get(category_sub_category_index_route))
         // .route("/style.css", get(style_css_route))

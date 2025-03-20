@@ -1,48 +1,49 @@
 {
-    "name": "@wisdomstar94/torytis",
-    "version": "1.5.5",
-    "description": "티스토리 블로그 스킨 개발 프레임워크",
-    "main": "index.js",
-    "scripts": {
-        "build": "cargo build --release",
-        "build:dev": "cargo build",
-        "cross:build": "cross build --release",
-        "npm:publish": "npm publish --access=public",
-        "postinstall": "node ./npm/install.js || true"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/wisdomstar94/torytis"
-    },
-    "bin": "./npm/run.js",
-    "keywords": [
-        "torytis",
-        "skin",
-        "blog",
-        "framework",
-        "cli",
-        "tistory",
-        "티스토리",
-        "블로그",
-        "프레임워크"
-    ],
-    "author": "wisdomstar94@gmail.com",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/wisdomstar94/torytis/issues"
-    },
-    "files": [
-        "npm/**/*",
-        "index.ts",
-        "types/**/*"
-    ],
-    "dependencies": {
-        "binary-install": "^1.1.0"
-    },
-    "devDependencies": {
-        "@types/react": "^18.3.3"
-    },
-    "engines": {
-        "node": ">=20.10.0"
-    }
+  "name": "@wisdomstar94/torytis",
+  "version": "1.5.6",
+  "description": "티스토리 블로그 스킨 개발 프레임워크",
+  "main": "index.js",
+  "scripts": {
+    "build": "cargo build --release && cpy ../../../target/release/torytis ./bin --flat",
+    "build:dev": "cargo build && cpy ../../../target/debug/torytis ./bin --flat",
+    "cross:build": "cross build --release",
+    "npm:publish": "npm publish --access=public",
+    "postinstall": "node ./npm/install.js || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wisdomstar94/torytis"
+  },
+  "bin": "./npm/run.js",
+  "keywords": [
+    "torytis",
+    "skin",
+    "blog",
+    "framework",
+    "cli",
+    "tistory",
+    "티스토리",
+    "블로그",
+    "프레임워크"
+  ],
+  "author": "wisdomstar94@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wisdomstar94/torytis/issues"
+  },
+  "files": [
+    "npm/**/*",
+    "index.ts",
+    "types/**/*"
+  ],
+  "dependencies": {
+    "binary-install": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "cpy-cli": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=22.10.0"
+  }
 }
