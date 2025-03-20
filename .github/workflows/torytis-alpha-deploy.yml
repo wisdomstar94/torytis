@@ -159,6 +159,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: corepack enable
       - run: corepack prepare yarn@stable --activate
+      - run: yarn install
       - run: |
           yarn torytis npm:publish --tag=next
         env:
