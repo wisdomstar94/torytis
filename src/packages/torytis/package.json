@@ -4,8 +4,10 @@
   "description": "티스토리 블로그 스킨 개발 프레임워크",
   "main": "index.js",
   "scripts": {
-    "build": "cargo build --release && cpy ../../../target/release/torytis ./bin --flat",
-    "build:dev": "cargo build && cpy ../../../target/debug/torytis ./bin --flat",
+    "build": "cargo build --release",
+    "build:cp": "cargo build --release && cpy ../../../target/release/torytis ./bin --flat",
+    "build:dev": "cargo build",
+    "build:dev:cp": "cargo build && cpy ../../../target/debug/torytis ./bin --flat",
     "cross:build": "cross build --release",
     "npm:publish": "npm publish --access=public",
     "postinstall": "node ./npm/install.js || true"
