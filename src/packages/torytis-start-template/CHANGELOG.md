@@ -1,3 +1,9 @@
+## v0.0.9
+
+- `package.json` 의 종속성 패키지들의 버전 최신화
+- `config/` 폴더 밑의 vite 관련 설정 파일들이 esm 으로 실행될 수 있도록 확장자를 `.ts` 에서 `.mts` 으로 변경
+- tailwindcss v4 대응
+
 ## v0.0.8
 
 - `package.json` 의 종속성 패키지들의 버전 최신화

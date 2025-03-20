@@ -1,3 +1,9 @@
+## v1.5.6
+
+- cargo 종속성 패키지 버전 최신화.
+- axum 버전 최신화로 인한 코드 마이그레이션 작업.
+- 로컬 환경에서 torytis 를 테스트 해볼 수 있는 환경 조성.
+
 ## v1.5.5
 
 - https://github.com/wisdomstar94/torytis/issues/21 해결.
