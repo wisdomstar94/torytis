@@ -1,3 +1,4 @@
+import "./index.css";
 import "./index.scss";
 import { HelloWorld } from "@/components/hello-world/hello-world.component";
 import { Script } from "@/components/script/script.component";

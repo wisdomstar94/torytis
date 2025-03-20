@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/torytis-start-template",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "scripts": {
     "build": "torytis build",
     "build:variable": "torytis varbuild",

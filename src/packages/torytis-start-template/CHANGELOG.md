@@ -1,3 +1,8 @@
+## v0.0.10
+
+- tailwindcss 를 import 하는 파일은 `.css` 파일로 변경.
+- `src/components/hello-world/hello-world.script.tsx` 의 코드 수정.
+
 ## v0.0.9
 
 - `package.json` 의 종속성 패키지들의 버전 최신화
