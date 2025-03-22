@@ -1,6 +1,6 @@
 /// <reference types="react" />
 
-declare namespace JSX {
+declare namespace React.JSX {
   interface IntrinsicElements {
     s_t3: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     s_sidebar: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;

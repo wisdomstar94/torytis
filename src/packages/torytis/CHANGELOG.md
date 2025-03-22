@@ -1,3 +1,7 @@
+## v1.5.7
+
+- `src/packages/torytis/types/global.d.ts` 파일의 타입 수정.
+
 ## v1.5.6
 
 - cargo 종속성 패키지 버전 최신화.
