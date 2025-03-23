@@ -12,7 +12,7 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
         <title></title>
       </head>
-      <body>
+      <body id="[##_body_id_##]">
         <HelloWorld />
         <Script
           html={`

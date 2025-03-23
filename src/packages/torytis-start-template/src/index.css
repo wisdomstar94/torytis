@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+/* tailwindcss 문법 샘플 */
+
+@custom-variant my-active (.my-active &, .my-active&);
+
+@plugin "../tailwind-plugins/basic-plugin.ts";
+
+@theme {
+  --color-strong-red: rgb(255, 0, 0); /* 사용 예시) text-strong-red, bg-strong-red/50 */
+}
+
+@theme {
+  --tab-size-2: 2;
+  --tab-size-4: 4;
+  --tab-size-github: 8;
+}
+/* 사용 예시) tab-[5], tab-2, tab-github */
+@utility tab-* {
+  tab-size: --value(--tab-size-*);
+  tab-size: --value([integer]);
+}

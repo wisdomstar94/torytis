@@ -1,3 +1,10 @@
+## v0.0.11
+
+- `.prettierignore` 파일 추가.
+- `src/index.css` 에 테일윈드 v4 관련 문법 샘플 작성.
+- `.vscode/tailwind.json` 에 tailwind v4 관련 디렉티브 추가.
+- `body` 태그에 `id="[##_body_id_##]"` 티스토리 기본 치환자 속성 추가
+
 ## v0.0.10
 
 - tailwindcss 를 import 하는 파일은 `.css` 파일로 변경.

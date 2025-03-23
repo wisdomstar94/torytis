@@ -1,3 +1,7 @@
+## v1.5.8
+
+- 다운로드 받는 시작 템플릿 버전을 `0.0.11` 로 변경.
+
 ## v1.5.7
 
 - `src/packages/torytis/types/global.d.ts` 파일의 타입 수정.
