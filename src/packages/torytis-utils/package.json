@@ -1,0 +1,41 @@
+{
+  "name": "@wisdomstar94/torytis-utils",
+  "version": "0.0.1",
+  "description": "티스토리 스킨 개발시 유용한 기능들을 제공하는 유틸 라이브러리 입니다.",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "vite build && tsc",
+    "package:update": "ncu -u",
+    "npm:publish": "npm publish --access=public"
+  },
+  "files": [
+    "./dist",
+    "./package.json"
+  ],
+  "devDependencies": {
+    "clsx": "^2.1.1",
+    "npm-check-updates": "^17.1.16",
+    "tailwind-merge": "^3.1.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.5"
+  },
+  "peerDependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.1.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  }
+}

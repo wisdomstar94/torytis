@@ -3,12 +3,14 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "moduleResolution": "nodenext",
+    "module": "NodeNext",
     "allowSyntheticDefaultImports": true,
-    "lib": ["ESNext", "DOM"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
+    "outDir": "./dist",
     "strict": true,
-    "types": ["@wisdomstar94/torytis-utils"],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

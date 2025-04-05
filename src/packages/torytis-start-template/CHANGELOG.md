@@ -1,3 +1,10 @@
+## v0.0.12
+
+- 종속성 패키지 버전 최신화.
+- `@wisdomstar94/torytis-utils` 종속성 추가.
+- `src/utils` 폴더 삭제.
+- `tsconfig.json` 설정 일부 수정.
+
 ## v0.0.11
 
 - `.prettierignore` 파일 추가.

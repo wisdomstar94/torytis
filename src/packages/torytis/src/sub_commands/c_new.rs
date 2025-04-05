@@ -72,6 +72,9 @@ pub async fn run(args: CliArgs) {
         .change(|file_content| {
             file_content.replacen(r#""@wisdomstar94/torytis": "workspace:^""#, &format!(r#""@wisdomstar94/torytis": "^{}""#, &version), 1)
         })
+        .change(|file_content| {
+            file_content.replacen(r#""@wisdomstar94/torytis-utils": "workspace:^""#, r#""@wisdomstar94/torytis-utils": "^0""#, 1)
+        })
         .commit();
 
     // step 8) npm install 진행

@@ -1,6 +1,6 @@
 import { Style } from "../style/style.component";
 import styles from "./hello-world.module.scss";
-import { cn } from "@/utils/cn";
+import { cn } from "@wisdomstar94/torytis-utils";
 
 export function HelloWorld() {
   return (

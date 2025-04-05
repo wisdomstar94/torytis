@@ -1,0 +1,31 @@
+name: "torytis-utils-stable-deploy"
+
+# This will trigger the action on each push to the `release` branch.
+on:
+  push:
+    tags:
+      - "torytis-utils-v[0-9]+.[0-9]+.[0-9]+"
+
+env:
+  CLI_NAME: torytis-utils
+
+jobs:
+  publish-release-registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+
+      - run: corepack enable
+      - run: corepack prepare yarn@stable --activate
+      - run: yarn install
+      - run: yarn torytis-utils build
+      - run: yarn torytis-utils npm:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGE_PUBLISH_KEY_NPM }}
