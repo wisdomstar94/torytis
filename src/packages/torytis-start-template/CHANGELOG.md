@@ -1,3 +1,7 @@
+## v0.0.13
+
+- `.vscode/settings.json` 에 `tailwindCSS.experimental.classRegex` 값 추가.
+
 ## v0.0.12
 
 - 종속성 패키지 버전 최신화.
