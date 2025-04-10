@@ -1,6 +1,6 @@
 {
   "name": "@wisdomstar94/torytis-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "티스토리 스킨 개발시 유용한 기능들을 제공하는 유틸 라이브러리 입니다.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
